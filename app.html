@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Speak</title>
+  <meta name="theme-color" content="#b87418" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Speak" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" href="icons/icon.png" />
+  <link rel="apple-touch-icon" href="icons/icon.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ── SENTENCE BAR ───────────────────────────────────────────── -->
+  <header id="topbar">
+    <button id="app-logo" title="Speak — tap to clear">
+      <img src="icons/icon.png" alt="Speak" />
+    </button>
+    <div id="sentence-display">
+      <div id="sentence-text" class="placeholder">Tap a symbol to speak...</div>
+    </div>
+    <button id="btn-ai" class="hidden" title="Build AI sentence">✨</button>
+    <button id="btn-speak-top" title="Speak sentence · Hold 3s for settings">🔊</button>
+    <div id="kiosk-badge" class="hidden" title="Kiosk mode active">🔒</div>
+    <div id="offline-badge" class="hidden" title="No internet — app still works">📵 Offline</div>
+  </header>
+
+  <!-- ── CORE VOCABULARY BAR ──────────────────────────────────── -->
+  <div id="core-vocab-bar"></div>
+
+  <!-- ── CATEGORY SIDEBAR ──────────────────────────────────────── -->
+  <nav id="category-nav">
+    <button class="cat-btn active" data-cat="needs">
+      <span class="cat-dot"></span><span class="cat-emoji">🙌</span>Needs
+    </button>
+    <button class="cat-btn" data-cat="feelings">
+      <span class="cat-dot"></span><span class="cat-emoji">💛</span>Feelings
+    </button>
+    <button class="cat-btn" data-cat="people">
+      <span class="cat-dot"></span><span class="cat-emoji">👤</span>People
+    </button>
+    <button class="cat-btn" data-cat="places">
+      <span class="cat-dot"></span><span class="cat-emoji">🏠</span>Places
+    </button>
+    <button class="cat-btn" data-cat="actions">
+      <span class="cat-dot"></span><span class="cat-emoji">🚶</span>Actions
+    </button>
+    <button class="cat-btn" data-cat="food">
+      <span class="cat-dot"></span><span class="cat-emoji">🍎</span>Food
+    </button>
+    <button class="cat-btn" data-cat="social">
+      <span class="cat-dot"></span><span class="cat-emoji">👋</span>Social
+    </button>
+    <button class="cat-btn" data-cat="quick">
+      <span class="cat-dot"></span><span class="cat-emoji">⚡</span>Quick
+    </button>
+    <button class="cat-btn" data-cat="custom">
+      <span class="cat-dot"></span><span class="cat-emoji">📷</span>Mine
+    </button>
+  </nav>
+
+  <!-- ── SYMBOL SEARCH ─────────────────────────────────────────── -->
+  <div id="search-bar">
+    <input id="search-input" type="search" placeholder="Search symbols..." autocomplete="off" autocorrect="off" spellcheck="false" />
+    <button id="search-clear" class="hidden">✕</button>
+  </div>
+
+  <!-- ── SYMBOL GRID ────────────────────────────────────────────── -->
+  <main id="symbol-grid"></main>
+
+  <!-- ── BOTTOM BAR ────────────────────────────────────────────── -->
+  <footer id="bottombar">
+    <button class="bar-btn" id="bar-back">
+      <span class="bar-icon">⌫</span> Back
+    </button>
+    <button class="bar-btn" id="bar-clear">
+      <span class="bar-icon">✕</span> Hold to Clear
+      <div id="clear-progress"></div>
+    </button>
+    <button class="bar-btn" id="bar-keyboard">
+      <span class="bar-icon">⌨️</span> Type
+    </button>
+    <button class="bar-btn" id="bar-history">
+      <span class="bar-icon">📋</span> Log
+    </button>
+    <button class="bar-btn" id="bar-help">
+      <span class="bar-icon">🆘</span> Help
+    </button>
+  </footer>
+
+  <!-- ── SESSION HISTORY DRAWER ─────────────────────────────────── -->
+  <div id="history-drawer">
+    <div id="history-header">
+      <div id="history-header-left">
+        <h3>Today's Communication</h3>
+        <span id="history-count"></span>
+      </div>
+      <button id="history-close">✕</button>
+    </div>
+    <div id="history-list">
+      <div id="history-empty">Nothing communicated yet today — it will appear here as the child uses the app.</div>
+    </div>
+  </div>
+
+  <!-- ── KEYBOARD OVERLAY ──────────────────────────────────────── -->
+  <div id="keyboard-overlay" class="hidden">
+    <div id="keyboard-inner">
+      <h3>Type anything</h3>
+      <textarea id="keyboard-input" placeholder="Write what you want to say..." rows="3"></textarea>
+      <div id="keyboard-actions">
+        <button id="kb-speak">🔊 Speak</button>
+        <button id="kb-add">+ Add</button>
+        <button id="kb-close">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── HELP — CHOOSE PATH ────────────────────────────────────────── -->
+  <div id="help-modal" class="hidden">
+    <div id="help-modal-inner">
+      <div id="help-modal-icon">🙋</div>
+      <h2>What kind of help?</h2>
+      <p>It's okay to ask for help. Choose what fits.</p>
+      <div id="help-choices">
+        <button class="help-choice-btn general" id="help-general">
+          <span class="help-choice-icon">🤝</span>
+          <span class="help-choice-text">I need help with something</span>
+        </button>
+        <button class="help-choice-btn private" id="help-private">
+          <span class="help-choice-icon">🛡️</span>
+          <span class="help-choice-text">I feel unsafe or scared</span>
+        </button>
+        <button class="help-choice-btn cancel" id="help-no">I'm okay</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── HELP SENT (general) ────────────────────────────────────────── -->
+  <div id="help-sent-modal" class="hidden">
+    <div id="help-sent-inner">
+      <div style="font-size:3.5rem;margin-bottom:16px">✅</div>
+      <h2>Help is on the way</h2>
+      <p>Someone will come help you soon.</p>
+      <button id="help-sent-ok">I understand</button>
+    </div>
+  </div>
+
+  <!-- ── PRIVATE SAFETY CHANNEL ─────────────────────────────────────── -->
+  <div id="private-channel-modal" class="hidden">
+    <div id="pc-inner">
+      <div id="pc-shield">🛡️</div>
+      <h2 id="pc-heading">You are safe here.</h2>
+      <p id="pc-subtext">This is just between you and someone you trust.<br>Tell us what is happening.</p>
+      <div id="pc-options">
+        <button class="pc-option" data-reason="scared">Someone is making me feel scared</button>
+        <button class="pc-option" data-reason="hurting">Someone is hurting me</button>
+        <button class="pc-option" data-reason="talk">I want to talk to someone I trust</button>
+        <button class="pc-option" data-reason="unsafe">Something bad is happening</button>
+        <button class="pc-option" data-reason="unsure">I'm not sure — I just need help</button>
+      </div>
+      <button id="pc-back">← Go back</button>
+    </div>
+  </div>
+
+  <!-- ── PRIVATE SENT ────────────────────────────────────────────────── -->
+  <div id="private-sent-modal" class="hidden">
+    <div id="ps-inner">
+      <div id="ps-glow"></div>
+      <div id="ps-heart">💛</div>
+      <h2>You are brave.</h2>
+      <p>You did the right thing.</p>
+      <p class="ps-sub">You are not alone. Someone will help you.</p>
+      <p class="ps-safety-note">Stay somewhere you feel safer if you can.<br>Your trusted contact has been notified.</p>
+      <div id="ps-crisis-box">
+        <div class="ps-crisis-label">If you are in immediate danger</div>
+        <a class="ps-crisis-link" href="tel:911">📞 Call 911</a>
+        <a class="ps-crisis-link" href="tel:18004224453">📞 Childhelp — 1-800-422-4453</a>
+        <a class="ps-crisis-link" href="sms:741741?body=HOME">📱 Text HOME to 741741</a>
+        <a class="ps-crisis-link" href="tel:988">🤝 Call or text 988</a>
+        <div class="ps-crisis-hint">Free · Confidential · 24 hours a day</div>
+      </div>
+      <button id="ps-ok">I understand</button>
+    </div>
+  </div>
+
+  <!-- ── PIN MODAL ──────────────────────────────────────────────── -->
+  <div id="pin-modal" class="hidden">
+    <div id="pin-inner">
+      <h2>Provider Access</h2>
+      <p id="pin-subtitle">Enter your 4-digit PIN</p>
+      <div id="pin-dots">
+        <span class="pin-dot" id="pd0"></span>
+        <span class="pin-dot" id="pd1"></span>
+        <span class="pin-dot" id="pd2"></span>
+        <span class="pin-dot" id="pd3"></span>
+      </div>
+      <div id="pin-error" class="hidden">Incorrect PIN — try again</div>
+      <div id="pin-pad">
+        <button class="pin-key" data-val="1">1</button>
+        <button class="pin-key" data-val="2">2</button>
+        <button class="pin-key" data-val="3">3</button>
+        <button class="pin-key" data-val="4">4</button>
+        <button class="pin-key" data-val="5">5</button>
+        <button class="pin-key" data-val="6">6</button>
+        <button class="pin-key" data-val="7">7</button>
+        <button class="pin-key" data-val="8">8</button>
+        <button class="pin-key" data-val="9">9</button>
+        <button class="pin-key pin-special" id="pin-del">⌫</button>
+        <button class="pin-key" data-val="0">0</button>
+        <button class="pin-key pin-special" id="pin-cancel">✕</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PROVIDER SETUP MODAL ───────────────────────────────────── -->
+  <div id="setup-modal" class="hidden">
+    <div id="setup-inner">
+      <div id="setup-header">
+        <h2>Provider Settings</h2>
+        <div id="setup-header-right">
+          <a id="setup-home-link" href="./index.html">← Home</a>
+          <button id="setup-close">✕ Close</button>
+        </div>
+      </div>
+      <div id="setup-scroll">
+
+        <button id="setup-open-dashboard">📊 View Dashboard</button>
+
+        <section class="setup-section">
+          <h3>User Profile</h3>
+          <label class="setup-label">
+            User's Name
+            <input class="setup-input" type="text" id="s-name" placeholder="e.g. Alex" />
+          </label>
+          <p class="setup-hint">Run the setup wizard again to reconfigure for a new user or update the current profile.</p>
+          <button id="setup-redo" class="setup-redo-btn">↺ Run Setup Again</button>
+        </section>
+
+        <section class="setup-section">
+          <h3>Trusted Safety Contact</h3>
+          <p class="setup-hint">This person receives a private alert when the user presses the Help button — bypassing the primary caretaker. Use a grandparent, teacher, therapist, or other trusted adult.</p>
+          <label class="setup-label">
+            Contact Name
+            <input class="setup-input" type="text" id="s-contact-name" placeholder="e.g. Grandma Susan" />
+          </label>
+          <label class="setup-label">
+            Contact Email
+            <input class="setup-input" type="email" id="s-contact-email" placeholder="trusted@example.com" />
+          </label>
+        </section>
+
+        <section class="setup-section" id="setup-teacher-section">
+          <h3>Teacher / School Access</h3>
+          <p class="setup-hint">Institution plan: enter a teacher's email to give them read-only access to this child's communication log in the <a href="teacher.html" target="_blank" style="color:var(--gold)">Teacher Dashboard</a>.</p>
+          <label class="setup-label">
+            Teacher Email
+            <input class="setup-input" type="email" id="s-teacher-email" placeholder="teacher@school.edu" />
+          </label>
+        </section>
+
+        <section class="setup-section" id="setup-account-section">
+          <h3>Cloud Sync</h3>
+          <p class="setup-hint">Sign in to save your settings to the cloud — so they're never lost if you switch devices or clear your browser.</p>
+          <div id="setup-account-status"></div>
+          <button id="setup-signin-btn" class="hidden">Sign In / Create Account</button>
+          <button id="setup-signout-btn" class="hidden">Sign Out</button>
+        </section>
+
+        <section class="setup-section" id="setup-custom-section">
+          <h3>My Symbols</h3>
+          <p class="setup-hint">Upload photos of people, pets, or places that matter to this child. Each photo becomes a tappable symbol in the "Mine" category — tap it to speak its name aloud.</p>
+          <div id="custom-upload-area">
+            <input type="file" id="custom-file-input" accept="image/*" class="hidden" />
+            <div id="custom-upload-preview" class="hidden">
+              <img id="custom-preview-img" alt="Preview" />
+              <button id="custom-preview-clear">✕ Remove photo</button>
+            </div>
+            <button id="custom-upload-btn">📷 Choose Photo</button>
+            <label class="setup-label" style="margin-top:10px">
+              Name (shown on the symbol)
+              <input class="setup-input" type="text" id="custom-sym-label" placeholder="e.g. Biscuit" autocorrect="off" />
+            </label>
+            <label class="setup-label">
+              What to say when tapped
+              <input class="setup-input" type="text" id="custom-sym-speech" placeholder="e.g. Biscuit the dog" autocorrect="off" />
+            </label>
+            <button id="custom-sym-add">+ Add Symbol</button>
+            <div id="custom-sym-status" class="hidden"></div>
+          </div>
+          <div id="custom-sym-list" style="margin-top:14px"></div>
+        </section>
+
+        <section class="setup-section">
+          <h3>Subscription</h3>
+          <p class="setup-hint">Manage your plan to unlock AI sentences, communication history, and the provider dashboard.</p>
+          <div id="setup-tier-display"></div>
+          <button id="setup-open-plans">View Plans &amp; Upgrade</button>
+        </section>
+
+        <section class="setup-section">
+          <h3>Kiosk Mode</h3>
+          <p class="setup-hint">Locks the app in fullscreen. The child cannot exit or access other apps. Exit requires entering your Provider PIN. Recommended for school and clinic tablets.</p>
+          <label class="setup-toggle">
+            <input type="checkbox" id="s-kiosk" />
+            <span class="setup-toggle-label">Enable Kiosk Mode</span>
+          </label>
+          <div id="kiosk-status"></div>
+        </section>
+
+        <section class="setup-section">
+          <h3>Provider PIN</h3>
+          <p class="setup-hint">4-digit PIN to access this settings screen. Default is 0000.</p>
+          <label class="setup-label">
+            New PIN (leave blank to keep current)
+            <input class="setup-input" type="tel" id="s-pin" placeholder="4 digits" maxlength="4" pattern="[0-9]{4}" />
+          </label>
+        </section>
+
+        <button id="setup-save">Save Settings</button>
+        <div id="setup-saved" class="hidden">✅ Settings saved!</div>
+
+        <section class="setup-section setup-about-section">
+          <h3>About &amp; Support</h3>
+          <p class="setup-hint">Speak is built to give every nonverbal person a voice — and a private way to stay safe. Made by Logan Snell.</p>
+          <div class="about-links-row">
+            <a class="about-link-btn" href="mailto:support@speakaac.org">✉ support@speakaac.org</a>
+            <button class="about-link-btn" id="setup-open-about">🛡️ Privacy &amp; FAQ</button>
+            <a class="about-link-btn" href="install_guide.html">📲 Install on iPad or Desktop</a>
+          </div>
+          <div class="about-crisis-row">
+            <span class="about-crisis-label">Crisis resources:</span>
+            <a class="about-crisis-link" href="tel:18004224453">Childhelp 1-800-422-4453</a>
+            <span class="about-crisis-sep">·</span>
+            <a class="about-crisis-link" href="sms:741741?body=HOME">Text HOME to 741741</a>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── UPGRADE PROMPT ───────────────────────────────────────────── -->
+  <div id="upgrade-modal" class="hidden">
+    <div id="upgrade-inner">
+      <div id="upgrade-icon">✨</div>
+      <h2>AI Sentence Builder</h2>
+      <p>You've used your 5 free AI sentences for today. Upgrade to Family for unlimited — sentences rebuild every day for free users.</p>
+      <p class="upgrade-plan-note"><strong>Family</strong> plan and above = unlimited AI sentences.</p>
+      <div id="upgrade-choices">
+        <button id="upgrade-go">See Plans</button>
+        <button id="upgrade-cancel">Not now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PLANS MODAL ──────────────────────────────────────────────── -->
+  <div id="plans-modal" class="hidden">
+    <div id="plans-inner">
+      <div id="plans-header">
+        <div>
+          <h2>Choose a Plan</h2>
+          <p id="plans-subtitle">Help every child be heard</p>
+        </div>
+        <button id="plans-close">✕</button>
+      </div>
+      <div id="plans-grid">
+
+        <div class="plan-card" data-tier="free">
+          <div class="plan-name">Free</div>
+          <div class="plan-price">
+            <span class="plan-amount">$0</span>
+            <span class="plan-period"> / month</span>
+          </div>
+          <ul class="plan-features">
+            <li class="feat yes">All symbols &amp; categories</li>
+            <li class="feat yes">Basic voice output</li>
+            <li class="feat yes">Private Help button</li>
+            <li class="feat partial">✨ 5 AI sentences/day</li>
+            <li class="feat no">Communication history</li>
+            <li class="feat no">Provider dashboard</li>
+          </ul>
+          <button class="plan-btn" data-select="free">Get Started Free</button>
+        </div>
+
+        <div class="plan-card plan-featured" data-tier="family">
+          <div class="plan-badge">Most Popular</div>
+          <div class="plan-name">Family</div>
+          <div class="plan-price">
+            <span class="plan-amount">$9.99</span>
+            <span class="plan-period"> / month</span>
+          </div>
+          <ul class="plan-features">
+            <li class="feat yes">All symbols &amp; categories</li>
+            <li class="feat yes">High-quality recorded audio</li>
+            <li class="feat yes">Private Help button</li>
+            <li class="feat yes">✨ Unlimited AI sentences</li>
+            <li class="feat yes">30-day communication history</li>
+            <li class="feat no">Provider dashboard</li>
+          </ul>
+          <button class="plan-btn plan-btn-primary" data-select="family">Get Family</button>
+        </div>
+
+        <div class="plan-card" data-tier="clinic">
+          <div class="plan-name">Clinic</div>
+          <div class="plan-price">
+            <span class="plan-amount">$29.99</span>
+            <span class="plan-period"> / mo per user</span>
+          </div>
+          <ul class="plan-features">
+            <li class="feat yes">Everything in Family</li>
+            <li class="feat yes">Multiple user profiles</li>
+            <li class="feat yes">Full analytics dashboard</li>
+            <li class="feat yes">Exportable reports</li>
+            <li class="feat yes">Custom symbol sets</li>
+            <li class="feat yes">HIPAA compliance</li>
+          </ul>
+          <button class="plan-btn plan-btn-dark" data-select="clinic">Get Clinic</button>
+        </div>
+
+        <div class="plan-card" data-tier="institution">
+          <div class="plan-name">Institution</div>
+          <div class="plan-price">
+            <span class="plan-amount">$49</span>
+            <span class="plan-period"> / month</span>
+          </div>
+          <ul class="plan-features">
+            <li class="feat yes">Everything in Clinic</li>
+            <li class="feat yes">Up to 10 child profiles</li>
+            <li class="feat yes">Teacher accounts (read-only)</li>
+            <li class="feat yes">Admin dashboard</li>
+            <li class="feat yes">Bulk communication reports</li>
+            <li class="feat yes">School enrollment support</li>
+          </ul>
+          <button class="plan-btn plan-btn-dark" data-select="institution">Contact Us</button>
+        </div>
+
+      </div>
+      <p id="plans-footer">The private Help button is always free — because safety should never be paywalled.</p>
+    </div>
+  </div>
+
+  <!-- ── PROVIDER DASHBOARD ───────────────────────────────────────── -->
+  <div id="dashboard-modal" class="hidden">
+    <div id="db-inner">
+      <div id="db-header">
+        <div id="db-header-text">
+          <h2>Provider Dashboard</h2>
+          <p id="db-user-name"></p>
+        </div>
+        <div id="db-header-actions">
+          <button id="db-seed">Load Demo</button>
+          <button id="db-close">✕ Close</button>
+        </div>
+      </div>
+      <div id="db-scroll">
+
+        <div id="db-stats">
+          <div class="db-stat-card">
+            <div class="db-stat-value" id="db-today-count">—</div>
+            <div class="db-stat-label">Today</div>
+          </div>
+          <div class="db-stat-card">
+            <div class="db-stat-value" id="db-week-alerts">—</div>
+            <div class="db-stat-label">Alerts This Week</div>
+          </div>
+          <div class="db-stat-card">
+            <div class="db-stat-value" id="db-top-symbol">—</div>
+            <div class="db-stat-label">Top Symbol</div>
+          </div>
+          <div class="db-stat-card">
+            <div class="db-stat-value" id="db-streak">—</div>
+            <div class="db-stat-label">Active Streak</div>
+          </div>
+        </div>
+
+        <section class="db-section">
+          <h3>🛡️ Safety Alerts</h3>
+          <div id="db-alerts-list"></div>
+        </section>
+
+        <section class="db-section">
+          <h3>💬 Recent Communications</h3>
+          <div id="db-recent-list"></div>
+        </section>
+
+        <section class="db-section">
+          <h3>📊 Most Used Symbols</h3>
+          <div id="db-symbols-chart"></div>
+        </section>
+
+        <section class="db-section">
+          <h3>📁 Category Breakdown</h3>
+          <div id="db-categories-chart"></div>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PASSWORD GATE ───────────────────────────────────────────── -->
+  <div id="password-gate">
+    <div id="pw-inner">
+      <img id="pw-logo" src="icons/icon.png" alt="Speak" />
+      <div id="pw-title">Speak</div>
+      <div id="pw-sub">Preview access</div>
+      <input id="pw-input" type="password" placeholder="Enter access code" autocomplete="off" />
+      <button id="pw-submit">Enter →</button>
+      <div id="pw-error" class="hidden">Incorrect code — try again</div>
+      <div id="pw-bottom-links">
+        <a id="pw-home-link" href="./index.html">← Back to home</a>
+        <span class="pw-link-sep">·</span>
+        <button id="pw-learn-more">What is Speak?</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── AUTH MODAL ─────────────────────────────────────────────── -->
+  <div id="auth-modal" class="hidden">
+    <div id="auth-inner">
+      <img id="auth-logo" src="icons/icon.png" alt="Speak" />
+      <h2 id="auth-title">Save your profile</h2>
+      <p id="auth-sub">Create a free account so their settings are never lost — even if you switch devices.</p>
+      <div id="auth-tabs">
+        <button class="auth-tab auth-tab-active" data-tab="signup">Create Account</button>
+        <button class="auth-tab" data-tab="signin">Sign In</button>
+      </div>
+      <input class="auth-input" id="auth-email" type="email" placeholder="Email address" autocomplete="email" />
+      <input class="auth-input" id="auth-password" type="password" placeholder="Password (min 6 characters)" autocomplete="new-password" />
+      <a id="auth-forgot-link" class="hidden" href="#">Forgot password?</a>
+      <div id="auth-error" class="hidden"></div>
+      <button id="auth-submit" class="auth-btn-primary">Create Account</button>
+      <button id="auth-skip" class="auth-btn-skip">Skip for now →</button>
+    </div>
+  </div>
+
+  <!-- ── SESSION LOCK ───────────────────────────────────────────── -->
+  <div id="session-lock" class="hidden">
+    <div id="sl-card">
+      <img id="sl-logo" src="icons/icon.png" alt="Speak" />
+      <div id="sl-greeting">Welcome back,</div>
+      <div id="sl-name"></div>
+      <p id="sl-hint">Enter provider PIN to unlock</p>
+      <div id="sl-dots">
+        <span class="sl-dot" id="sld0"></span>
+        <span class="sl-dot" id="sld1"></span>
+        <span class="sl-dot" id="sld2"></span>
+        <span class="sl-dot" id="sld3"></span>
+      </div>
+      <div id="sl-error" class="hidden">Incorrect PIN — try again</div>
+      <div id="sl-pad">
+        <button class="sl-key" data-val="1">1</button>
+        <button class="sl-key" data-val="2">2</button>
+        <button class="sl-key" data-val="3">3</button>
+        <button class="sl-key" data-val="4">4</button>
+        <button class="sl-key" data-val="5">5</button>
+        <button class="sl-key" data-val="6">6</button>
+        <button class="sl-key" data-val="7">7</button>
+        <button class="sl-key" data-val="8">8</button>
+        <button class="sl-key" data-val="9">9</button>
+        <button class="sl-key sl-special" id="sl-del">⌫</button>
+        <button class="sl-key" data-val="0">0</button>
+        <button class="sl-key sl-forgot" id="sl-forgot">?</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ONBOARDING OVERLAY ──────────────────────────────────────── -->
+  <div id="onboarding-overlay">
+    <div id="ob-card">
+      <div id="ob-header">
+        <a id="ob-app-name" href="./index.html">Speak</a>
+        <div id="ob-progress-track"><div id="ob-progress-fill"></div></div>
+        <div id="ob-header-right">
+          <a id="ob-home-link" href="./index.html">← Home</a>
+          <button id="ob-skip-setup">Skip Setup</button>
+        </div>
+      </div>
+      <div id="ob-content"></div>
+      <div id="ob-footer">
+        <button id="ob-back-btn" class="hidden">← Back</button>
+        <button id="ob-next-btn">Continue →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ABOUT / FAQ MODAL ─────────────────────────────────────────── -->
+  <div id="about-modal" class="hidden">
+    <div id="about-inner">
+      <div id="about-header">
+        <div>
+          <div id="about-logo">🗣️ Speak</div>
+          <div id="about-tagline">A voice for every child</div>
+        </div>
+        <button id="about-close">✕</button>
+      </div>
+      <div id="about-scroll">
+
+        <section class="about-section">
+          <p class="about-body">Speak is a free AAC (augmentative and alternative communication) app built for nonverbal and minimally verbal children and adults. It gives them symbols, audio, and AI-assisted sentences to communicate — and a private safety channel to report abuse to a trusted adult without anyone in the room knowing.</p>
+          <p class="about-body">Made by Logan Snell, an 18-year-old developer in Kansas. Built in the open, for families first.</p>
+        </section>
+
+        <section class="about-section">
+          <h3 class="about-section-title">Privacy &amp; Security</h3>
+          <div id="faq-list"></div>
+        </section>
+
+        <section class="about-section">
+          <h3 class="about-section-title">🛡️ Crisis &amp; Safety Resources</h3>
+          <p class="about-body about-crisis-intro">The private safety channel in Speak notifies a trusted adult — but in an immediate emergency, these free 24/7 resources are always available.</p>
+          <div class="crisis-resource-list">
+            <a class="crisis-resource" href="tel:911">
+              <div class="cr-icon">🚨</div>
+              <div class="cr-text">
+                <div class="cr-name">Emergency — Call 911</div>
+                <div class="cr-desc">For immediate danger to life</div>
+              </div>
+            </a>
+            <a class="crisis-resource" href="tel:18004224453">
+              <div class="cr-icon">💛</div>
+              <div class="cr-text">
+                <div class="cr-name">Childhelp National Child Abuse Hotline</div>
+                <div class="cr-desc">1-800-422-4453 · 24/7 · Free · Confidential · Has interpreters for 170+ languages</div>
+              </div>
+            </a>
+            <a class="crisis-resource" href="sms:741741?body=HOME">
+              <div class="cr-icon">📱</div>
+              <div class="cr-text">
+                <div class="cr-name">Crisis Text Line</div>
+                <div class="cr-desc">Text HOME to 741741 · Free · Confidential · 24/7</div>
+              </div>
+            </a>
+            <a class="crisis-resource" href="tel:988">
+              <div class="cr-icon">🤝</div>
+              <div class="cr-text">
+                <div class="cr-name">988 Suicide &amp; Crisis Lifeline</div>
+                <div class="cr-desc">Call or text 988 · 24/7 · For mental health crises</div>
+              </div>
+            </a>
+          </div>
+        </section>
+
+        <section class="about-section">
+          <h3 class="about-section-title">Contact &amp; Support</h3>
+          <p class="about-body">Questions, feedback, or technical issues — reach out anytime.</p>
+          <a class="about-contact-btn" href="mailto:support@speakaac.org">✉ support@speakaac.org</a>
+          <a class="about-contact-btn" href="./index.html" style="margin-top:6px;">← Back to Speak home page</a>
+          <p class="about-body about-version" id="about-version-line"></p>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script src="symbols.js"></script>
+  <script src="arasaac.js"></script>
+  <script src="sync.js"></script>
+  <script src="onboarding.js"></script>
+  <script src="dashboard.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

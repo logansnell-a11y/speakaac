@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Milestones — Speak AAC</title>
+  <link rel="icon" type="image/png" href="icons/icon.png" />
+  <meta name="description" content="The Speak AAC journey — from first line of code to first family helped." />
+  <meta property="og:title"       content="Milestones — Speak AAC" />
+  <meta property="og:description" content="The Speak AAC journey — from first line of code to first family helped." />
+  <meta property="og:url"         content="https://speakaac.org/milestones.html" />
+  <meta property="og:image"       content="https://speakaac.org/icons/icon.png" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #0e0e0e;
+      --surface:     #161616;
+      --surface2:    #1c1c1c;
+      --border:      #2a2a2a;
+      --gold:        #C8922A;
+      --gold-bright: #E5A535;
+      --gold-glow:   rgba(200,146,42,0.12);
+      --text:        #f0ece4;
+      --text-muted:  #a09880;
+      --text-dim:    #5a5448;
+      --green:       #27ae60;
+      --radius:      16px;
+      --radius-sm:   10px;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg:          #f4efe6;
+        --surface:     #fffdf8;
+        --surface2:    #ede8de;
+        --border:      #ddd6c8;
+        --gold:        #a36818;
+        --gold-bright: #c07c10;
+        --gold-glow:   rgba(163,104,24,0.10);
+        --text:        #1a1008;
+        --text-muted:  #5a4028;
+        --text-dim:    #9a8468;
+        --green:       #1d7a44;
+      }
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* Nav */
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 28px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: color-mix(in srgb, var(--bg) 90%, transparent);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 100;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 9px; }
+    .nav-logo img { width: 28px; height: 28px; border-radius: 7px; }
+    .nav-logo-text { font-weight: 900; font-size: 1rem; color: var(--gold-bright); letter-spacing: .1em; text-transform: uppercase; }
+    .nav-right { margin-left: auto; display: flex; gap: 16px; align-items: center; }
+    .nav-link { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
+    .nav-link:hover { color: var(--text); }
+    .btn-nav { background: var(--gold); color: #fff; font-weight: 700; font-size: 0.85rem; padding: 8px 18px; border-radius: 8px; }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 72px 24px 48px;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .hero-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      font-weight: 900;
+      line-height: 1.15;
+      margin-bottom: 18px;
+    }
+    .hero p {
+      font-size: 1rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    /* Timeline */
+    .timeline-wrap {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    .timeline {
+      position: relative;
+      padding-left: 32px;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 7px;
+      top: 8px;
+      bottom: 0;
+      width: 2px;
+      background: var(--border);
+    }
+
+    .milestone {
+      position: relative;
+      margin-bottom: 40px;
+    }
+    .milestone::before {
+      content: '';
+      position: absolute;
+      left: -27px;
+      top: 6px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--gold);
+      border: 2px solid var(--bg);
+      box-shadow: 0 0 0 2px var(--gold);
+      z-index: 1;
+    }
+    .milestone.pending::before {
+      background: var(--surface2);
+      box-shadow: 0 0 0 2px var(--border);
+    }
+    .milestone.big::before {
+      width: 18px;
+      height: 18px;
+      left: -29px;
+      top: 4px;
+      box-shadow: 0 0 0 3px var(--gold), 0 0 12px var(--gold-glow);
+    }
+
+    .ms-date {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+    .milestone.pending .ms-date { color: var(--text-dim); }
+
+    .ms-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .milestone.pending .ms-title { color: var(--text-muted); }
+
+    .ms-body {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.65;
+    }
+
+    .ms-tag {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin-bottom: 6px;
+      background: var(--gold-glow);
+      color: var(--gold-bright);
+      border: 1px solid rgba(200,146,42,0.25);
+    }
+
+    .ms-tag.green {
+      background: rgba(39,174,96,0.1);
+      color: var(--green);
+      border-color: rgba(39,174,96,0.25);
+    }
+
+    .ms-tag.gray {
+      background: var(--surface2);
+      color: var(--text-dim);
+      border-color: var(--border);
+    }
+
+    /* Section dividers */
+    .timeline-section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--text-dim);
+      margin: 48px 0 24px -32px;
+      padding-left: 32px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+
+    /* Stat chips */
+    .stat-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .stat-chip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+    .stat-chip strong { color: var(--text); }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 24px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+    footer a { color: var(--gold); }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="nav-logo" href="index.html">
+      <img src="icons/icon.png" alt="Speak" />
+      <span class="nav-logo-text">Speak</span>
+    </a>
+    <div class="nav-right">
+      <a class="nav-link" href="mission.html">Mission</a>
+      <a class="nav-link" href="press.html">Press</a>
+      <a class="btn-nav" href="app.html">Open App</a>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-label">Build log</div>
+    <h1>The Speak Journey</h1>
+    <p>One 18-year-old developer. One app that gives nonverbal children a voice — and a way to say <em>I'm not safe</em>. This is every milestone, in order.</p>
+  </div>
+
+  <div class="timeline-wrap">
+    <div class="timeline">
+
+      <div class="timeline-section-label">The Beginning</div>
+
+      <div class="milestone big">
+        <div class="ms-tag">Origin</div>
+        <div class="ms-date">Early 2026</div>
+        <div class="ms-title">The idea</div>
+        <div class="ms-body">
+          Logan Snell, 18, Axtell Kansas, realizes that every AAC app gives every child the same generic grid — regardless of diagnosis, age, or ability. And not one of them has a private way for a child to say <em>I'm not safe</em> without the person in the room knowing. Speak begins.
+        </div>
+      </div>
+
+      <div class="milestone">
+        <div class="ms-tag">Build</div>
+        <div class="ms-date">March 15, 2026</div>
+        <div class="ms-title">First working build</div>
+        <div class="ms-body">
+          Symbol grid, gTTS audio, ARASAAC pictograms, and a working safety channel. First deploy to Netlify. The app functions.
+        </div>
+      </div>
+
+      <div class="timeline-section-label">Launch Day — March 17, 2026</div>
+
+      <div class="milestone big">
+        <div class="ms-tag green">Live</div>
+        <div class="ms-date">March 17, 2026</div>
+        <div class="ms-title">Speak v1.0 launches at speakaac.org</div>
+        <div class="ms-body">
+          After a full build sprint: AI sentence builder powered by Claude Haiku, Supabase auth and cloud sync, Stripe payments, 17 onboarding diagnosis profiles, teacher dashboard, session history, kiosk mode, offline support, and a COPPA-compliant privacy policy. All deployed by one person in one day.
+        </div>
+        <div class="stat-row">
+          <div class="stat-chip"><strong>11</strong> pages</div>
+          <div class="stat-chip"><strong>3</strong> paid tiers</div>
+          <div class="stat-chip"><strong>17</strong> diagnosis profiles</div>
+          <div class="stat-chip"><strong>95</strong> audio phrases</div>
+          <div class="stat-chip"><strong>1</strong> developer</div>
+        </div>
+      </div>
+
+      <div class="milestone">
+        <div class="ms-tag green">Live</div>
+        <div class="ms-date">March 17, 2026</div>
+        <div class="ms-title">GoFundMe goes live</div>
+        <div class="ms-body">
+          Community fundraising campaign launched to fund development, server costs, and the school access program — giving Speak to families and classrooms that can't afford it.
+        </div>
+      </div>
+
+      <div class="milestone">
+        <div class="ms-tag green">Live</div>
+        <div class="ms-date">March 17, 2026</div>
+        <div class="ms-title">Stripe payments activated</div>
+        <div class="ms-body">
+          Family ($9.99/mo), Clinic ($29.99/mo), and Institution ($49/mo) plans go live. The path to sustainability is open.
+        </div>
+      </div>
+
+      <div class="milestone">
+        <div class="ms-tag green">Live</div>
+        <div class="ms-date">March 17, 2026</div>
+        <div class="ms-title">@speakaac on Instagram &amp; TikTok</div>
+        <div class="ms-body">
+          Social presence established. Content coming — app demos, the safety channel story, and the mission behind it all.
+        </div>
+      </div>
+
+      <div class="timeline-section-label">What's Coming</div>
+
+      <div class="milestone pending">
+        <div class="ms-tag gray">Pending</div>
+        <div class="ms-date">Soon</div>
+        <div class="ms-title">First visitor (not Logan)</div>
+        <div class="ms-body">The first person who finds Speak on their own — a parent, a therapist, an educator — and decides it's worth a look.</div>
+      </div>
+
+      <div class="milestone pending">
+        <div class="ms-tag gray">Pending</div>
+        <div class="ms-date">Soon</div>
+        <div class="ms-title">First paid subscriber</div>
+        <div class="ms-body">The moment Speak becomes a real business. A family pays $9.99 because this is worth it to them.</div>
+      </div>
+
+      <div class="milestone pending">
+        <div class="ms-tag gray">Pending</div>
+        <div class="ms-date">Soon</div>
+        <div class="ms-title">First school or clinic</div>
+        <div class="ms-body">A teacher, SLP, or administrator reaches out. Speak enters a real clinical or educational setting.</div>
+      </div>
+
+      <div class="milestone pending">
+        <div class="ms-tag gray">Pending</div>
+        <div class="ms-date">2026</div>
+        <div class="ms-title">NIDILRR grant application</div>
+        <div class="ms-body">Applying for $100k–$500k in federal research funding to formally study Speak's impact on nonverbal children's communication outcomes.</div>
+      </div>
+
+      <div class="milestone pending">
+        <div class="ms-tag gray">Pending</div>
+        <div class="ms-date">2026</div>
+        <div class="ms-title">iOS &amp; Android app</div>
+        <div class="ms-body">Native app releases for full offline capability, push notifications for the safety channel, and App Store / Play Store distribution.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    <p>Built by <strong>Logan Snell</strong>, Axtell, Kansas · <a href="mailto:support@speakaac.org">support@speakaac.org</a> · <a href="index.html">speakaac.org</a></p>
+  </footer>
+
+  <!-- Google Analytics (loaded only after consent) -->
+  <script>
+    function loadGA() {
+      if (document.getElementById('ga-script')) return;
+      var s = document.createElement('script');
+      s.id = 'ga-script';
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID';
+      document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      window.gtag = gtag;
+      gtag('js', new Date());
+      gtag('config', 'GA_MEASUREMENT_ID');
+    }
+    if (localStorage.getItem('speak_analytics') === 'yes') loadGA();
+  </script>
+
+  <!-- Cookie consent bar -->
+  <div id="cookie-bar" style="display:none; position:fixed; bottom:0; left:0; right:0; background:var(--surface); border-top:1px solid var(--border); padding:14px 20px; display:flex; align-items:center; gap:12px; flex-wrap:wrap; z-index:9999; font-size:0.82rem; color:var(--text-muted);">
+    <span style="flex:1; min-width:200px;">We use analytics to understand how people find Speak and improve the experience. No personal data is sold. <a href="privacy.html" style="color:var(--gold);">Privacy policy</a></span>
+    <button onclick="consentGA(true)"  style="background:var(--gold); color:#fff; border:none; border-radius:8px; padding:8px 18px; font-size:0.82rem; font-weight:700; cursor:pointer;">Accept</button>
+    <button onclick="consentGA(false)" style="background:var(--surface2); color:var(--text-muted); border:1px solid var(--border); border-radius:8px; padding:8px 14px; font-size:0.82rem; cursor:pointer;">Decline</button>
+  </div>
+
+  <script>
+    (function() {
+      var consent = localStorage.getItem('speak_analytics');
+      if (!consent) document.getElementById('cookie-bar').style.display = 'flex';
+    })();
+
+    function consentGA(yes) {
+      localStorage.setItem('speak_analytics', yes ? 'yes' : 'no');
+      document.getElementById('cookie-bar').style.display = 'none';
+      if (yes) loadGA();
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Full bleed background for maskable (safe zone is inner 80%) -->
+  <rect width="512" height="512" fill="#b87418"/>
+  <!-- Speech bubble — scaled down to sit within safe zone -->
+  <path d="M256 148 C181 148 122 196 122 254 C122 289 141 319 171 337 L163 374 L214 346 C227 349 241 350 256 350 C331 350 390 302 390 254 C390 206 331 148 256 148 Z" fill="white"/>
+  <!-- Three dots -->
+  <circle cx="206" cy="256" r="18" fill="#b87418"/>
+  <circle cx="256" cy="256" r="18" fill="#b87418"/>
+  <circle cx="306" cy="256" r="18" fill="#b87418"/>
+</svg>

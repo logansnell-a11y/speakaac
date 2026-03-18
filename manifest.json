@@ -1,0 +1,25 @@
+{
+  "name": "Speak — AAC Communication App",
+  "short_name": "Speak",
+  "description": "Free AAC app for nonverbal children — with a private safety channel",
+  "start_url": "/app.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#d6c9b2",
+  "theme_color": "#b87418",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "icons/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Speak — Teacher Dashboard</title>
+  <link rel="icon" type="image/png" href="icons/icon.png" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #0f0f10;
+      --surface:      #1a1a1e;
+      --surface-high: #232328;
+      --border:       #2e2e34;
+      --border-light: #3a3a42;
+      --gold:         #c9952a;
+      --gold-bright:  #e0a830;
+      --gold-glow:    rgba(201,149,42,0.15);
+      --text:         #f0f0f2;
+      --text-muted:   #9999aa;
+      --text-dim:     #666672;
+      --red:          #e05555;
+      --blue:         #4a90d9;
+      --purple:       #9b59b6;
+      --green:        #27ae60;
+      --orange:       #e07820;
+      --pink:         #e054a0;
+      --radius:       10px;
+      --radius-lg:    16px;
+      --shadow-sm:    0 1px 3px rgba(0,0,0,.4);
+      --shadow-md:    0 4px 16px rgba(0,0,0,.5);
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg:          #f4efe6;
+        --surface:     #fffdf8;
+        --surface-high:#ede8de;
+        --surface2:    #ede8de;
+        --border:      #ddd6c8;
+        --border-light:#ccc5b8;
+        --gold:        #a36818;
+        --gold-bright: #c07c10;
+        --gold-glow:   rgba(163,104,24,0.10);
+        --text:        #1a1008;
+        --text-muted:  #5a4028;
+        --text-dim:    #9a8468;
+      }
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+    }
+
+    /* ── Nav ── */
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    nav img { width: 28px; height: 28px; border-radius: 7px; }
+    .nav-title { font-weight: 800; font-size: 1rem; color: var(--gold-bright); letter-spacing: .06em; }
+    .nav-sub   { font-size: 0.8rem; color: var(--text-muted); margin-left: 4px; }
+    .nav-right { margin-left: auto; display: flex; gap: 10px; align-items: center; }
+    .nav-user  { font-size: 0.82rem; color: var(--text-muted); }
+    .btn-sm {
+      background: var(--surface-high);
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 0.82rem;
+      padding: 6px 14px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-sm:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* ── Main layout ── */
+    main { max-width: 960px; margin: 0 auto; padding: 32px 20px 60px; }
+
+    /* ── Auth screen ── */
+    #auth-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100dvh - 57px);
+    }
+    #auth-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: 40px 36px;
+      width: min(420px, 94vw);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    #auth-card img { width: 48px; height: 48px; border-radius: 12px; margin-bottom: 4px; }
+    #auth-card h2 { font-size: 1.4rem; font-weight: 700; }
+    #auth-card p  { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+    .auth-input {
+      width: 100%;
+      background: var(--surface-high);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.95rem;
+      padding: 11px 14px;
+      outline: none;
+    }
+    .auth-input:focus { border-color: var(--gold); }
+    .btn-gold {
+      width: 100%;
+      background: var(--gold);
+      border: none;
+      border-radius: var(--radius);
+      color: #0f0f10;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 13px;
+      cursor: pointer;
+    }
+    .btn-gold:hover { background: var(--gold-bright); }
+    #auth-error { font-size: 0.82rem; color: var(--red); min-height: 18px; font-weight: 500; }
+    .auth-note { font-size: 0.78rem; color: var(--text-dim); text-align: center; }
+
+    /* ── Dashboard screen ── */
+    #dash-screen { display: none; }
+    .dash-heading { font-size: 1.4rem; font-weight: 700; margin-bottom: 6px; }
+    .dash-sub { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 28px; }
+
+    /* ── Summary stats ── */
+    #summary-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .stat-card.stat-alerts { border-color: rgba(224,85,85,0.4); }
+    .stat-card.stat-active { border-color: rgba(39,174,96,0.4); }
+    .stat-icon { font-size: 1.4rem; margin-bottom: 4px; }
+    .stat-val  { font-size: 1.7rem; font-weight: 800; color: var(--text); line-height: 1; }
+    .stat-label { font-size: 0.74rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; margin-top: 4px; }
+    .stat-sub   { font-size: 0.72rem; color: var(--text-dim); margin-top: 2px; }
+
+    /* ── Section title ── */
+    .section-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 12px;
+      margin-top: 28px;
+    }
+
+    /* ── Child cards ── */
+    #children-list { display: flex; flex-direction: column; gap: 14px; }
+    .child-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      transition: border-color 0.15s;
+    }
+    .child-card:hover { border-color: var(--border-light); }
+    .child-card.open  { border-color: var(--gold); }
+
+    .child-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 20px;
+      cursor: pointer;
+    }
+    .child-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--gold-glow);
+      border: 2px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--gold-bright);
+      flex-shrink: 0;
+    }
+    .child-info { flex: 1; min-width: 0; }
+    .child-name { font-size: 1.05rem; font-weight: 700; }
+    .child-meta { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+    .child-badges { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+    .badge {
+      font-size: 0.74rem;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+    .badge-alert  { background: rgba(224,85,85,.18); color: var(--red); }
+    .badge-events { background: rgba(74,144,217,.12); color: var(--blue); }
+    .badge-today  { background: rgba(39,174,96,.12); color: var(--green); }
+    .chevron { color: var(--text-dim); transition: transform 0.2s; font-size: 1.1rem; margin-left: 4px; flex-shrink: 0; }
+    .child-card.open .chevron { transform: rotate(90deg); }
+
+    /* ── Child detail panel ── */
+    .child-detail {
+      display: none;
+      border-top: 1px solid var(--border);
+    }
+    .child-card.open .child-detail { display: block; }
+
+    /* ── Child mini stats ── */
+    .child-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .child-stat {
+      padding: 14px 16px;
+      border-right: 1px solid var(--border);
+      text-align: center;
+    }
+    .child-stat:last-child { border-right: none; }
+    .child-stat-val   { font-size: 1.3rem; font-weight: 800; }
+    .child-stat-label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 3px; }
+
+    /* ── Most used symbols ── */
+    .top-symbols {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .top-symbols-title {
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 10px;
+    }
+    .symbol-bars { display: flex; flex-direction: column; gap: 6px; }
+    .symbol-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .symbol-bar-label {
+      font-size: 0.8rem;
+      width: 100px;
+      flex-shrink: 0;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .symbol-bar-track {
+      flex: 1;
+      height: 8px;
+      background: var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .symbol-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: var(--gold);
+      transition: width 0.5s ease;
+    }
+    .symbol-bar-count {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      width: 24px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    /* ── Event log ── */
+    .event-log {
+      padding: 0 20px 20px;
+      max-height: 380px;
+      overflow-y: auto;
+    }
+    .event-log-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0 10px;
+    }
+    .event-log-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .btn-export {
+      background: var(--surface-high);
+      border: 1px solid var(--border-light);
+      border-radius: 7px;
+      color: var(--text-muted);
+      font-size: 0.74rem;
+      font-weight: 600;
+      padding: 5px 12px;
+      cursor: pointer;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .btn-export:hover { border-color: var(--gold); color: var(--gold); }
+
+    .event-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .event-item:last-child { border-bottom: none; }
+    .event-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-top: 5px;
+      flex-shrink: 0;
+    }
+    .dot-sentence  { background: var(--blue); }
+    .dot-symbol    { background: var(--text-dim); }
+    .dot-ai        { background: var(--purple); }
+    .dot-keyboard  { background: var(--text-muted); }
+    .dot-alert     { background: var(--red); }
+    .dot-core      { background: var(--gold); }
+
+    .event-body { flex: 1; }
+    .event-text { font-size: 0.88rem; color: var(--text); line-height: 1.4; }
+    .event-time { font-size: 0.74rem; color: var(--text-dim); margin-top: 2px; }
+    .event-alert .event-text { color: var(--red); font-weight: 600; }
+
+    .log-empty { font-size: 0.85rem; color: var(--text-muted); padding: 16px 0; text-align: center; }
+
+    /* ── No children state ── */
+    #no-children {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+      display: none;
+    }
+    #no-children h3 { font-size: 1.1rem; margin-bottom: 8px; color: var(--text); }
+    #no-children p  { font-size: 0.88rem; line-height: 1.6; }
+
+    /* ── Loading ── */
+    #loading { text-align: center; padding: 60px; color: var(--text-muted); display: none; }
+
+    /* ── Troubleshooting / Self-service section ── */
+    #help-section {
+      margin-top: 48px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .help-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      background: var(--surface);
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+    }
+    .help-section-header h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .help-section-chevron { color: var(--text-dim); transition: transform 0.2s; }
+    .help-section-body.open .help-section-chevron { transform: rotate(180deg); }
+    #help-section-body { display: none; }
+    #help-section-body.open { display: block; }
+
+    .help-steps {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .help-step {
+      display: flex;
+      gap: 14px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .help-step:last-child { border-bottom: none; }
+    .help-step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--gold-glow);
+      border: 1.5px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--gold-bright);
+      flex-shrink: 0;
+    }
+    .help-step-body { flex: 1; }
+    .help-step-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; }
+    .help-step-desc  { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; }
+    .help-step-action {
+      display: inline-block;
+      margin-top: 8px;
+      background: var(--surface-high);
+      border: 1px solid var(--border-light);
+      border-radius: 7px;
+      color: var(--text);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      cursor: pointer;
+      font-family: inherit;
+      text-decoration: none;
+    }
+    .help-step-action:hover { border-color: var(--gold); color: var(--gold); }
+
+    .help-contact {
+      padding: 16px 20px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .help-contact p { font-size: 0.84rem; color: var(--text-muted); }
+    .help-contact a {
+      color: var(--gold-bright);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.84rem;
+    }
+    .help-contact a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      .child-stats { grid-template-columns: repeat(2, 1fr); }
+      .child-stat { border-bottom: 1px solid var(--border); }
+      .child-stat:nth-child(2) { border-right: none; }
+      .child-stat:nth-child(3) { border-bottom: none; }
+      .child-stat:nth-child(4) { border-bottom: none; border-right: none; }
+      #summary-stats { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <img src="icons/icon.png" alt="Speak" />
+  <span class="nav-title">SPEAK</span>
+  <span class="nav-sub">Teacher Dashboard</span>
+  <div class="nav-right">
+    <span class="nav-user" id="nav-email"></span>
+    <button class="btn-sm" id="nav-signout" style="display:none">Sign Out</button>
+  </div>
+</nav>
+
+<!-- ── Auth screen ── -->
+<div id="auth-screen">
+  <div id="auth-card">
+    <img src="icons/icon.png" alt="Speak" />
+    <h2>Teacher Sign In</h2>
+    <p>Sign in with the email address your school has registered with Speak. You'll see a read-only view of each child's communication log.</p>
+    <input class="auth-input" type="email" id="t-email" placeholder="your@school.edu" autocomplete="email" />
+    <input class="auth-input" type="password" id="t-password" placeholder="Password" autocomplete="current-password" />
+    <div id="auth-error"></div>
+    <button class="btn-gold" id="t-signin">Sign In</button>
+    <p class="auth-note">Don't have an account? Ask your school's Speak admin to set up access for you.</p>
+  </div>
+</div>
+
+<!-- ── Dashboard screen ── -->
+<div id="dash-screen">
+  <main>
+    <div id="loading">Loading...</div>
+
+    <div id="dash-header" style="display:none">
+      <div class="dash-heading">Communication Dashboard</div>
+      <div class="dash-sub" id="dash-sub"></div>
+
+      <!-- Summary stats across all children -->
+      <div id="summary-stats">
+        <div class="stat-card">
+          <div class="stat-icon">💬</div>
+          <div class="stat-val" id="s-total-week">—</div>
+          <div class="stat-label">Communications</div>
+          <div class="stat-sub">This week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📅</div>
+          <div class="stat-val" id="s-total-today">—</div>
+          <div class="stat-label">Today</div>
+          <div class="stat-sub">All children</div>
+        </div>
+        <div class="stat-card stat-alerts">
+          <div class="stat-icon">⚠️</div>
+          <div class="stat-val" id="s-alerts">—</div>
+          <div class="stat-label">Safety Alerts</div>
+          <div class="stat-sub">All time</div>
+        </div>
+        <div class="stat-card stat-active">
+          <div class="stat-icon">🔥</div>
+          <div class="stat-val" id="s-top-symbol">—</div>
+          <div class="stat-label">Top Symbol</div>
+          <div class="stat-sub">This week</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title" id="children-section-label" style="display:none">Children</div>
+
+    <div id="no-children">
+      <h3>No children assigned yet</h3>
+      <p>Your email hasn't been linked to any child profiles yet.<br>Ask the provider to enter your email in Provider Settings → Teacher / School Access.</p>
+    </div>
+    <div id="children-list"></div>
+
+    <!-- ── Troubleshooting / Self-service ── -->
+    <div id="help-section" style="display:none">
+      <div class="help-section-header" id="help-toggle">
+        <h3>🛠 Troubleshooting &amp; Self-Service</h3>
+        <span class="help-section-chevron">▼</span>
+      </div>
+      <div id="help-section-body">
+        <div class="help-steps">
+
+          <div class="help-step">
+            <div class="help-step-num">1</div>
+            <div class="help-step-body">
+              <div class="help-step-title">App not loading or showing a blank screen</div>
+              <div class="help-step-desc">This is almost always a browser cache issue. Force-reload the app — it clears the cached files and pulls the latest version.</div>
+              <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+                <span class="help-step-action">Mac: ⌘ + Shift + R</span>
+                <span class="help-step-action">Windows: Ctrl + Shift + R</span>
+                <span class="help-step-action">iPad: Close tab → reopen</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="help-step">
+            <div class="help-step-num">2</div>
+            <div class="help-step-body">
+              <div class="help-step-title">Child is locked out — forgot PIN</div>
+              <div class="help-step-desc">The default PIN is <strong>0000</strong>. If that doesn't work, you can reset it from Provider Settings. Hold the 🔊 speaker button in the app for 3 seconds to open the PIN entry screen.</div>
+            </div>
+          </div>
+
+          <div class="help-step">
+            <div class="help-step-num">3</div>
+            <div class="help-step-body">
+              <div class="help-step-title">Symbols not showing images (just emoji)</div>
+              <div class="help-step-desc">The app loads symbol images from ARASAAC's pictogram library, which requires an internet connection. If images aren't loading, check the device's wifi. Once connected, the images will load automatically.</div>
+            </div>
+          </div>
+
+          <div class="help-step">
+            <div class="help-step-num">4</div>
+            <div class="help-step-body">
+              <div class="help-step-title">No audio / app not speaking</div>
+              <div class="help-step-desc">Make sure the device volume is turned up and not muted. In kiosk mode on an iPad, the physical mute switch overrides software volume. Also check that the child's profile doesn't have sound muted in Provider Settings.</div>
+            </div>
+          </div>
+
+          <div class="help-step">
+            <div class="help-step-num">5</div>
+            <div class="help-step-body">
+              <div class="help-step-title">Communication log not updating here</div>
+              <div class="help-step-desc">The dashboard pulls from Supabase in real time. If events aren't showing up, try signing out and back in below. If the issue persists, the child's profile may not have your email set under Teacher / School Access.</div>
+              <button class="help-step-action" id="help-refresh">↺ Refresh Dashboard</button>
+            </div>
+          </div>
+
+          <div class="help-step">
+            <div class="help-step-num">6</div>
+            <div class="help-step-body">
+              <div class="help-step-title">App isn't installed on the classroom iPad</div>
+              <div class="help-step-desc">Speak can be installed as a PWA (web app) on any iPad — no App Store needed. Open the app in Safari, tap the Share button, then "Add to Home Screen."</div>
+              <a class="help-step-action" href="install_guide.html" target="_blank">📲 View Install Guide</a>
+            </div>
+          </div>
+
+        </div>
+        <div class="help-contact">
+          <p>Still stuck? We respond to every message — usually within a few hours.</p>
+          <a href="mailto:support@speakaac.org">✉ support@speakaac.org</a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="sync.js"></script>
+<script>
+
+// ── Helpers ──────────────────────────────────────────────────────────
+function esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function getWeekStart() {
+  const d = new Date();
+  d.setDate(d.getDate() - 6);
+  d.setHours(0,0,0,0);
+  return d;
+}
+
+function isThisWeek(isoStr) {
+  if (!isoStr) return false;
+  return new Date(isoStr) >= getWeekStart();
+}
+
+function isToday(dateStr) {
+  return dateStr === new Date().toLocaleDateString();
+}
+
+function eventLabel(ev) {
+  switch (ev.type) {
+    case 'sentence_spoken': return { dot: 'dot-sentence', text: `🗣 "${esc(ev.payload?.text || '')}"` };
+    case 'ai_sentence':     return { dot: 'dot-ai',       text: `✨ AI: "${esc(ev.payload?.output || '')}"` };
+    case 'keyboard':        return { dot: 'dot-keyboard',  text: `⌨ Typed: "${esc(ev.payload?.text || '')}"` };
+    case 'symbol':
+      return {
+        dot: ev.payload?.category === 'core' ? 'dot-core' : 'dot-symbol',
+        text: `○ ${esc(ev.payload?.label || ev.payload?.speech || '')}`,
+      };
+    case 'help_alert': return { dot: 'dot-alert', text: `⚠ Safety alert — ${esc(ev.payload?.reason || 'Help requested')}` };
+    default:           return { dot: 'dot-symbol', text: esc(ev.type) };
+  }
+}
+
+// ── Auth ──────────────────────────────────────────────────────────────
+(async function init() {
+  const session = await Sync.getSession();
+  if (session) showDash(session);
+})();
+
+document.getElementById('t-signin').addEventListener('click', async () => {
+  const email    = document.getElementById('t-email').value.trim();
+  const password = document.getElementById('t-password').value;
+  const errEl    = document.getElementById('auth-error');
+  errEl.textContent = '';
+
+  if (!email || !password) { errEl.textContent = 'Enter your email and password.'; return; }
+
+  const btn = document.getElementById('t-signin');
+  btn.textContent = 'Signing in…';
+  btn.disabled = true;
+
+  try {
+    const { data, error } = await Sync.signIn(email, password);
+    if (error) throw error;
+    showDash(data.session);
+  } catch (e) {
+    errEl.textContent = e.message || 'Sign in failed — check your email and password.';
+    btn.textContent = 'Sign In';
+    btn.disabled = false;
+  }
+});
+
+['t-email','t-password'].forEach(id => {
+  document.getElementById(id).addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('t-signin').click();
+  });
+});
+
+document.getElementById('nav-signout').addEventListener('click', async () => {
+  await Sync.signOut();
+  location.reload();
+});
+
+// ── Dashboard ─────────────────────────────────────────────────────────
+let _allEvents = []; // flat array of all events across all children
+
+async function showDash(session) {
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('dash-screen').style.display = 'block';
+  document.getElementById('nav-email').textContent = session.user.email;
+  document.getElementById('nav-signout').style.display = 'inline-block';
+  document.getElementById('loading').style.display = 'block';
+
+  const profiles = await Sync.loadAsTeacher();
+
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('help-section').style.display = 'block';
+
+  if (!profiles.length) {
+    document.getElementById('no-children').style.display = 'block';
+    return;
+  }
+
+  document.getElementById('dash-header').style.display = 'block';
+  document.getElementById('children-section-label').style.display = 'block';
+
+  const childCount = profiles.length;
+  document.getElementById('dash-sub').textContent =
+    `${childCount} child${childCount !== 1 ? 'ren' : ''} assigned to you`;
+
+  // Load all events first to compute summary stats
+  const allProfiles = await Promise.all(profiles.map(async p => {
+    const events = await Sync.loadEventsForProfile(p.user_id);
+    return { profile: p, events };
+  }));
+
+  _allEvents = allProfiles.flatMap(x => x.events);
+  renderSummaryStats(_allEvents);
+
+  const list = document.getElementById('children-list');
+  list.innerHTML = '';
+
+  for (const { profile, events } of allProfiles) {
+    renderChildCard(list, profile, events);
+  }
+}
+
+function renderSummaryStats(allEvents) {
+  const weekEvents    = allEvents.filter(e => isThisWeek(e.ts));
+  const todayEvents   = allEvents.filter(e => isToday(e.date_str));
+  const alertCount    = allEvents.filter(e => e.type === 'help_alert').length;
+
+  // Top symbol this week
+  const symbolCounts = {};
+  weekEvents.filter(e => e.type === 'symbol' || e.type === 'sentence_spoken').forEach(e => {
+    const label = e.payload?.label || e.payload?.text || e.type;
+    if (label) symbolCounts[label] = (symbolCounts[label] || 0) + 1;
+  });
+  const topSymbol = Object.entries(symbolCounts).sort((a,b) => b[1]-a[1])[0]?.[0] || '—';
+
+  document.getElementById('s-total-week').textContent  = weekEvents.length;
+  document.getElementById('s-total-today').textContent = todayEvents.length;
+  document.getElementById('s-alerts').textContent      = alertCount;
+  document.getElementById('s-top-symbol').textContent  = topSymbol.length > 10 ? topSymbol.slice(0,9) + '…' : (topSymbol || '—');
+}
+
+function renderChildCard(list, profile, events) {
+  const name    = profile.settings?.userName || 'Unnamed Child';
+  const initial = name.charAt(0).toUpperCase();
+
+  const weekEvents   = events.filter(e => isThisWeek(e.ts));
+  const todayEvents  = events.filter(e => isToday(e.date_str));
+  const alertCount   = events.filter(e => e.type === 'help_alert').length;
+
+  // Top 5 symbols for this child this week
+  const symCounts = {};
+  weekEvents.filter(e => e.type === 'symbol').forEach(e => {
+    const label = e.payload?.label || e.payload?.speech || '';
+    if (label) symCounts[label] = (symCounts[label] || 0) + 1;
+  });
+  const topSymbols = Object.entries(symCounts).sort((a,b) => b[1]-a[1]).slice(0,5);
+  const maxCount   = topSymbols[0]?.[1] || 1;
+
+  // Last active
+  let lastActiveStr = 'Never';
+  if (events.length) {
+    const last = new Date(events[0].ts);
+    const diffDays = Math.floor((Date.now() - last) / 86400000);
+    lastActiveStr = diffDays === 0 ? 'Today' : diffDays === 1 ? 'Yesterday' : `${diffDays}d ago`;
+  }
+
+  const card = document.createElement('div');
+  card.className = 'child-card';
+
+  // Badges HTML
+  let badgesHtml = '';
+  if (alertCount > 0) badgesHtml += `<span class="badge badge-alert">⚠ ${alertCount} alert${alertCount !== 1 ? 's' : ''}</span>`;
+  if (todayEvents.length > 0) badgesHtml += `<span class="badge badge-today">✓ ${todayEvents.length} today</span>`;
+  badgesHtml += `<span class="badge badge-events">${events.length} total</span>`;
+
+  // Symbol bars HTML
+  let barsHtml = '';
+  if (topSymbols.length) {
+    barsHtml = `
+      <div class="top-symbols">
+        <div class="top-symbols-title">Most used this week</div>
+        <div class="symbol-bars">
+          ${topSymbols.map(([label, count]) => `
+            <div class="symbol-bar-row">
+              <div class="symbol-bar-label">${esc(label)}</div>
+              <div class="symbol-bar-track">
+                <div class="symbol-bar-fill" style="width:${Math.round(count/maxCount*100)}%"></div>
+              </div>
+              <div class="symbol-bar-count">${count}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  card.innerHTML = `
+    <div class="child-header">
+      <div class="child-avatar">${initial}</div>
+      <div class="child-info">
+        <div class="child-name">${esc(name)}</div>
+        <div class="child-meta">Last active: ${lastActiveStr} · ${weekEvents.length} this week</div>
+      </div>
+      <div class="child-badges">${badgesHtml}</div>
+      <span class="chevron">›</span>
+    </div>
+    <div class="child-detail">
+      <div class="child-stats">
+        <div class="child-stat">
+          <div class="child-stat-val">${todayEvents.length}</div>
+          <div class="child-stat-label">Today</div>
+        </div>
+        <div class="child-stat">
+          <div class="child-stat-val">${weekEvents.length}</div>
+          <div class="child-stat-label">This Week</div>
+        </div>
+        <div class="child-stat">
+          <div class="child-stat-val" style="color:${alertCount > 0 ? 'var(--red)' : 'inherit'}">${alertCount}</div>
+          <div class="child-stat-label">Alerts</div>
+        </div>
+        <div class="child-stat">
+          <div class="child-stat-val">${events.length}</div>
+          <div class="child-stat-label">All Time</div>
+        </div>
+      </div>
+      ${barsHtml}
+      <div class="event-log">
+        <div class="event-log-header">
+          <div class="event-log-title">Communication Log</div>
+          <button class="btn-export" data-uid="${esc(profile.user_id)}" data-name="${esc(name)}">⬇ Export CSV</button>
+        </div>
+        ${renderEventLog(events)}
+      </div>
+    </div>
+  `;
+
+  // Toggle open/close
+  card.querySelector('.child-header').addEventListener('click', () => {
+    card.classList.toggle('open');
+  });
+
+  // Export CSV
+  card.querySelector('.btn-export').addEventListener('click', (e) => {
+    e.stopPropagation();
+    exportCSV(events, name);
+  });
+
+  list._eventsMap = list._eventsMap || {};
+  list._eventsMap[profile.user_id] = events;
+
+  list.appendChild(card);
+}
+
+function renderEventLog(events) {
+  if (!events.length) {
+    return '<div class="log-empty">No communication events yet — they\'ll appear here as the child uses the app.</div>';
+  }
+  return events.slice(0, 100).map(ev => {
+    const { dot, text } = eventLabel(ev);
+    const alertClass = ev.type === 'help_alert' ? ' event-alert' : '';
+    return `
+      <div class="event-item${alertClass}">
+        <div class="event-dot ${dot}"></div>
+        <div class="event-body">
+          <div class="event-text">${text}</div>
+          <div class="event-time">${esc(ev.date_str || '')} · ${esc(ev.time_str || '')}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ── CSV Export ────────────────────────────────────────────────────────
+function exportCSV(events, childName) {
+  const rows = [
+    ['Date', 'Time', 'Type', 'Content', 'Category'],
+    ...events.map(ev => {
+      const type = ev.type || '';
+      let content = '';
+      switch (ev.type) {
+        case 'sentence_spoken': content = ev.payload?.text || ''; break;
+        case 'ai_sentence':     content = ev.payload?.output || ''; break;
+        case 'keyboard':        content = ev.payload?.text || ''; break;
+        case 'symbol':          content = ev.payload?.label || ev.payload?.speech || ''; break;
+        case 'help_alert':      content = `Safety alert: ${ev.payload?.reason || ''}`; break;
+        default:                content = JSON.stringify(ev.payload || '');
+      }
+      const cat = ev.payload?.category || '';
+      return [
+        ev.date_str || '',
+        ev.time_str || '',
+        type,
+        `"${content.replace(/"/g, '""')}"`,
+        cat,
+      ];
+    }),
+  ];
+
+  const csv = rows.map(r => r.join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  const safe = childName.replace(/[^a-z0-9]/gi, '_');
+  a.href = url;
+  a.download = `speak_${safe}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── Troubleshooting panel ─────────────────────────────────────────────
+document.getElementById('help-toggle').addEventListener('click', () => {
+  const body    = document.getElementById('help-section-body');
+  const chevron = document.querySelector('.help-section-chevron');
+  const isOpen  = body.classList.toggle('open');
+  chevron.textContent = isOpen ? '▲' : '▼';
+});
+
+document.getElementById('help-refresh')?.addEventListener('click', () => {
+  location.reload();
+});
+
+</script>
+</body>
+</html>

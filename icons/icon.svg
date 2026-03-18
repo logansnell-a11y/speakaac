@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Rounded square background -->
+  <rect width="512" height="512" rx="110" fill="#b87418"/>
+  <!-- Speech bubble -->
+  <path d="M256 112 C159 112 84 174 84 250 C84 295 110 335 153 360 L142 418 L207 381 C222 384 239 386 256 386 C353 386 428 324 428 250 C428 176 353 112 256 112 Z" fill="white"/>
+  <!-- Three dots -->
+  <circle cx="192" cy="252" r="24" fill="#b87418"/>
+  <circle cx="256" cy="252" r="24" fill="#b87418"/>
+  <circle cx="320" cy="252" r="24" fill="#b87418"/>
+</svg>

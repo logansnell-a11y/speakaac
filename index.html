@@ -1,0 +1,1698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Speak — A voice for every child</title>
+  <meta name="description" content="Free AAC communication app for nonverbal children — with a private safety channel that lets them silently alert a trusted adult if they feel unsafe." />
+  <!-- Open Graph / Facebook / TikTok / Instagram -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:url"         content="https://speakaac.org/" />
+  <meta property="og:title"       content="Speak — A voice for every child" />
+  <meta property="og:description" content="Free AAC app for nonverbal kids. Symbols, AI sentences, and a private safety channel so they can silently ask for help." />
+  <meta property="og:image"       content="https://speakaac.org/icons/icon.png" />
+  <!-- Twitter card -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content="Speak — A voice for every child" />
+  <meta name="twitter:description" content="Free AAC app for nonverbal kids. Symbols, AI sentences, and a private safety channel so they can silently ask for help." />
+  <meta name="twitter:image"       content="https://speakaac.org/icons/icon.png" />
+  <link rel="icon" type="image/png" href="icons/icon.png" />
+  <link rel="apple-touch-icon" href="icons/icon.png" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* Dark theme — default */
+      --bg:          #0e0e0e;
+      --surface:     #161616;
+      --surface2:    #1c1c1c;
+      --border:      #2a2a2a;
+      --gold:        #C8922A;
+      --gold-bright: #E5A535;
+      --gold-glow:   rgba(200,146,42,0.12);
+      --gold-dark:   #a37320;
+      --text:        #f0ece4;
+      --text-muted:  #a09880;
+      --text-dim:    #5a5448;
+      --green:       #4caf76;
+      --red:         #e05555;
+      --radius:      20px;
+      --radius-sm:   12px;
+    }
+
+    /* Light mode — warm cream */
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg:          #f4efe6;
+        --surface:     #fffdf8;
+        --surface2:    #ede8de;
+        --border:      #ddd6c8;
+        --gold:        #a36818;
+        --gold-bright: #c07c10;
+        --gold-glow:   rgba(163,104,24,0.10);
+        --gold-dark:   #7a5010;
+        --text:        #1a1008;
+        --text-muted:  #5a4028;
+        --text-dim:    #9a8468;
+        --green:       #2d7040;
+        --red:         #c04040;
+      }
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    /* ── Nav ──────────────────────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: var(--gold-bright);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      text-decoration: none;
+    }
+
+    .nav-logo img {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+
+    .nav-right { display: flex; gap: 12px; align-items: center; }
+
+    .nav-link {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      transition: color 0.15s;
+    }
+
+    .nav-link:hover { color: var(--text); }
+
+    .nav-cta {
+      font-size: 0.8rem;
+      font-weight: 800;
+      background: var(--gold);
+      color: #000;
+      padding: 8px 18px;
+      border-radius: var(--radius-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      transition: background 0.15s;
+    }
+
+    .nav-cta:hover { background: var(--gold-bright); }
+
+    /* ── Hero ─────────────────────────────────────────────────── */
+    .hero {
+      min-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 60px 24px 80px;
+      position: relative;
+      overflow: hidden;
+      /* Subtle dot grid for texture */
+      background-image: radial-gradient(rgba(200,146,42,0.07) 1px, transparent 1px);
+      background-size: 36px 36px;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 55% at 50% 15%, rgba(200,146,42,0.13) 0%, transparent 65%),
+        radial-gradient(ellipse 45% 35% at 15% 85%, rgba(200,146,42,0.05) 0%, transparent 60%),
+        radial-gradient(ellipse 45% 35% at 85% 85%, rgba(200,146,42,0.05) 0%, transparent 60%),
+        linear-gradient(to bottom, rgba(14,14,14,0.0) 0%, rgba(14,14,14,0.85) 100%);
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      background: linear-gradient(to bottom, transparent, rgba(14,14,14,0.6));
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--gold);
+      margin-bottom: 22px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hero-eyebrow::before, .hero-eyebrow::after {
+      content: '';
+      display: block;
+      width: 28px;
+      height: 1px;
+      background: var(--gold-dark);
+    }
+
+    .hero-title {
+      font-size: clamp(2.4rem, 7vw, 4.2rem);
+      font-weight: 900;
+      line-height: 1.1;
+      color: var(--text);
+      max-width: 720px;
+      margin-bottom: 22px;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-title em {
+      font-style: normal;
+      color: var(--gold-bright);
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2.5vw, 1.18rem);
+      color: var(--text-muted);
+      max-width: 520px;
+      line-height: 1.7;
+      margin-bottom: 38px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn-primary {
+      padding: 16px 32px;
+      border-radius: var(--radius);
+      background: var(--gold);
+      color: #000;
+      font-size: 1rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      box-shadow: 0 4px 20px rgba(200,146,42,0.35);
+      transition: transform 0.12s, background 0.15s;
+      display: inline-block;
+    }
+
+    .btn-primary:hover { background: var(--gold-bright); transform: translateY(-1px); }
+    .btn-primary:active { transform: scale(0.97); }
+
+    .btn-secondary {
+      padding: 16px 28px;
+      border-radius: var(--radius);
+      border: 1.5px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 1rem;
+      font-weight: 700;
+      display: inline-block;
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .btn-secondary:hover { border-color: var(--gold); color: var(--gold-bright); }
+
+    .hero-note {
+      margin-top: 18px;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+    }
+
+    .hero-fundraiser {
+      margin-top: 14px;
+    }
+
+    .hero-fundraiser-link {
+      font-size: 0.9rem;
+      color: var(--gold);
+      text-decoration: none;
+      border-bottom: 1px solid var(--gold-glow);
+      padding-bottom: 1px;
+      transition: color 0.15s;
+    }
+
+    .hero-fundraiser-link:hover { color: var(--gold-bright); }
+
+    /* ── Section wrappers ─────────────────────────────────────── */
+    section { padding: 80px 24px; }
+
+    .container { max-width: 920px; margin: 0 auto; }
+
+    .section-label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 900;
+      line-height: 1.15;
+      color: var(--text);
+      margin-bottom: 16px;
+      letter-spacing: -0.015em;
+    }
+
+    .section-sub {
+      font-size: 1rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      max-width: 520px;
+    }
+
+    /* ── Safety channel feature ──────────────────────────────── */
+    .safety-section {
+      background: linear-gradient(135deg, #0f0f0f 0%, #141008 100%);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .safety-inner {
+      max-width: 920px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .safety-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--gold-glow);
+      border: 1px solid rgba(200,146,42,0.3);
+      border-radius: 100px;
+      padding: 6px 14px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--gold-bright);
+      margin-bottom: 20px;
+    }
+    .safety-badge::before {
+      content: '◆';
+      font-size: 0.45rem;
+      opacity: 0.8;
+    }
+
+    .safety-title {
+      font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+      font-weight: 900;
+      color: var(--text);
+      line-height: 1.15;
+      margin-bottom: 18px;
+      letter-spacing: -0.015em;
+    }
+
+    .safety-body {
+      font-size: 1rem;
+      color: var(--text-muted);
+      line-height: 1.75;
+      margin-bottom: 28px;
+    }
+
+    .safety-points {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .safety-point {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .safety-point-icon {
+      display: none;
+    }
+    .safety-point::before {
+      content: '◆';
+      font-size: 0.42rem;
+      color: var(--gold);
+      flex-shrink: 0;
+      padding-top: 6px;
+      opacity: 0.85;
+    }
+
+    .safety-stat-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px 32px;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25), 0 2px 8px rgba(0,0,0,0.12);
+    }
+
+    .safety-stat-number {
+      font-size: 3.5rem;
+      font-weight: 900;
+      color: var(--gold-bright);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .safety-stat-label {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      max-width: 200px;
+      margin: 0 auto;
+    }
+
+    .safety-stat-source {
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      margin-top: 18px;
+    }
+
+    .safety-always-free {
+      margin-top: 20px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--gold);
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* ── Features grid ────────────────────────────────────────── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+      margin-top: 48px;
+    }
+
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.18), 0 1px 4px rgba(0,0,0,0.1);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.22), 0 2px 8px rgba(0,0,0,0.12);
+    }
+
+    .feature-icon {
+      display: inline-block;
+      font-size: 0.6rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--gold-bright);
+      background: var(--gold-glow);
+      border: 1px solid rgba(200,146,42,0.28);
+      border-radius: 6px;
+      padding: 4px 10px;
+      align-self: flex-start;
+    }
+
+    .feature-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .feature-body {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    /* ── Who it's for ─────────────────────────────────────────── */
+    .who-section { background: var(--surface); }
+
+    .who-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 40px;
+    }
+
+    .who-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.08);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .who-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .who-icon { display: none; }
+    .who-card { border-left: 3px solid var(--gold-dark); border-radius: 0 var(--radius) var(--radius) 0; }
+
+    .who-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .who-body {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ── Disability profiles ──────────────────────────────────── */
+    .profiles-scroll {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-top: 36px;
+      scrollbar-width: none;
+    }
+
+    .profiles-scroll::-webkit-scrollbar { display: none; }
+
+    .profile-chip {
+      flex-shrink: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 8px 18px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    /* ── Pricing ──────────────────────────────────────────────── */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+      margin-top: 48px;
+    }
+
+    .price-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.18), 0 1px 4px rgba(0,0,0,0.1);
+    }
+
+    .price-card.featured {
+      border-color: var(--gold);
+      background: linear-gradient(160deg, #1a1508 0%, var(--surface) 60%);
+    }
+
+    .price-badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--gold);
+      color: #000;
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 4px 14px;
+      border-radius: 100px;
+      white-space: nowrap;
+    }
+
+    .price-name {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+    }
+
+    .price-amount {
+      font-size: 2.4rem;
+      font-weight: 900;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .price-period {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      margin-top: 2px;
+      margin-bottom: 16px;
+    }
+
+    .price-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+      margin-bottom: 20px;
+      flex: 1;
+    }
+
+    .price-features li {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      line-height: 1.4;
+    }
+
+    .price-features li.yes::before     { content: '✓'; color: var(--green); font-weight: 800; flex-shrink: 0; }
+    .price-features li.no::before      { content: '–'; color: var(--text-dim); flex-shrink: 0; }
+    .price-features li.partial::before { content: '✦'; color: var(--gold); font-weight: 800; flex-shrink: 0; font-size: 0.75em; }
+
+    .price-btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      border-radius: var(--radius-sm);
+      text-align: center;
+      font-size: 0.88rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      transition: opacity 0.15s;
+    }
+
+    .price-btn:hover { opacity: 0.88; }
+
+    .price-btn-primary { background: var(--gold); color: #000; }
+    .price-btn-ghost   { background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border); }
+
+    .pricing-note {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 0.82rem;
+      color: var(--text-dim);
+    }
+
+    .pricing-note strong { color: var(--gold); }
+
+    /* ── Mission / about ──────────────────────────────────────── */
+    .mission-section {
+      text-align: center;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .mission-quote {
+      font-size: clamp(1.15rem, 3vw, 1.5rem);
+      color: var(--text-muted);
+      line-height: 1.75;
+      max-width: 640px;
+      margin: 0 auto 24px;
+    }
+
+    .mission-author {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      font-style: italic;
+    }
+
+    /* ── Crisis resources ─────────────────────────────────────── */
+    .crisis-section { background: var(--bg); }
+
+    .crisis-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 36px;
+    }
+
+    .crisis-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      text-decoration: none;
+      transition: border-color 0.15s;
+    }
+
+    .crisis-card:hover { border-color: var(--gold); }
+
+    .crisis-card-icon { font-size: 1.4rem; flex-shrink: 0; padding-top: 2px; }
+
+    .crisis-card-name {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+
+    .crisis-card-desc {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* ── Footer ───────────────────────────────────────────────── */
+    footer {
+      padding: 40px 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      text-align: center;
+    }
+
+    /* ── Request Access Modal ──────────────────────────────────── */
+    .access-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(6px);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      overflow-y: auto;
+    }
+
+    .access-overlay.open { display: flex; }
+
+    .access-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 40px 36px;
+      max-width: 460px;
+      width: 100%;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+      position: relative;
+    }
+
+    .access-close {
+      position: absolute;
+      top: 14px; right: 16px;
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: color 0.12s;
+    }
+    .access-close:hover { color: var(--text); }
+
+    .access-icon { font-size: 2.2rem; margin-bottom: 12px; }
+
+    .access-title {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--text);
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+    }
+
+    .access-sub {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.65;
+      margin-bottom: 26px;
+    }
+
+    .access-form { display: flex; flex-direction: column; gap: 14px; }
+
+    .access-field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .access-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+    }
+
+    .access-input, .access-textarea {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 11px 14px;
+      font-size: 0.92rem;
+      color: var(--text);
+      font-family: inherit;
+      width: 100%;
+      transition: border-color 0.12s;
+      outline: none;
+    }
+    .access-input:focus, .access-textarea:focus { border-color: var(--gold); }
+    .access-input::placeholder, .access-textarea::placeholder { color: var(--text-dim); }
+
+    .access-textarea { resize: vertical; min-height: 88px; line-height: 1.5; }
+
+    .access-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    .access-submit {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      border-radius: var(--radius-sm);
+      background: var(--gold);
+      color: #000;
+      font-size: 0.95rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      margin-top: 6px;
+      transition: background 0.12s, transform 0.1s;
+    }
+    .access-submit:hover { background: var(--gold-bright); transform: translateY(-1px); }
+    .access-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .access-success {
+      display: none;
+      text-align: center;
+      padding: 20px 0 8px;
+    }
+    .access-success-icon { font-size: 2.8rem; margin-bottom: 12px; }
+    .access-success-title { font-size: 1.2rem; font-weight: 900; color: var(--text); margin-bottom: 8px; }
+    .access-success-body { font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; }
+
+    .access-footer-note {
+      font-size: 0.74rem;
+      color: var(--text-dim);
+      text-align: center;
+      margin-top: 14px;
+      line-height: 1.5;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      font-weight: 900;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .footer-logo img {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .footer-link {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      transition: color 0.15s;
+    }
+
+    .footer-link:hover { color: var(--text-muted); }
+
+    .footer-note {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+      max-width: 400px;
+    }
+
+    /* ── How it works ─────────────────────────────────────────── */
+    .how-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 28px;
+      margin-top: 48px;
+    }
+    .how-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 14px;
+    }
+    .how-step-num {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--gold-glow);
+      border: 2px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: var(--gold-bright);
+      flex-shrink: 0;
+    }
+    .how-step-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .how-step-body {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      line-height: 1.65;
+    }
+    .how-cta {
+      text-align: center;
+      margin-top: 44px;
+    }
+    .how-cta-note {
+      font-size: 0.76rem;
+      color: var(--text-dim);
+      margin-top: 11px;
+    }
+
+    /* ── Feature card top accent ──────────────────────────────── */
+    .feature-card {
+      border-top: 2px solid rgba(200,146,42,0.2) !important;
+    }
+    .feature-card:hover {
+      border-top-color: rgba(200,146,42,0.5) !important;
+    }
+
+    /* ── Safety section glow enhancement ─────────────────────── */
+    .safety-section {
+      background: linear-gradient(135deg, #0d0d0d 0%, #13100a 50%, #0d0d0d 100%);
+    }
+    .safety-stat-box {
+      background: linear-gradient(160deg, #1a1a1a 0%, #181208 100%);
+      border-color: rgba(200,146,42,0.2);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(200,146,42,0.08), inset 0 1px 0 rgba(200,146,42,0.1);
+    }
+
+    /* ── Responsive ───────────────────────────────────────────── */
+    @media (max-width: 680px) {
+      .safety-inner { grid-template-columns: 1fr; gap: 36px; }
+      .safety-stat-box { padding: 24px; }
+      section { padding: 56px 20px; }
+      nav { padding: 12px 18px; }
+      .nav-link { display: none; }
+      .how-grid { gap: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Nav ──────────────────────────────────────────────────────── -->
+  <nav>
+    <div class="nav-logo"><img src="icons/icon.png" alt="" />Speak</div>
+    <div class="nav-right">
+      <a class="nav-link" href="#features">Features</a>
+      <a class="nav-link" href="#pricing">Pricing</a>
+      <a class="nav-link" href="#safety">Safety</a>
+      <a class="nav-link" href="mission.html">Mission</a>
+      <a class="nav-cta" href="./app.html">Open App →</a>
+    </div>
+  </nav>
+
+  <!-- ── Hero ─────────────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-eyebrow">Open · Personalized · Built for families</div>
+    <h1 class="hero-title">
+      Give them <em>words.</em><br>Give them <em>safety.</em>
+    </h1>
+    <p class="hero-sub">
+      Speak is an AAC communication app personalized for your child's diagnosis, age, and needs —
+      with a private safety channel built in from day one.
+    </p>
+    <div class="hero-actions">
+      <a class="btn-primary" href="./app.html">Open the App →</a>
+      <a class="btn-secondary" href="./onboarding_demo.html">See How Setup Works</a>
+    </div>
+    <div class="hero-fundraiser">
+      <a class="hero-fundraiser-link" href="https://gofund.me/c6f47107e" target="_blank" rel="noopener">
+        Support this project on GoFundMe
+      </a>
+      <a class="hero-fundraiser-link" href="mission.html" style="margin-top:6px;">
+        School or clinic that can't afford it? See our access program →
+      </a>
+    </div>
+  </section>
+
+  <!-- ── Safety channel ───────────────────────────────────────────── -->
+  <section class="safety-section" id="safety">
+    <div class="safety-inner container">
+      <div>
+        <div class="safety-badge">The feature no other AAC app has</div>
+        <h2 class="safety-title">A private way to ask for help — without anyone in the room knowing</h2>
+        <p class="safety-body">
+          When a child presses the Help button, they can privately tell a trusted adult outside the primary caretaker relationship what's happening — without the person in the room seeing a thing.
+          The trusted contact gets a notification immediately. No mail app opens. No sound. Nothing visible on screen.
+        </p>
+        <div class="safety-points">
+          <div class="safety-point">
+            <div class="safety-point-icon">🔒</div>
+            <div>Completely silent — no visible action on the child's device</div>
+          </div>
+          <div class="safety-point">
+            <div class="safety-point-icon">👤</div>
+            <div>Bypasses the primary caretaker — goes to a grandparent, teacher, or therapist you choose</div>
+          </div>
+          <div class="safety-point">
+            <div class="safety-point-icon">🤫</div>
+            <div>Hidden trigger — works even if the child can't navigate to the Help button</div>
+          </div>
+          <div class="safety-point">
+            <div class="safety-point-icon">💛</div>
+            <div>Always free — because safety should never be behind a paywall</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="safety-stat-box">
+          <div class="safety-stat-number">3–4×</div>
+          <div class="safety-stat-label">
+            higher rate of abuse and maltreatment among children with communication disabilities compared to typically developing peers
+          </div>
+          <div class="safety-stat-source">Sullivan & Knutson, 2000 · Journal of Pediatric Psychology</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Features ─────────────────────────────────────────────────── -->
+  <section id="features">
+    <div class="container">
+      <div class="section-label">What Speak does</div>
+      <h2 class="section-title">Built around your child — not around everyone else's</h2>
+      <p class="section-sub">Every existing AAC app gives every child the same grid. Speak configures itself based on who your child actually is.</p>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">Onboarding</div>
+          <div class="feature-title">Personalized from day one</div>
+          <div class="feature-body">Answer 10 questions about your child — diagnosis, age, motor ability, sensory needs, interests. Speak configures the layout, vocabulary, symbol size, and starting categories automatically. Setup that used to take hours takes minutes.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">AI</div>
+          <div class="feature-title">AI Sentence Builder</div>
+          <div class="feature-body">Tap a few symbols and Speak uses Claude AI to turn them into a full, natural sentence — spoken aloud. "Want water more" becomes "I would really like some more water, please." Every thought, fully expressed.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">Audio</div>
+          <div class="feature-title">Real recorded audio</div>
+          <div class="feature-body">Every symbol has a real recorded voice — not robotic text-to-speech. Type anything and it speaks it aloud. Works offline. Works without an internet connection for all core symbols.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">Dashboard</div>
+          <div class="feature-title">Provider dashboard</div>
+          <div class="feature-body">See what your child communicated today, this week, over time. Most-used symbols. Safety alert log. Category breakdown. A picture of their communication you couldn't see before.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">Security</div>
+          <div class="feature-title">Kiosk mode</div>
+          <div class="feature-body">Lock the app in fullscreen so the child can't exit or access other apps. Requires a provider PIN to unlock. Built for school tablets and clinic devices.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">Standard</div>
+          <div class="feature-title">ARASAAC pictograms</div>
+          <div class="feature-body">Every symbol uses ARASAAC — the international AAC pictogram standard used by SLPs and schools worldwide. Clear, familiar, and accessible to every child who has used AAC before.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── How it works ─────────────────────────────────────────────── -->
+  <section style="background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);" id="how-it-works">
+    <div class="container">
+      <div class="section-label">Get started</div>
+      <h2 class="section-title">Up and running in under 2 minutes</h2>
+      <p class="section-sub">No app store. No download. Works on any device with a browser.</p>
+
+      <div class="how-grid">
+        <div class="how-step">
+          <div class="how-step-num">1</div>
+          <div class="how-step-title">Open the app</div>
+          <div class="how-step-body">Any browser — iPad, iPhone, Android, laptop. No install required. Add to your home screen for a full-screen native feel.</div>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num">2</div>
+          <div class="how-step-title">Answer 10 questions</div>
+          <div class="how-step-body">Name, age, diagnosis, motor ability, sensory needs, interests. Speak configures layout, vocabulary, and symbol size automatically.</div>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num">3</div>
+          <div class="how-step-title">Hand it to your child</div>
+          <div class="how-step-body">Ready to use immediately. Every symbol is voiced. The private safety channel is active from the moment setup is complete.</div>
+        </div>
+      </div>
+
+      <div class="how-cta">
+        <a class="btn-primary" href="./onboarding_demo.html">Try the Setup Demo →</a>
+        <div class="how-cta-note">See the 10-question flow before committing — no login required</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Who it's for ──────────────────────────────────────────────── -->
+  <section style="background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+    <div class="container">
+      <div class="section-label">Who Speak is for</div>
+      <h2 class="section-title">Built for the full range of AAC users</h2>
+
+      <div class="who-grid">
+        <div class="who-card">
+          <div class="who-icon">👨‍👩‍👧</div>
+          <div class="who-title">Families</div>
+          <div class="who-body">For parents of nonverbal or minimally verbal children who need an affordable, personalized AAC tool — and a safer way to keep their child protected.</div>
+        </div>
+        <div class="who-card">
+          <div class="who-icon">🩺</div>
+          <div class="who-title">SLPs &amp; OTs</div>
+          <div class="who-body">For speech-language pathologists who spend hours configuring AAC devices per patient. Speak's setup wizard does it in minutes. The dashboard shows you what's working.</div>
+        </div>
+        <div class="who-card">
+          <div class="who-icon">🏫</div>
+          <div class="who-title">Schools &amp; Clinics</div>
+          <div class="who-body">Kiosk mode, provider PIN, multi-profile support, and exportable reports make Speak viable for classroom and clinical settings. Clinic plan includes HIPAA compliance.</div>
+        </div>
+        <div class="who-card">
+          <div class="who-icon">🧑</div>
+          <div class="who-title">Adults with acquired disorders</div>
+          <div class="who-body">Stroke, TBI, ALS, aphasia. Speak has an adult vocabulary and adult design — not a children's toy. Because losing speech doesn't mean losing intelligence.</div>
+        </div>
+      </div>
+
+      <div class="profiles-scroll" aria-label="Diagnosis profiles supported">
+        <div class="profile-chip">Autism Spectrum Disorder</div>
+        <div class="profile-chip">Down Syndrome</div>
+        <div class="profile-chip">Cerebral Palsy</div>
+        <div class="profile-chip">Childhood Apraxia of Speech</div>
+        <div class="profile-chip">Angelman Syndrome</div>
+        <div class="profile-chip">Rett Syndrome</div>
+        <div class="profile-chip">Fragile X Syndrome</div>
+        <div class="profile-chip">ALS</div>
+        <div class="profile-chip">Aphasia / Stroke</div>
+        <div class="profile-chip">Traumatic Brain Injury</div>
+        <div class="profile-chip">Multiple Sclerosis</div>
+        <div class="profile-chip">Selective Mutism</div>
+        <div class="profile-chip">Intellectual Disability</div>
+        <div class="profile-chip">Phelan-McDermid Syndrome</div>
+        <div class="profile-chip">Williams Syndrome</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Pricing ───────────────────────────────────────────────────── -->
+  <section id="pricing">
+    <div class="container">
+      <div class="section-label">Pricing</div>
+      <h2 class="section-title">Affordable. Honest. Safety always free.</h2>
+      <p class="section-sub">Core communication features are free to start. The safety channel is free on every plan, forever.</p>
+
+      <div class="pricing-grid">
+        <div class="price-card">
+          <div class="price-name">Free</div>
+          <div class="price-amount">$0</div>
+          <div class="price-period">forever</div>
+          <ul class="price-features">
+            <li class="yes">All symbols &amp; categories</li>
+            <li class="yes">Real recorded audio</li>
+            <li class="yes">🛡️ Private safety channel</li>
+            <li class="yes">Personalized setup wizard</li>
+            <li class="partial">✨ 5 AI sentences/day free</li>
+            <li class="no">Communication history</li>
+            <li class="no">Provider dashboard</li>
+          </ul>
+          <a class="price-btn price-btn-ghost" href="./app.html">Get Started Free</a>
+        </div>
+
+        <div class="price-card featured">
+          <div class="price-badge">Most Popular</div>
+          <div class="price-name">Family</div>
+          <div class="price-amount">$9.99</div>
+          <div class="price-period">per month</div>
+          <ul class="price-features">
+            <li class="yes">Everything in Free</li>
+            <li class="yes">✨ Unlimited AI sentences</li>
+            <li class="yes">30-day communication history</li>
+            <li class="no">Provider dashboard</li>
+            <li class="no">Multiple child profiles</li>
+            <li class="no">HIPAA compliance</li>
+          </ul>
+          <a class="price-btn price-btn-primary" href="https://buy.stripe.com/8x25kw1eQfeMgdDeh8dwc00" target="_blank" rel="noopener">Get Family</a>
+        </div>
+
+        <div class="price-card">
+          <div class="price-name">Clinic</div>
+          <div class="price-amount">$29.99</div>
+          <div class="price-period">per user / month</div>
+          <ul class="price-features">
+            <li class="yes">Everything in Family</li>
+            <li class="yes">Full provider dashboard</li>
+            <li class="yes">Multiple patient profiles</li>
+            <li class="yes">Exportable reports</li>
+            <li class="yes">Custom symbol sets</li>
+            <li class="yes">HIPAA compliance + BAA</li>
+          </ul>
+          <a class="price-btn price-btn-ghost" href="https://buy.stripe.com/00w9AM9Lm5Ec0eF5KCdwc01" target="_blank" rel="noopener">Get Clinic</a>
+        </div>
+
+        <div class="price-card">
+          <div class="price-name">Institution</div>
+          <div class="price-amount">$49</div>
+          <div class="price-period">per month · up to 10 kids</div>
+          <ul class="price-features">
+            <li class="yes">Everything in Clinic</li>
+            <li class="yes">One admin, 10 child profiles</li>
+            <li class="yes">Teacher read-only accounts</li>
+            <li class="yes">Admin dashboard</li>
+            <li class="yes">Bulk communication reports</li>
+            <li class="yes">School enrollment support</li>
+          </ul>
+          <a class="price-btn price-btn-ghost" href="https://buy.stripe.com/7sY7sE3mY6Ig5yZ5KCdwc02" target="_blank" rel="noopener">Get Institution</a>
+        </div>
+      </div>
+
+      <p class="pricing-note"><strong>The private safety channel is always free</strong> — on every plan, forever. Because safety should never require a subscription.</p>
+      <p class="pricing-note">Underfunded school or clinic? <a href="mission.html" style="color:var(--gold);font-weight:700;">Learn about free access →</a></p>
+    </div>
+  </section>
+
+  <!-- ── FAQ ──────────────────────────────────────────────────────── -->
+  <section style="background: var(--surface); border-top: 1px solid var(--border);" id="faq">
+    <div class="container">
+      <div class="section-label">Common questions</div>
+      <h2 class="section-title">Everything you need to know</h2>
+
+      <div id="faq-list-landing" style="margin-top:36px; display:flex; flex-direction:column; gap:0;">
+
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            Does Speak work offline?
+            <span class="faq-chevron">+</span>
+          </button>
+          <div class="faq-a">Once loaded, all core symbols, audio, and app features work completely offline. An internet connection is only needed to load ARASAAC pictogram images for the first time, and to use the AI Sentence Builder. After your first session, the app is fully cached.</div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            What devices does it work on?
+            <span class="faq-chevron">+</span>
+          </button>
+          <div class="faq-a">Speak works on any modern browser — iPad, iPhone, Android tablets and phones, Windows, Mac, and Chromebook. You can install it on your home screen from Safari or Chrome like a native app. No App Store, no Google Play, no download fees.</div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            How does the private safety channel actually work?
+            <span class="faq-chevron">+</span>
+          </button>
+          <div class="faq-a">When the child presses Help and chooses "I feel unsafe," Speak silently sends an email to the trusted contact you set up during onboarding — a grandparent, therapist, or teacher. Nothing visible happens on the device. No sound. No mail app opens. The person in the room sees nothing. The trusted contact gets an email within seconds with what the child selected and a timestamp.</div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            Is it COPPA / HIPAA compliant?
+            <span class="faq-chevron">+</span>
+          </button>
+          <div class="faq-a">Yes. Speak is COPPA-compliant for children under 13 — we don't collect personal data from children, and all profile data is encrypted in transit and at rest. The Clinic and Institution plans include HIPAA compliance for clinical settings. We never sell data or build advertising profiles.</div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            How is Speak different from Proloquo2Go or TouchChat?
+            <span class="faq-chevron">+</span>
+          </button>
+          <div class="faq-a">Proloquo2Go costs $299.99. TouchChat HD is $149.99. Speak starts completely free. Beyond price: Speak is the only AAC app with a private safety channel built in. It's also the only one that configures itself for your child's specific diagnosis, age, and motor ability in under two minutes — no SLP consultation required to get started.</div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            Can my child's teacher see their communication log?
+            <span class="faq-chevron">+</span>
+          </button>
+          <div class="faq-a">Yes, on the Institution plan. Enter a teacher's email in Provider Settings → Teacher / School Access. They get read-only access to a communication log and usage stats through a separate Teacher Dashboard — they can never change any settings. Teachers sign in with their own account and only see children explicitly assigned to them.</div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            What if our school can't afford it?
+            <span class="faq-chevron">+</span>
+          </button>
+          <div class="faq-a">We have a free access program for schools and clinics that can't afford a subscription. No waitlist, no lengthy application — just reach out. <a href="mission.html" style="color:var(--gold); font-weight:700;">Learn more →</a></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+    }
+    .faq-item:first-child { border-top: 1px solid var(--border); }
+
+    .faq-q {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-align: left;
+      padding: 18px 0;
+      cursor: pointer;
+      line-height: 1.4;
+    }
+    .faq-q:hover { color: var(--gold-bright); }
+
+    .faq-chevron {
+      flex-shrink: 0;
+      font-size: 1.4rem;
+      color: var(--gold);
+      line-height: 1;
+      transition: transform 0.2s;
+    }
+    .faq-q.open .faq-chevron { transform: rotate(45deg); }
+
+    .faq-a {
+      display: none;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      padding-bottom: 18px;
+      max-width: 680px;
+    }
+    .faq-a.open { display: block; }
+  </style>
+  <script>
+    function toggleFaq(btn) {
+      const a = btn.nextElementSibling;
+      const wasOpen = btn.classList.contains('open');
+      // Close all
+      document.querySelectorAll('.faq-q').forEach(b => {
+        b.classList.remove('open');
+        b.nextElementSibling.classList.remove('open');
+      });
+      // Open this one if it was closed
+      if (!wasOpen) {
+        btn.classList.add('open');
+        a.classList.add('open');
+      }
+    }
+  </script>
+
+  <!-- ── Mission ───────────────────────────────────────────────────── -->
+  <section class="mission-section">
+    <div class="container">
+      <p class="mission-quote">
+        "Every existing AAC app gives every person the same grid — regardless of their diagnosis, their age, or their life. And not one of them has a private way to say <em>I'm not safe</em> — without the person in the room knowing."
+      </p>
+      <p class="mission-quote" style="font-size: 1rem; margin-top: 20px;">
+        Speak exists to fix both of those things. Built by one 18-year-old developer in Kansas, for families who deserve better.
+      </p>
+      <p class="mission-author">— Logan Snell, developer &amp; founder · Axtell, Kansas</p>
+    </div>
+  </section>
+
+  <!-- ── Email capture ────────────────────────────────────────────── -->
+  <section style="background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 48px 20px;">
+    <div class="container" style="text-align:center; max-width:540px;">
+      <div style="font-size:0.74rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--gold); margin-bottom:12px;">Stay in the loop</div>
+      <h2 style="font-size:1.4rem; font-weight:800; margin-bottom:10px; color:var(--text);">Get notified when we ship new features</h2>
+      <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:24px; line-height:1.6;">Short updates only — new features, research updates, and the iOS app launch. No spam, ever.</p>
+
+      <form id="email-capture-form"
+            action="https://formspree.io/f/xdawwjjk"
+            method="POST"
+            style="display:flex; gap:10px; max-width:420px; margin:0 auto;">
+        <input type="hidden" name="form_type" value="newsletter" />
+        <input
+          type="email"
+          name="email"
+          required
+          placeholder="your@email.com"
+          style="flex:1; background:var(--surface2); border:1.5px solid var(--border); border-radius:10px; color:var(--text); font-family:inherit; font-size:0.9rem; padding:12px 16px; outline:none; min-width:0;"
+          onfocus="this.style.borderColor='var(--gold)'"
+          onblur="this.style.borderColor='var(--border)'"
+        />
+        <button
+          type="submit"
+          style="background:var(--gold); color:#000; border:none; border-radius:10px; font-family:inherit; font-size:0.88rem; font-weight:800; padding:12px 20px; cursor:pointer; white-space:nowrap; flex-shrink:0;"
+        >Stay updated</button>
+      </form>
+
+      <div id="email-capture-done" style="display:none; font-size:0.88rem; color:var(--gold-bright); font-weight:600; margin-top:16px;">✓ You're in. We'll keep it short.</div>
+    </div>
+  </section>
+
+  <script>
+    (function() {
+      const form = document.getElementById('email-capture-form');
+      if (!form) return;
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const btn = form.querySelector('button[type="submit"]');
+        btn.textContent = 'Saving…';
+        btn.disabled = true;
+        try {
+          const res = await fetch(form.action, {
+            method: 'POST',
+            body: new FormData(form),
+            headers: { Accept: 'application/json' },
+          });
+          if (res.ok) {
+            form.style.display = 'none';
+            document.getElementById('email-capture-done').style.display = 'block';
+          } else {
+            throw new Error('failed');
+          }
+        } catch {
+          btn.textContent = 'Stay updated';
+          btn.disabled = false;
+          form.action = 'mailto:support@speakaac.org'; // fallback
+          form.submit();
+        }
+      });
+    })();
+  </script>
+
+  <!-- ── Crisis resources ──────────────────────────────────────────── -->
+  <section class="crisis-section">
+    <div class="container">
+      <div class="section-label">Safety resources</div>
+      <h2 class="section-title">Crisis &amp; safety hotlines</h2>
+      <p class="section-sub">The private safety channel in Speak notifies a trusted adult. In an immediate emergency, these 24/7 services are always available — free and confidential.</p>
+
+      <div class="crisis-grid">
+        <a class="crisis-card" href="tel:911">
+          <div class="crisis-card-icon">🚨</div>
+          <div>
+            <div class="crisis-card-name">Emergency — Call 911</div>
+            <div class="crisis-card-desc">For immediate danger to life</div>
+          </div>
+        </a>
+        <a class="crisis-card" href="tel:18004224453">
+          <div class="crisis-card-icon">💛</div>
+          <div>
+            <div class="crisis-card-name">Childhelp National Child Abuse Hotline</div>
+            <div class="crisis-card-desc">1-800-422-4453 · 24/7 · Free · Confidential · 170+ languages</div>
+          </div>
+        </a>
+        <a class="crisis-card" href="sms:741741?body=HOME">
+          <div class="crisis-card-icon">📱</div>
+          <div>
+            <div class="crisis-card-name">Crisis Text Line</div>
+            <div class="crisis-card-desc">Text HOME to 741741 · Free · Confidential · 24/7</div>
+          </div>
+        </a>
+        <a class="crisis-card" href="tel:988">
+          <div class="crisis-card-icon">🤝</div>
+          <div>
+            <div class="crisis-card-name">988 Suicide &amp; Crisis Lifeline</div>
+            <div class="crisis-card-desc">Call or text 988 · 24/7 · Mental health crises</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ────────────────────────────────────────────────────── -->
+  <footer>
+    <div class="footer-logo"><img src="icons/icon.png" alt="" />Speak</div>
+    <div class="footer-links">
+      <a class="footer-link" href="./app.html">Open App</a>
+      <a class="footer-link" href="install_guide.html">Install Guide</a>
+      <a class="footer-link" href="mission.html">Mission</a>
+      <a class="footer-link" href="mailto:support@speakaac.org">support@speakaac.org</a>
+      <a class="footer-link" href="privacy.html">Privacy Policy</a>
+      <a class="footer-link" href="#pricing">Pricing</a>
+    </div>
+    <p class="footer-note">
+      Built by Logan Snell · Axtell, Kansas · © 2026<br>
+      ARASAAC pictograms used under the Creative Commons license.
+    </p>
+  </footer>
+
+  <!-- ── Sticky mobile CTA ────────────────────────────────────────── -->
+  <div id="sticky-cta">
+    <div id="sticky-cta-text">Free · Works on iPad &amp; iPhone</div>
+    <a id="sticky-cta-btn" href="./app.html">Open App →</a>
+  </div>
+
+  <style>
+    #sticky-cta {
+      display: none;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 12px 20px;
+      z-index: 500;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+    }
+    #sticky-cta-text {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+    #sticky-cta-btn {
+      background: var(--gold);
+      color: #000;
+      font-weight: 800;
+      font-size: 0.88rem;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    @media (max-width: 680px) {
+      #sticky-cta { display: flex; }
+      body { padding-bottom: 68px; }
+    }
+  </style>
+
+  <!-- ── Request Access Modal ──────────────────────────────────── -->
+  <div class="access-overlay" id="access-overlay">
+    <div class="access-card">
+      <button class="access-close" id="access-close">✕</button>
+
+      <!-- Form state -->
+      <div id="access-form-wrap">
+        <div class="access-icon">💛</div>
+        <div class="access-title">Request free access</div>
+        <p class="access-sub">Speak is free for families who need it. Tell us a little about your situation and we'll reach out to get you set up — no cost, no credit card, ever.</p>
+
+        <!-- ROUTE SUBMISSIONS: sign up free at formspree.io, create a form,
+             then replace YOUR_FORM_ID below with your actual form ID. -->
+        <form class="access-form" id="access-form"
+              action="https://formspree.io/f/xdawwjjk"
+              method="POST">
+
+          <div class="access-row">
+            <div class="access-field">
+              <label class="access-label" for="af-name">Your name *</label>
+              <input class="access-input" id="af-name" name="name" type="text" placeholder="e.g. Sarah" required />
+            </div>
+            <div class="access-field">
+              <label class="access-label" for="af-email">Your email *</label>
+              <input class="access-input" id="af-email" name="email" type="email" placeholder="you@example.com" required />
+            </div>
+          </div>
+
+          <div class="access-row">
+            <div class="access-field">
+              <label class="access-label" for="af-child">Child's first name</label>
+              <input class="access-input" id="af-child" name="child_name" type="text" placeholder="Optional" />
+            </div>
+            <div class="access-field">
+              <label class="access-label" for="af-age">Child's age</label>
+              <input class="access-input" id="af-age" name="child_age" type="text" placeholder="e.g. 7" />
+            </div>
+          </div>
+
+          <div class="access-field">
+            <label class="access-label" for="af-diagnosis">Diagnosis or condition</label>
+            <input class="access-input" id="af-diagnosis" name="diagnosis" type="text" placeholder="e.g. Autism, Cerebral Palsy, not sure..." />
+          </div>
+
+          <div class="access-field">
+            <label class="access-label" for="af-message">How can we help? *</label>
+            <textarea class="access-textarea" id="af-message" name="message" placeholder="Tell us a little about your child and what you're hoping Speak can do for them..." required></textarea>
+          </div>
+
+          <button class="access-submit" type="submit" id="access-submit">Send Request →</button>
+        </form>
+
+        <p class="access-footer-note">We typically respond within 24–48 hours.<br>Your information is never shared or sold.</p>
+      </div>
+
+      <!-- Success state -->
+      <div class="access-success" id="access-success">
+        <div class="access-success-icon">💛</div>
+        <div class="access-success-title">Request received!</div>
+        <p class="access-success-body">Thank you — we'll be in touch within 48 hours to help get you set up. Every child deserves a voice.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const overlay  = document.getElementById('access-overlay');
+    const openBtn  = document.getElementById('btn-request-access');
+    const closeBtn = document.getElementById('access-close');
+    const form     = document.getElementById('access-form');
+    const submitBtn= document.getElementById('access-submit');
+    const formWrap = document.getElementById('access-form-wrap');
+    const success  = document.getElementById('access-success');
+
+    if (openBtn) openBtn.addEventListener('click', () => overlay.classList.add('open'));
+    closeBtn.addEventListener('click', () => {
+      overlay.classList.remove('open');
+      // Reset after close animation
+      setTimeout(() => {
+        formWrap.style.display = '';
+        success.style.display = 'none';
+        form.reset();
+      }, 300);
+    });
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) closeBtn.click();
+    });
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending…';
+
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { 'Accept': 'application/json' }
+        });
+        if (res.ok) {
+          formWrap.style.display = 'none';
+          success.style.display = 'block';
+        } else {
+          throw new Error();
+        }
+      } catch {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send Request →';
+        alert('Something went wrong. Please try again or email us directly.');
+      }
+    });
+  </script>
+
+  <!-- Google Analytics — loaded only after cookie consent -->
+  <script>
+    function loadGA() {
+      if (document.getElementById('ga-script')) return;
+      var s = document.createElement('script');
+      s.id = 'ga-script'; s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID';
+      document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);} window.gtag = gtag;
+      gtag('js', new Date()); gtag('config', 'GA_MEASUREMENT_ID');
+    }
+    if (localStorage.getItem('speak_analytics') === 'yes') loadGA();
+  </script>
+  <div id="cookie-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:14px 20px;align-items:center;gap:12px;flex-wrap:wrap;z-index:9999;font-size:0.82rem;color:var(--text-muted);">
+    <span style="flex:1;min-width:200px;">We use analytics to understand how people find Speak and improve the experience. No personal data is sold. <a href="privacy.html" style="color:var(--gold);">Privacy policy</a></span>
+    <button onclick="consentGA(true)"  style="background:var(--gold);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:0.82rem;font-weight:700;cursor:pointer;">Accept</button>
+    <button onclick="consentGA(false)" style="background:var(--surface2);color:var(--text-muted);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:0.82rem;cursor:pointer;">Decline</button>
+  </div>
+  <script>
+    (function(){ if (!localStorage.getItem('speak_analytics')) document.getElementById('cookie-bar').style.display = 'flex'; })();
+    function consentGA(yes) { localStorage.setItem('speak_analytics', yes ? 'yes' : 'no'); document.getElementById('cookie-bar').style.display = 'none'; if (yes) loadGA(); }
+  </script>
+
+</body>
+</html>

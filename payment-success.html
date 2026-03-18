@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment Successful — Speak</title>
+  <link rel="icon" type="image/png" href="icons/icon.png" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #0e0e0e;
+      --surface:     #161616;
+      --surface2:    #1c1c1c;
+      --border:      #2a2a2a;
+      --gold:        #C8922A;
+      --gold-bright: #E5A535;
+      --gold-glow:   rgba(200, 146, 42, 0.12);
+      --text:        #f4f0ea;
+      --text-muted:  #9a8f80;
+      --text-dim:    #5a5248;
+      --green:       #27ae60;
+      --green-glow:  rgba(39, 174, 96, 0.12);
+      --red:         #e05555;
+      --radius:      14px;
+      --radius-lg:   20px;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg:          #f4efe6;
+        --surface:     #fffdf8;
+        --surface2:    #ede8de;
+        --border:      #ddd6c8;
+        --gold:        #a36818;
+        --gold-bright: #c07c10;
+        --gold-glow:   rgba(163,104,24,0.10);
+        --text:        #1a1008;
+        --text-muted:  #5a4028;
+        --text-dim:    #9a8468;
+        --green:       #1d7a44;
+        --green-glow:  rgba(29,122,68,0.12);
+      }
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 20px 48px;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      z-index: 100;
+    }
+
+    nav img { width: 26px; height: 26px; border-radius: 7px; }
+
+    .nav-brand {
+      font-weight: 900;
+      font-size: 0.95rem;
+      color: var(--gold-bright);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .nav-back {
+      margin-left: auto;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+    .nav-back:hover { color: var(--text); }
+
+    /* ── Card ── */
+    .card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 48px 40px 40px;
+      width: min(480px, 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 0;
+      margin-top: 72px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+    }
+
+    /* ── Check animation ── */
+    .success-ring {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--green-glow);
+      border: 2px solid var(--green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      margin-bottom: 24px;
+      animation: pop-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    @keyframes pop-in {
+      0%   { transform: scale(0.4); opacity: 0; }
+      100% { transform: scale(1);   opacity: 1; }
+    }
+
+    /* ── Tier badge ── */
+    .tier-badge {
+      display: inline-block;
+      background: var(--gold-glow);
+      border: 1px solid var(--gold);
+      border-radius: 100px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--gold-bright);
+      padding: 5px 16px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: var(--text);
+      line-height: 1.25;
+      margin-bottom: 10px;
+    }
+
+    .sub {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 28px;
+      max-width: 360px;
+    }
+
+    /* ── Unlocked features ── */
+    .unlocked-title {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+      align-self: flex-start;
+    }
+
+    .unlocked-list {
+      align-self: stretch;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 32px;
+    }
+
+    .unlocked-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.88rem;
+      color: var(--text);
+      text-align: left;
+    }
+
+    .unlocked-item::before {
+      content: '✓';
+      color: var(--green);
+      font-weight: 800;
+      flex-shrink: 0;
+      font-size: 0.9rem;
+    }
+
+    /* ── CTAs ── */
+    .btn-primary {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      background: var(--gold);
+      color: #000;
+      border: none;
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 800;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      margin-bottom: 12px;
+    }
+    .btn-primary:hover { opacity: 0.88; }
+
+    .btn-secondary {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: var(--surface2);
+      color: var(--text-muted);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* ── Cloud sync prompt ── */
+    .sync-notice {
+      margin-top: 24px;
+      padding: 16px;
+      background: var(--gold-glow);
+      border: 1px solid rgba(200,146,42,0.3);
+      border-radius: var(--radius);
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      text-align: left;
+      align-self: stretch;
+    }
+
+    .sync-notice strong { color: var(--gold-bright); }
+
+    /* ── Support ── */
+    .support-note {
+      margin-top: 28px;
+      font-size: 0.76rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+    .support-note a { color: var(--gold); text-decoration: none; }
+    .support-note a:hover { text-decoration: underline; }
+
+    /* ── Activation status ── */
+    #activation-status {
+      font-size: 0.78rem;
+      color: var(--green);
+      font-weight: 600;
+      margin-top: 6px;
+      min-height: 18px;
+    }
+
+    @media (max-width: 500px) {
+      .card { padding: 36px 24px 32px; }
+      h1 { font-size: 1.35rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <img src="icons/icon.png" alt="Speak" />
+  <span class="nav-brand">Speak</span>
+  <a class="nav-back" href="./index.html">← Back to home</a>
+</nav>
+
+<div class="card">
+  <div class="success-ring">✓</div>
+
+  <div class="tier-badge" id="tier-badge">Family Plan</div>
+
+  <h1 id="success-heading">Your plan is active.</h1>
+  <p class="sub" id="success-sub">
+    Thank you — your support directly funds development of Speak for families who need it.
+  </p>
+
+  <div class="unlocked-title">What you just unlocked</div>
+  <div class="unlocked-list" id="unlocked-list">
+    <!-- filled by JS -->
+  </div>
+
+  <a class="btn-primary" href="./app.html" id="open-app-btn">Open Speak Now →</a>
+  <a class="btn-secondary" href="./index.html">Back to home</a>
+
+  <div id="activation-status"></div>
+
+  <div class="sync-notice" id="sync-notice" style="display:none">
+    <strong>Save your plan across devices</strong><br>
+    Sign in to Speak (or create a free account) to permanently link your subscription to your profile — so it's never lost if you clear your browser.
+  </div>
+
+  <p class="support-note">
+    Questions or issues? We respond fast.<br>
+    <a href="mailto:support@speakaac.org">support@speakaac.org</a>
+  </p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="sync.js"></script>
+<script>
+
+const TIER_DATA = {
+  family: {
+    label:    'Family Plan',
+    heading:  'Your Family plan is active.',
+    sub:      'Thank you — your support directly funds Speak for families who can\'t afford it.',
+    features: [
+      'AI Sentence Builder — turn tapped symbols into full sentences',
+      '30-day communication history log',
+      'All symbols, categories, and real recorded audio',
+      'Private safety channel — always on, always free',
+    ],
+  },
+  clinic: {
+    label:    'Clinic Plan',
+    heading:  'Your Clinic plan is active.',
+    sub:      'Full clinical features are now enabled. Thank you for trusting Speak with your patients.',
+    features: [
+      'Everything in the Family plan',
+      'Full provider analytics dashboard',
+      'Multiple patient profiles',
+      'Exportable communication reports (CSV)',
+      'Custom symbol sets',
+      'HIPAA compliance',
+    ],
+  },
+  institution: {
+    label:    'Institution Plan',
+    heading:  'Your Institution plan is active.',
+    sub:      'School-wide access is now enabled. Thank you for bringing Speak to your students.',
+    features: [
+      'Everything in the Clinic plan',
+      'Up to 10 child profiles under one account',
+      'Teacher read-only dashboard accounts',
+      'Admin dashboard and bulk reports',
+      'School enrollment support',
+    ],
+  },
+};
+
+// ── Read tier from URL ──────────────────────────────────────────────
+const params = new URLSearchParams(location.search);
+const tier   = (['family', 'clinic', 'institution'].includes(params.get('tier')))
+  ? params.get('tier')
+  : 'family'; // default to family if param missing or invalid
+
+const data = TIER_DATA[tier];
+
+// ── Populate UI ─────────────────────────────────────────────────────
+document.getElementById('tier-badge').textContent   = data.label;
+document.getElementById('success-heading').textContent = data.heading;
+document.getElementById('success-sub').textContent  = data.sub;
+
+const list = document.getElementById('unlocked-list');
+data.features.forEach(f => {
+  const item = document.createElement('div');
+  item.className = 'unlocked-item';
+  item.textContent = f;
+  list.appendChild(item);
+});
+
+// ── Activate tier locally ───────────────────────────────────────────
+const SETTINGS_KEY  = 'aac_settings';
+const ACCESS_KEY    = 'aac_access_v1';  // matches app.js password gate key
+
+function activateTierLocally() {
+  try {
+    const settings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
+    settings.tier = tier;
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    // Bypass the beta access gate so paying customers go straight into the app
+    localStorage.setItem(ACCESS_KEY, '1');
+    document.getElementById('activation-status').textContent = '✓ Plan activated on this device';
+    return settings;
+  } catch { return {}; }
+}
+
+// ── Sync to cloud if signed in ──────────────────────────────────────
+async function activateTierCloud() {
+  if (!window.Sync) return;
+  const session = await Sync.getSession();
+  if (!session) {
+    // Not signed in — show the sync notice
+    document.getElementById('sync-notice').style.display = 'block';
+    return;
+  }
+  try {
+    const settings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
+    settings.tier = tier;
+    await Sync.save(settings);
+    document.getElementById('activation-status').textContent = '✓ Plan activated and saved to your account';
+  } catch {
+    document.getElementById('activation-status').textContent = '✓ Plan activated on this device';
+  }
+}
+
+// Run on load
+activateTierLocally();
+activateTierCloud();
+
+</script>
+</body>
+</html>

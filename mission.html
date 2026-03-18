@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Our Mission — Speak AAC</title>
+  <link rel="icon" type="image/png" href="icons/icon.png" />
+  <meta name="description" content="Speak is an open AAC communication app for nonverbal children — with a built-in private safety channel so children can report abuse without anyone in the room knowing." />
+  <meta property="og:type"        content="website" />
+  <meta property="og:url"         content="https://speakaac.org/mission.html" />
+  <meta property="og:title"       content="Our Mission — Speak AAC" />
+  <meta property="og:description" content="Every child deserves a voice and a way out. The story behind Speak." />
+  <meta property="og:image"       content="https://speakaac.org/icons/icon.png" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0f0f10; --surface: #1a1a1e; --surface-high: #232328;
+      --border: #2e2e34; --border-light: #3a3a42;
+      --gold: #c9952a; --gold-bright: #e0a830; --gold-glow: rgba(201,149,42,0.12);
+      --text: #f0f0f2; --text-muted: #9999aa; --text-dim: #666672;
+      --red: #e05555; --green: #27ae60;
+      --radius: 10px; --radius-lg: 16px;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg:          #f4efe6;
+        --surface:     #fffdf8;
+        --surface2:    #ede8de;
+        --border:      #ddd6c8;
+        --border-light:#ccc5b8;
+        --gold:        #a36818;
+        --gold-bright: #c07c10;
+        --gold-glow:   rgba(163,104,24,0.10);
+        --gold-dark:   #7a5010;
+        --text:        #1a1008;
+        --text-muted:  #5a4028;
+        --text-dim:    #9a8468;
+      }
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); }
+
+    /* ── Nav ── */
+    nav { display: flex; align-items: center; gap: 10px; padding: 16px 28px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg); z-index: 100; }
+    .nav-logo { display: flex; align-items: center; gap: 9px; text-decoration: none; }
+    .nav-logo img { width: 28px; height: 28px; border-radius: 7px; }
+    .nav-logo-text { font-weight: 900; font-size: 1rem; color: var(--gold-bright); letter-spacing: .1em; text-transform: uppercase; }
+    .nav-right { margin-left: auto; display: flex; gap: 20px; align-items: center; }
+    .nav-link { font-size: 0.85rem; color: var(--text-muted); text-decoration: none; }
+    .nav-link:hover { color: var(--text); }
+    .btn-nav { background: var(--gold); color: #0f0f10; font-weight: 700; font-size: 0.85rem; padding: 8px 18px; border-radius: 8px; text-decoration: none; }
+
+    /* ── Page layout ── */
+    .page { max-width: 740px; margin: 0 auto; padding: 72px 24px 100px; }
+
+    /* ── Hero ── */
+    .eyebrow { font-size: 0.78rem; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: .12em; margin-bottom: 16px; }
+    h1 { font-size: 2.6rem; font-weight: 900; line-height: 1.15; margin-bottom: 24px; }
+    h1 em { color: var(--gold-bright); font-style: normal; }
+    .lead { font-size: 1.12rem; color: var(--text-muted); line-height: 1.75; margin-bottom: 56px; max-width: 600px; }
+
+    /* ── Divider ── */
+    .divider { width: 40px; height: 2px; background: var(--gold); margin: 48px 0; }
+
+    /* ── Body sections ── */
+    .section { margin-bottom: 48px; }
+    .section h2 { font-size: 1.25rem; font-weight: 800; margin-bottom: 14px; color: var(--text); }
+    .section p { font-size: 0.97rem; color: var(--text-muted); line-height: 1.8; margin-bottom: 14px; }
+    .section p:last-child { margin-bottom: 0; }
+    .section p strong { color: var(--text); font-weight: 600; }
+
+    /* ── Stat callouts ── */
+    .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin: 32px 0; }
+    .stat-box { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 24px 20px; }
+    .stat-num { font-size: 2.2rem; font-weight: 900; color: var(--gold-bright); line-height: 1; margin-bottom: 6px; }
+    .stat-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; }
+    .stat-source { font-size: 0.7rem; color: var(--text-dim); margin-top: 6px; font-style: italic; }
+
+    /* ── Access program card ── */
+    .access-card {
+      background: var(--gold-glow);
+      border: 1.5px solid var(--gold);
+      border-radius: var(--radius-lg);
+      padding: 32px 28px;
+      margin: 40px 0;
+    }
+    .access-card h3 { font-size: 1.1rem; font-weight: 800; color: var(--gold-bright); margin-bottom: 10px; }
+    .access-card p { font-size: 0.92rem; color: var(--text-muted); line-height: 1.75; margin-bottom: 12px; }
+    .access-card p:last-child { margin-bottom: 0; }
+    .access-card a { color: var(--gold-bright); text-decoration: underline; }
+
+    /* ── Research card ── */
+    .research-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 32px 28px;
+      margin: 32px 0;
+    }
+    .research-card h3 { font-size: 1.05rem; font-weight: 800; color: var(--text); margin-bottom: 10px; }
+    .research-card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.75; margin-bottom: 10px; }
+    .research-card p:last-child { margin-bottom: 0; }
+    .research-card .research-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+
+    /* ── Status / traction ── */
+    .traction-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin: 24px 0;
+    }
+    .traction-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+    .traction-val { font-size: 1.4rem; font-weight: 900; color: var(--text); margin-bottom: 4px; }
+    .traction-label { font-size: 0.74rem; color: var(--text-muted); line-height: 1.4; }
+
+    /* ── Quote ── */
+    blockquote {
+      border-left: 3px solid var(--gold);
+      padding: 4px 0 4px 20px;
+      margin: 32px 0;
+      font-size: 1.05rem;
+      color: var(--text);
+      line-height: 1.7;
+      font-style: italic;
+    }
+
+    /* ── CTA ── */
+    .cta-block { text-align: center; padding: 56px 0 0; }
+    .cta-block h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 12px; }
+    .cta-block p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 28px; line-height: 1.7; }
+    .cta-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn-gold { background: var(--gold); color: #0f0f10; font-weight: 700; font-size: 0.95rem; padding: 13px 28px; border-radius: 10px; text-decoration: none; }
+    .btn-ghost { background: transparent; border: 1.5px solid var(--border-light); color: var(--text); font-size: 0.95rem; padding: 13px 28px; border-radius: 10px; text-decoration: none; }
+    .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* ── Refs ── */
+    .refs { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); }
+    .refs h4 { font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); margin-bottom: 12px; }
+    .refs ol { padding-left: 20px; display: flex; flex-direction: column; gap: 8px; }
+    .refs li { font-size: 0.78rem; color: var(--text-dim); line-height: 1.5; }
+
+    /* ── Footer ── */
+    footer { border-top: 1px solid var(--border); padding: 24px 28px; display: flex; gap: 16px; align-items: center; justify-content: center; flex-wrap: wrap; }
+    .footer-link { font-size: 0.8rem; color: var(--text-dim); text-decoration: none; }
+    .footer-link:hover { color: var(--text-muted); }
+
+    /* ── Contact modal ── */
+    .contact-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(6px);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .contact-overlay.open { display: flex; }
+    .contact-card {
+      background: var(--surface);
+      border: 1px solid var(--border-light, #3a3a3a);
+      border-radius: 20px;
+      padding: 36px 32px;
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .contact-card h3 { font-size: 1.2rem; font-weight: 800; color: var(--text); }
+    .contact-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+    .contact-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .contact-field label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .contact-field input,
+    .contact-field textarea,
+    .contact-field select {
+      background: #111;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.9rem;
+      padding: 11px 14px;
+      outline: none;
+      transition: border-color 0.15s;
+      resize: vertical;
+    }
+    .contact-field input:focus,
+    .contact-field textarea:focus,
+    .contact-field select:focus { border-color: var(--gold); }
+    .contact-field textarea { min-height: 100px; }
+    .contact-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 4px; }
+    .contact-cancel { background: none; border: 1px solid var(--border); border-radius: 10px; color: var(--text-muted); font-family: inherit; font-size: 0.88rem; font-weight: 600; padding: 10px 20px; cursor: pointer; }
+    .contact-cancel:hover { border-color: var(--text-muted); color: var(--text); }
+    .contact-submit { background: var(--gold); border: none; border-radius: 10px; color: #000; font-family: inherit; font-size: 0.88rem; font-weight: 800; padding: 10px 24px; cursor: pointer; }
+    .contact-submit:hover { background: var(--gold-bright); }
+    .contact-done { display: none; text-align: center; padding: 12px 0 4px; font-size: 0.9rem; color: var(--gold-bright); font-weight: 600; }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2rem; }
+      .page { padding: 48px 20px 80px; }
+      .contact-card { padding: 28px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <img src="icons/icon.png" alt="Speak" />
+    <span class="nav-logo-text">Speak</span>
+  </a>
+  <div class="nav-right">
+    <a class="nav-link" href="index.html#features">Features</a>
+    <a class="nav-link" href="index.html#pricing">Pricing</a>
+    <a class="btn-nav" href="./app.html">Open App</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="eyebrow">Our Mission</div>
+  <h1>Every child deserves<br>a <em>voice</em> and a <em>way out.</em></h1>
+  <p class="lead">
+    Speak exists because the children who need communication tools the most are the ones least likely to have access to them — and the most at risk when they don't.
+  </p>
+
+  <!-- ── Who built this ── -->
+  <div class="section">
+    <h2>Who built this</h2>
+    <p>
+      My name is Logan Snell. I'm 18 years old and I live in Axtell, Kansas — a town of about 400 people. I built Speak alone because I kept running into the same fact: children with communication disabilities are abused at <strong>3 to 4 times the rate of their peers</strong>, and the thing that makes them vulnerable is the same thing keeping them silent.
+    </p>
+    <p>
+      No commercial AAC app has ever addressed that. Every existing product gives every child the same symbol grid and never asks the question: <em>what if no one in the room can be trusted?</em>
+    </p>
+    <p>
+      I built an app that asks that question from day one. The private safety channel — a way for a nonverbal child to silently alert a trusted adult outside the primary caretaker relationship — is built into the free tier. It always will be.
+    </p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ── The problem ── -->
+  <div class="section">
+    <h2>The gap nobody is closing</h2>
+    <p>
+      There are roughly <strong>2 million nonverbal or minimally verbal children</strong> in the United States. The majority are in public school classrooms. Most of those classrooms have little to no dedicated budget for AAC software.
+    </p>
+
+    <div class="stat-row">
+      <div class="stat-box">
+        <div class="stat-num">3–4×</div>
+        <div class="stat-desc">higher abuse rate for children with communication disabilities vs. non-disabled peers</div>
+        <div class="stat-source">Sullivan &amp; Knutson, 2000 · J. Pediatric Psychology</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">~2M</div>
+        <div class="stat-desc">nonverbal or minimally verbal children in the US who could benefit from AAC</div>
+        <div class="stat-source">ASHA, 2022 prevalence estimates</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">$299</div>
+        <div class="stat-desc">average one-time cost of a leading commercial AAC app — before SLP configuration fees</div>
+        <div class="stat-source">Proloquo2Go, TouchChat HD current pricing</div>
+      </div>
+    </div>
+
+    <p>
+      Teachers in underfunded schools routinely buy classroom materials out of pocket. Special education aides work with children who have no communication tools at all — not because no tools exist, but because the tools that exist weren't designed for classrooms without budgets.
+    </p>
+    <p>
+      Speak was designed for exactly those classrooms. It runs on any tablet with a browser. No app store. No download. Setup takes under two minutes. And the safety channel is free on every plan, at every price, including zero.
+    </p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ── Safety channel ── -->
+  <div class="section">
+    <h2>Why the safety channel matters</h2>
+    <p>
+      When a nonverbal child is being abused, the traditional reporting pipeline breaks down entirely. They cannot call a hotline. They cannot write a note. They cannot pull a teacher aside and whisper. The adults most likely to notice are often the adults involved.
+    </p>
+
+    <blockquote>
+      "The very thing that makes them vulnerable is the same thing keeping them silent."
+    </blockquote>
+
+    <p>
+      Speak's private safety channel is a single button — or a hidden symbol sequence the child can activate on their own. One tap sends an immediate, silent email to a trusted adult outside the home. No sound. Nothing appears on screen. The person in the room never knows it happened.
+    </p>
+    <p>
+      The trusted contact — a grandparent, teacher, or therapist — receives a notification within seconds that includes what the child selected, a timestamp, and the child's name. No app installation required on their end. No account. Just an email.
+    </p>
+    <p>
+      <strong>This feature is free on every plan. Forever.</strong>
+    </p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ── Current status ── -->
+  <div class="section">
+    <h2>Current status</h2>
+    <p>
+      Speak launched publicly in early 2026 as a fully functional web application. As of March 2026:
+    </p>
+
+    <div class="traction-grid">
+      <div class="traction-item">
+        <div class="traction-val">17</div>
+        <div class="traction-label">diagnosis profiles supported with personalized configuration</div>
+      </div>
+      <div class="traction-item">
+        <div class="traction-val">Live</div>
+        <div class="traction-label">fully deployed on Netlify with Supabase cloud sync</div>
+      </div>
+      <div class="traction-item">
+        <div class="traction-val">PWA</div>
+        <div class="traction-label">installable on iPad, iPhone, Android, Windows, Mac — no App Store</div>
+      </div>
+      <div class="traction-item">
+        <div class="traction-val">COPPA</div>
+        <div class="traction-label">compliant privacy policy · HIPAA compliance on Clinic/Institution plans</div>
+      </div>
+    </div>
+
+    <p>
+      The app includes a full onboarding wizard, ARASAAC pictogram integration, real recorded audio, AI sentence construction via Claude (Anthropic), a session history drawer, a provider analytics dashboard, kiosk mode for tablets, and a teacher read-only dashboard for school settings.
+    </p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ── Research track ── -->
+  <div class="section">
+    <h2>Research &amp; grant track</h2>
+    <p>
+      Beyond the consumer product, Speak represents a research opportunity: <strong>no empirical study has evaluated the effectiveness of an integrated private safety channel in AAC systems</strong> on abuse reporting rates or detection outcomes for nonverbal children.
+    </p>
+
+    <div class="research-card">
+      <div class="research-label">Research concept — in development</div>
+      <h3>Efficacy of Embedded Safety Reporting in AAC Systems for Nonverbal Children at Risk</h3>
+      <p>
+        Proposed research question: Does the integration of a private, silent safety-reporting channel within a daily-use AAC application increase the rate of abuse disclosure among nonverbal and minimally verbal children in educational and home care settings?
+      </p>
+      <p>
+        Primary methodology: mixed-methods study across school and clinical settings using Speak as the AAC intervention. Outcome measures include disclosure rate, time-to-disclosure, caregiver and educator response patterns, and child-reported sense of safety.
+      </p>
+      <p>
+        <strong>Target funding:</strong> NIDILRR Rehabilitation Engineering Research Centers (RERC) program · $100,000–$500,000 · Potential partner: University of Kansas (initial contact established with Dr. Brady, Department of Special Education)
+      </p>
+    </div>
+
+    <p>
+      This research has the potential to produce the first evidence base for safety-integrated AAC — a methodology that could be adopted across the entire AAC field if findings are positive. Speak serves as the proof-of-concept platform and the primary instrument for the study.
+    </p>
+    <p>
+      If you are a researcher, clinician, or institution interested in participating in or co-leading this research, please reach out.
+    </p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ── Access program ── -->
+  <div class="access-card">
+    <h3>The School Access Program</h3>
+    <p>
+      Schools and classrooms that qualify — Title I schools, underfunded special education programs, under-resourced nonprofits working with nonverbal children — can receive full Institution access at no cost.
+    </p>
+    <p>
+      This program is funded by the families and clinics that subscribe at the standard rate. Every clinic that pays a subscription helps cover access for a school that can't.
+    </p>
+    <p>
+      If you work in a school or clinic that needs Speak and can't afford it, email <a href="mailto:support@speakaac.org">support@speakaac.org</a>. We'll make it work.
+    </p>
+  </div>
+
+  <!-- ── What support funds ── -->
+  <div class="section">
+    <h2>What your support funds</h2>
+    <p>
+      There are no salaries here. Support goes toward three things:
+    </p>
+    <p>
+      <strong>1. Infrastructure.</strong> Hosting, cloud sync, database, and the services that make the app reliable for families using it every day.
+    </p>
+    <p>
+      <strong>2. The school access program.</strong> Every dollar donated expands how many underfunded classrooms get institution-level access at no cost.
+    </p>
+    <p>
+      <strong>3. Native app development.</strong> A native iOS and Android app reaches the iPads already in classrooms — without requiring Safari and a "Add to Home Screen" step. That's the next milestone.
+    </p>
+  </div>
+
+  <!-- ── CTA ── -->
+  <div class="cta-block">
+    <h2>Help us reach the kids who need it most.</h2>
+    <p>Share with a family who needs it. Donate if you're able. Both matter equally.</p>
+    <div class="cta-buttons">
+      <a class="btn-gold" href="https://www.gofundme.com/f/giving-nonverbal-children-a-voice-and-a-way-to-stay-safe" target="_blank" rel="noopener">Support on GoFundMe</a>
+      <a class="btn-ghost" href="./app.html">Open Speak</a>
+      <button class="btn-ghost" id="contact-open-btn" style="cursor:pointer; border:1.5px solid var(--border-light,#3a3a3a); background:transparent; color:var(--text-muted); font-size:0.95rem; padding:13px 28px; border-radius:10px; font-family:inherit; font-weight:700; transition:border-color 0.15s,color 0.15s;" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold-bright)'" onmouseout="this.style.borderColor='var(--border-light,#3a3a3a)';this.style.color='var(--text-muted)'">Get in Touch</button>
+    </div>
+  </div>
+
+  <!-- ── References ── -->
+  <div class="refs">
+    <h4>References</h4>
+    <ol>
+      <li>Sullivan, P.M. &amp; Knutson, J.F. (2000). Maltreatment and disabilities: A population-based epidemiological study. <em>Child Abuse &amp; Neglect, 24</em>(10), 1257–1273.</li>
+      <li>American Speech-Language-Hearing Association (ASHA). (2022). Augmentative and Alternative Communication (AAC). asha.org/practice-portal/clinical-topics/augmentative-and-alternative-communication.</li>
+      <li>Beukelman, D.R. &amp; Mirenda, P. (2013). <em>Augmentative and Alternative Communication: Supporting Children and Adults with Complex Communication Needs</em> (4th ed.). Brookes Publishing.</li>
+      <li>National Institute on Disability, Independent Living, and Rehabilitation Research (NIDILRR). (2023). RERC Program overview. acl.gov/programs/research-and-development/nidilrr.</li>
+    </ol>
+  </div>
+
+</div>
+
+<footer>
+  <a class="footer-link" href="index.html">Home</a>
+  <a class="footer-link" href="./app.html">Open App</a>
+  <a class="footer-link" href="mailto:support@speakaac.org">support@speakaac.org</a>
+  <a class="footer-link" href="https://www.gofundme.com/f/giving-nonverbal-children-a-voice-and-a-way-to-stay-safe" target="_blank" rel="noopener">GoFundMe</a>
+  <a class="footer-link" href="privacy.html">Privacy</a>
+</footer>
+
+<!-- ── Contact Modal ─────────────────────────────────────────── -->
+<div class="contact-overlay" id="contact-overlay">
+  <div class="contact-card" role="dialog" aria-modal="true" aria-labelledby="contact-title">
+    <h3 id="contact-title">Get in touch</h3>
+    <p>Questions about the research track, grant opportunities, school access, or anything else — reach out directly.</p>
+    <form id="contact-form" action="https://formspree.io/f/xdawwjjk" method="POST">
+      <input type="hidden" name="form_type" value="contact" />
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div class="contact-field">
+          <label for="cf-name">Your name</label>
+          <input type="text" id="cf-name" name="name" placeholder="Dr. Jane Smith" autocomplete="name" required />
+        </div>
+        <div class="contact-field">
+          <label for="cf-email">Email address</label>
+          <input type="email" id="cf-email" name="email" placeholder="you@example.com" autocomplete="email" required />
+        </div>
+        <div class="contact-field">
+          <label for="cf-subject">Subject</label>
+          <select id="cf-subject" name="subject">
+            <option value="Research partnership">Research partnership</option>
+            <option value="School access program">School access program</option>
+            <option value="Grant / funding">Grant / funding inquiry</option>
+            <option value="Media / press">Media or press</option>
+            <option value="General">General question</option>
+          </select>
+        </div>
+        <div class="contact-field">
+          <label for="cf-message">Message</label>
+          <textarea id="cf-message" name="message" placeholder="Tell us what you're working on or what you need." required></textarea>
+        </div>
+        <div class="contact-actions">
+          <button type="button" class="contact-cancel" id="contact-close-btn">Cancel</button>
+          <button type="submit" class="contact-submit" id="contact-submit-btn">Send message</button>
+        </div>
+        <div class="contact-done" id="contact-done">Message sent — we'll reply to your email within 2 business days.</div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+(function() {
+  const overlay = document.getElementById('contact-overlay');
+  const openBtn = document.getElementById('contact-open-btn');
+  const closeBtn = document.getElementById('contact-close-btn');
+  const form = document.getElementById('contact-form');
+  const submitBtn = document.getElementById('contact-submit-btn');
+  const doneEl = document.getElementById('contact-done');
+
+  function openModal() { overlay.classList.add('open'); document.getElementById('cf-name').focus(); }
+  function closeModal() { overlay.classList.remove('open'); }
+
+  openBtn.addEventListener('click', openModal);
+  closeBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    submitBtn.textContent = 'Sending…';
+    submitBtn.disabled = true;
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { Accept: 'application/json' },
+      });
+      if (res.ok) {
+        form.querySelectorAll('input, textarea, select, button').forEach(el => el.style.display = 'none');
+        doneEl.style.display = 'block';
+        setTimeout(closeModal, 3500);
+      } else {
+        throw new Error();
+      }
+    } catch {
+      submitBtn.textContent = 'Send message';
+      submitBtn.disabled = false;
+      window.location.href = 'mailto:support@speakaac.org?subject=Mission%20page%20inquiry';
+    }
+  });
+})();
+</script>
+
+  <!-- Google Analytics — loaded only after cookie consent -->
+  <script>
+    function loadGA() {
+      if (document.getElementById('ga-script')) return;
+      var s = document.createElement('script');
+      s.id = 'ga-script'; s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID';
+      document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);} window.gtag = gtag;
+      gtag('js', new Date()); gtag('config', 'GA_MEASUREMENT_ID');
+    }
+    if (localStorage.getItem('speak_analytics') === 'yes') loadGA();
+  </script>
+  <div id="cookie-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:14px 20px;align-items:center;gap:12px;flex-wrap:wrap;z-index:9999;font-size:0.82rem;color:var(--text-muted);">
+    <span style="flex:1;min-width:200px;">We use analytics to understand how people find Speak and improve the experience. No personal data is sold. <a href="privacy.html" style="color:var(--gold);">Privacy policy</a></span>
+    <button onclick="consentGA(true)"  style="background:var(--gold);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:0.82rem;font-weight:700;cursor:pointer;">Accept</button>
+    <button onclick="consentGA(false)" style="background:var(--surface2);color:var(--text-muted);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:0.82rem;cursor:pointer;">Decline</button>
+  </div>
+  <script>
+    (function(){ if (!localStorage.getItem('speak_analytics')) document.getElementById('cookie-bar').style.display = 'flex'; })();
+    function consentGA(yes) { localStorage.setItem('speak_analytics', yes ? 'yes' : 'no'); document.getElementById('cookie-bar').style.display = 'none'; if (yes) loadGA(); }
+  </script>
+
+</body>
+</html>

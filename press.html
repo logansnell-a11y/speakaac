@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Press & Media — Speak AAC</title>
+  <link rel="icon" type="image/png" href="icons/icon.png" />
+  <!-- Not indexed — media/press contacts only -->
+  <meta name="robots" content="noindex, nofollow" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #0e0e0e;
+      --surface:     #161616;
+      --surface2:    #1c1c1c;
+      --border:      #2a2a2a;
+      --border-light:#333;
+      --gold:        #C8922A;
+      --gold-bright: #E5A535;
+      --gold-dark:   #a37320;
+      --gold-glow:   rgba(200,146,42,0.12);
+      --text:        #f0ece4;
+      --text-muted:  #a09880;
+      --text-dim:    #5a5448;
+      --radius:      16px;
+      --radius-sm:   10px;
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg:          #f4efe6;
+        --surface:     #fffdf8;
+        --surface2:    #ede8de;
+        --border:      #ddd6c8;
+        --border-light:#ccc5b8;
+        --gold:        #a36818;
+        --gold-bright: #c07c10;
+        --gold-dark:   #7a5010;
+        --gold-glow:   rgba(163,104,24,0.10);
+        --text:        #1a1008;
+        --text-muted:  #5a4028;
+        --text-dim:    #9a8468;
+      }
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* Nav */
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 28px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: color-mix(in srgb, var(--bg) 90%, transparent);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 100;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 9px; text-decoration: none; }
+    .nav-logo img { width: 28px; height: 28px; border-radius: 7px; }
+    .nav-logo-text { font-weight: 900; font-size: 1rem; color: var(--gold-bright); letter-spacing: .1em; text-transform: uppercase; }
+    .nav-right { margin-left: auto; display: flex; gap: 16px; align-items: center; }
+    .nav-link { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
+    .nav-link:hover { color: var(--text); }
+    .btn-nav { background: var(--gold); color: #0f0f10; font-weight: 700; font-size: 0.85rem; padding: 8px 18px; border-radius: 8px; text-decoration: none; }
+
+    /* Page */
+    .page { max-width: 800px; margin: 0 auto; padding: 72px 28px 120px; }
+
+    /* Hero */
+    .press-badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--gold-bright);
+      background: var(--gold-glow);
+      border: 1px solid rgba(200,146,42,0.28);
+      border-radius: 6px;
+      padding: 4px 12px;
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 18px;
+    }
+    h1 em { font-style: normal; color: var(--gold-bright); }
+    .lead {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      line-height: 1.75;
+      max-width: 600px;
+      margin-bottom: 40px;
+    }
+    .divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+
+    /* Section */
+    .section { margin-bottom: 0; }
+    h2 { font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 18px; }
+    .eyebrow {
+      font-size: 0.64rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+
+    /* Stat grid */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 14px;
+      margin-bottom: 36px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 18px;
+    }
+    .stat-val { font-size: 1.9rem; font-weight: 900; color: var(--gold-bright); line-height: 1; margin-bottom: 5px; }
+    .stat-label { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; }
+
+    /* Story block */
+    .story p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.8; margin-bottom: 16px; }
+    .story p:last-child { margin-bottom: 0; }
+    .story strong { color: var(--text); font-weight: 700; }
+
+    /* Quote */
+    blockquote {
+      border-left: 3px solid var(--gold);
+      padding: 16px 0 16px 22px;
+      margin: 28px 0;
+    }
+    blockquote p { font-size: 1.05rem; font-style: italic; color: var(--text-muted); line-height: 1.65; margin: 0; }
+    blockquote cite { display: block; font-size: 0.78rem; color: var(--text-dim); margin-top: 10px; font-style: normal; }
+
+    /* Talking points */
+    .points { display: flex; flex-direction: column; gap: 14px; }
+    .point {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .point::before {
+      content: '◆';
+      font-size: 0.4rem;
+      color: var(--gold);
+      flex-shrink: 0;
+      padding-top: 8px;
+    }
+    .point strong { color: var(--text); }
+
+    /* Brand assets */
+    .assets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+    }
+    .asset-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .asset-preview {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      background: var(--gold-glow);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .asset-preview img { width: 100%; height: 100%; object-fit: cover; border-radius: 14px; }
+    .asset-name { font-size: 0.88rem; font-weight: 700; color: var(--text); }
+    .asset-desc { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+    .asset-link {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--gold-bright);
+      border: 1px solid rgba(200,146,42,0.3);
+      border-radius: 7px;
+      padding: 6px 14px;
+      display: inline-block;
+      align-self: flex-start;
+      margin-top: 4px;
+    }
+    .asset-link:hover { background: var(--gold-glow); }
+
+    /* Fact sheet */
+    .factsheet { display: flex; flex-direction: column; gap: 0; }
+    .fact-row {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.88rem;
+    }
+    .fact-row:first-child { border-top: 1px solid var(--border); }
+    .fact-label { font-weight: 700; color: var(--text-muted); }
+    .fact-value { color: var(--text-muted); line-height: 1.5; }
+    .fact-value strong { color: var(--text); }
+
+    /* Contact */
+    .contact-block {
+      background: var(--surface);
+      border: 1.5px solid var(--border-light);
+      border-radius: var(--radius);
+      padding: 32px 28px;
+    }
+    .contact-block h3 { font-size: 1rem; font-weight: 800; margin-bottom: 8px; }
+    .contact-block p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px; }
+    .contact-email {
+      display: inline-block;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--gold-bright);
+      border-bottom: 1px solid rgba(200,146,42,0.3);
+      padding-bottom: 1px;
+    }
+    .contact-email:hover { color: var(--gold); }
+    .response-note { font-size: 0.74rem; color: var(--text-dim); margin-top: 12px; }
+
+    /* Footer */
+    footer { border-top: 1px solid var(--border); padding: 24px 28px; display: flex; gap: 16px; align-items: center; justify-content: center; flex-wrap: wrap; }
+    .footer-link { font-size: 0.8rem; color: var(--text-dim); text-decoration: none; }
+    .footer-link:hover { color: var(--text-muted); }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2rem; }
+      .page { padding: 48px 20px 80px; }
+      .fact-row { grid-template-columns: 1fr; gap: 4px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <img src="icons/icon.png" alt="Speak" />
+    <span class="nav-logo-text">Speak</span>
+  </a>
+  <div class="nav-right">
+    <a class="nav-link" href="index.html">Home</a>
+    <a class="nav-link" href="mission.html">Mission</a>
+    <a class="btn-nav" href="./app.html">Open App</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="press-badge">Press &amp; Media</div>
+  <h1>Speak gives nonverbal children<br>a <em>voice</em> — and a <em>way out.</em></h1>
+  <p class="lead">
+    Speak is a free web-based AAC (augmentative and alternative communication) app for nonverbal and minimally verbal children and adults. It's the only AAC system in the world with a private, silent safety channel built in from day one — so a child can alert a trusted adult outside the home if they feel unsafe, without the person in the room ever knowing.
+  </p>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-val">3–4×</div>
+      <div class="stat-label">higher rate of abuse among children with communication disabilities</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">~2M</div>
+      <div class="stat-label">nonverbal or minimally verbal children in the US</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">$299</div>
+      <div class="stat-label">average cost of leading commercial AAC apps</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">$0</div>
+      <div class="stat-label">to get started with Speak</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">17</div>
+      <div class="stat-label">diagnosis profiles — personalized setup in under 2 minutes</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">1</div>
+      <div class="stat-label">builder — 18 years old, rural Kansas, no team, no funding</div>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Story -->
+  <div class="section">
+    <div class="eyebrow">The story</div>
+    <h2>Built by one person who couldn't ignore the gap</h2>
+    <div class="story">
+      <p>
+        Logan Snell is 18 years old and lives in Axtell, Kansas — a town of about 400 people. He built Speak alone, over the course of several months, after researching AAC tools and encountering a consistent finding: <strong>children with communication disabilities are abused at 3 to 4 times the rate of their speaking peers</strong>, and the thing that makes them most vulnerable is the same thing keeping them from reporting it.
+      </p>
+      <p>
+        No AAC app has ever addressed that. Every existing product gives every child the same symbol grid, at the same price, with no consideration for what happens when the adult in the room is the problem. Speak was built specifically to close that gap.
+      </p>
+      <p>
+        The private safety channel — a way for a nonverbal child to silently alert a trusted adult outside the primary caretaker relationship — is built into the free version. It always will be. Safety should never require a subscription.
+      </p>
+    </div>
+
+    <blockquote>
+      <p>"The thing that makes them most vulnerable is the same thing keeping them silent. No one had built anything to change that."</p>
+      <cite>— Logan Snell, founder, Speak AAC</cite>
+    </blockquote>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Key talking points -->
+  <div class="section">
+    <div class="eyebrow">Key talking points</div>
+    <h2>What makes Speak different</h2>
+    <div class="points">
+      <div class="point"><span><strong>The only AAC app with a built-in safety channel.</strong> When a child presses the Help button, a silent email goes immediately to a trusted contact outside the home — a grandparent, teacher, or therapist. No sound. Nothing visible on screen. The person in the room sees nothing.</span></div>
+      <div class="point"><span><strong>Personalized by diagnosis in under 2 minutes.</strong> Answer 10 questions about the child's diagnosis, age, motor ability, and sensory needs. Speak configures the entire layout, vocabulary, symbol size, and starting categories automatically. Setup that used to take hours with an SLP takes minutes.</span></div>
+      <div class="point"><span><strong>Free to start — no App Store required.</strong> Speak runs in any browser. Install it on an iPad or Android tablet by adding it to the home screen. No app store. No download fees. No credit card.</span></div>
+      <div class="point"><span><strong>Built on the international AAC standard.</strong> Every symbol uses ARASAAC — the pictogram set used by SLPs and schools worldwide — so children who have used AAC before recognize everything immediately.</span></div>
+      <div class="point"><span><strong>AI Sentence Builder.</strong> Tap a few symbols and Speak uses Claude AI (by Anthropic) to construct a full, natural sentence spoken aloud. "Want water more" becomes "I would really like some more water, please."</span></div>
+      <div class="point"><span><strong>Research-backed problem, novel solution.</strong> The 3–4× abuse rate for children with communication disabilities is documented in peer-reviewed literature (Sullivan &amp; Knutson, 2000). No empirical study has yet evaluated a safety-integrated AAC system — Speak is seeking a university research partner for that study.</span></div>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Fact sheet -->
+  <div class="section">
+    <div class="eyebrow">Quick facts</div>
+    <h2>At a glance</h2>
+    <div class="factsheet">
+      <div class="fact-row">
+        <span class="fact-label">Product</span>
+        <span class="fact-value">Speak AAC — free web-based augmentative and alternative communication app</span>
+      </div>
+      <div class="fact-row">
+        <span class="fact-label">Founder</span>
+        <span class="fact-value"><strong>Logan Snell</strong> — 18, Axtell, Kansas. No team, no outside funding, no investors. Built independently.</span>
+      </div>
+      <div class="fact-row">
+        <span class="fact-label">Launched</span>
+        <span class="fact-value">March 2026</span>
+      </div>
+      <div class="fact-row">
+        <span class="fact-label">Pricing</span>
+        <span class="fact-value">Free (core features + safety channel) · $9.99/mo Family · $29.99/mo Clinic · $49/mo Institution</span>
+      </div>
+      <div class="fact-row">
+        <span class="fact-label">Platform</span>
+        <span class="fact-value">Web app (PWA) — runs on iPad, iPhone, Android, Windows, Mac, Chromebook. No app store required.</span>
+      </div>
+      <div class="fact-row">
+        <span class="fact-label">Key feature</span>
+        <span class="fact-value">Private safety channel — silent email alert to a trusted adult, usable by a nonverbal child without any visible action on their device</span>
+      </div>
+      <div class="fact-row">
+        <span class="fact-label">Compliance</span>
+        <span class="fact-value">COPPA-compliant · HIPAA compliance on Clinic and Institution plans · No ads · No data sold</span>
+      </div>
+      <div class="fact-row">
+        <span class="fact-label">Technology</span>
+        <span class="fact-value">Supabase (cloud sync) · ARASAAC pictograms (CC license) · Claude AI by Anthropic (sentence builder) · EmailJS (safety alerts)</span>
+      </div>
+      <div class="fact-row">
+        <span class="fact-label">Research</span>
+        <span class="fact-value">Seeking university partner for NIDILRR-funded study on safety-integrated AAC efficacy. Initial contact with University of Kansas.</span>
+      </div>
+      <div class="fact-row">
+        <span class="fact-label">Website</span>
+        <span class="fact-value"><a href="https://speakaac.org" style="color:var(--gold-bright);">speakaac.org</a></span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Brand assets -->
+  <div class="section">
+    <div class="eyebrow">Brand assets</div>
+    <h2>Logo &amp; visual identity</h2>
+    <div class="assets-grid">
+      <div class="asset-card">
+        <div class="asset-preview">
+          <img src="icons/icon.png" alt="Speak logo" />
+        </div>
+        <div class="asset-name">App icon</div>
+        <div class="asset-desc">512×512 PNG — use on white or dark backgrounds</div>
+        <a class="asset-link" href="icons/icon.png" download>Download PNG</a>
+      </div>
+      <div class="asset-card">
+        <div class="asset-preview" style="background: #0e0e0e;">
+          <img src="icons/icon.png" alt="Speak logo on dark" />
+        </div>
+        <div class="asset-name">Icon on dark</div>
+        <div class="asset-desc">Renders on dark backgrounds — same file, works as-is</div>
+        <a class="asset-link" href="icons/icon.png" download>Download PNG</a>
+      </div>
+      <div class="asset-card">
+        <div class="asset-preview" style="align-items:flex-start; padding:12px; flex-direction:column; gap:3px;">
+          <div style="font-size:0.6rem; font-weight:900; letter-spacing:0.12em; color:#C8922A;">SPEAK</div>
+          <div style="font-size:0.45rem; color:#a09880; font-weight:600; letter-spacing:0.05em;">AAC COMMUNICATION</div>
+        </div>
+        <div class="asset-name">Wordmark</div>
+        <div class="asset-desc">Gold on dark — for digital use. Available on request as SVG.</div>
+        <a class="asset-link" href="mailto:support@speakaac.org?subject=Press%20kit%20request%20%E2%80%94%20wordmark%20SVG">Request SVG</a>
+      </div>
+    </div>
+    <p style="font-size:0.78rem; color:var(--text-dim); margin-top:16px; line-height:1.6;">Brand colors: Gold <strong style="color:var(--text-muted);">#C8922A</strong> · Dark background <strong style="color:var(--text-muted);">#0e0e0e</strong> · Warm cream <strong style="color:var(--text-muted);">#f0ece4</strong> · Font: system-ui / -apple-system</p>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Media contact -->
+  <div class="contact-block">
+    <h3>Media contact</h3>
+    <p>
+      For interview requests, photography, screenshots, or additional information about Speak or the research behind it — reach out directly. Response within 24 hours.
+    </p>
+    <a class="contact-email" href="mailto:support@speakaac.org?subject=Press%20inquiry">support@speakaac.org</a>
+    <div class="response-note">Logan Snell · Founder &amp; developer · Axtell, Kansas · Available for phone, video, or in-person interviews</div>
+  </div>
+
+</div>
+
+<footer>
+  <a class="footer-link" href="index.html">Home</a>
+  <a class="footer-link" href="mission.html">Mission</a>
+  <a class="footer-link" href="./app.html">Open App</a>
+  <a class="footer-link" href="mailto:support@speakaac.org">support@speakaac.org</a>
+  <a class="footer-link" href="privacy.html">Privacy</a>
+</footer>
+
+  <!-- Google Analytics — loaded only after cookie consent -->
+  <script>
+    function loadGA() {
+      if (document.getElementById('ga-script')) return;
+      var s = document.createElement('script');
+      s.id = 'ga-script'; s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID';
+      document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);} window.gtag = gtag;
+      gtag('js', new Date()); gtag('config', 'GA_MEASUREMENT_ID');
+    }
+    if (localStorage.getItem('speak_analytics') === 'yes') loadGA();
+  </script>
+  <div id="cookie-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:14px 20px;align-items:center;gap:12px;flex-wrap:wrap;z-index:9999;font-size:0.82rem;color:var(--text-muted);">
+    <span style="flex:1;min-width:200px;">We use analytics to understand how people find Speak and improve the experience. No personal data is sold. <a href="privacy.html" style="color:var(--gold);">Privacy policy</a></span>
+    <button onclick="consentGA(true)"  style="background:var(--gold);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:0.82rem;font-weight:700;cursor:pointer;">Accept</button>
+    <button onclick="consentGA(false)" style="background:var(--surface2);color:var(--text-muted);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:0.82rem;cursor:pointer;">Decline</button>
+  </div>
+  <script>
+    (function(){ if (!localStorage.getItem('speak_analytics')) document.getElementById('cookie-bar').style.display = 'flex'; })();
+    function consentGA(yes) { localStorage.setItem('speak_analytics', yes ? 'yes' : 'no'); document.getElementById('cookie-bar').style.display = 'none'; if (yes) loadGA(); }
+  </script>
+
+</body>
+</html>

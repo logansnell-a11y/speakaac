@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Install Speak — Setup Guide</title>
+  <link rel="icon" type="image/png" href="icons/icon.png" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0f0f10; --surface: #1a1a1e; --surface-high: #232328;
+      --border: #2e2e34; --border-light: #3a3a42;
+      --gold: #c9952a; --gold-bright: #e0a830; --gold-glow: rgba(201,149,42,0.12);
+      --text: #f0f0f2; --text-muted: #9999aa; --text-dim: #666672;
+      --green: #27ae60; --green-glow: rgba(39,174,96,0.12);
+      --blue: #4a90d9; --blue-glow: rgba(74,144,217,0.12);
+      --radius: 10px; --radius-lg: 16px;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg:          #f4efe6;
+        --surface:     #fffdf8;
+        --surface2:    #ede8de;
+        --border:      #ddd6c8;
+        --border-light:#ccc5b8;
+        --gold:        #a36818;
+        --gold-bright: #c07c10;
+        --gold-glow:   rgba(163,104,24,0.10);
+        --gold-dark:   #7a5010;
+        --text:        #1a1008;
+        --text-muted:  #5a4028;
+        --text-dim:    #9a8468;
+      }
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); }
+
+    /* ── Nav ── */
+    nav { display: flex; align-items: center; gap: 10px; padding: 16px 28px; border-bottom: 1px solid var(--border); }
+    .nav-logo { display: flex; align-items: center; gap: 9px; text-decoration: none; }
+    .nav-logo img { width: 28px; height: 28px; border-radius: 7px; }
+    .nav-logo-text { font-weight: 900; font-size: 1rem; color: var(--gold-bright); letter-spacing: .1em; text-transform: uppercase; }
+    .nav-right { margin-left: auto; display: flex; gap: 20px; align-items: center; }
+    .nav-link { font-size: 0.85rem; color: var(--text-muted); text-decoration: none; }
+    .nav-link:hover { color: var(--text); }
+    .btn-nav { background: var(--gold); color: #0f0f10; font-weight: 700; font-size: 0.85rem; padding: 8px 18px; border-radius: 8px; text-decoration: none; }
+
+    /* ── Page ── */
+    .page { max-width: 720px; margin: 0 auto; padding: 64px 24px 100px; }
+
+    .eyebrow { font-size: 0.78rem; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: .12em; margin-bottom: 16px; }
+    h1 { font-size: 2.4rem; font-weight: 900; line-height: 1.15; margin-bottom: 20px; }
+    h1 em { color: var(--gold-bright); font-style: normal; }
+    .lead { font-size: 1.05rem; color: var(--text-muted); line-height: 1.75; margin-bottom: 52px; max-width: 580px; }
+
+    /* ── Why install banner ── */
+    .why-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px; margin-bottom: 56px;
+    }
+    .why-card {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg); padding: 20px 18px;
+    }
+    .why-icon { font-size: 1.6rem; margin-bottom: 10px; }
+    .why-title { font-size: 0.9rem; font-weight: 800; margin-bottom: 6px; }
+    .why-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+
+    /* ── Device section ── */
+    .device-section { margin-bottom: 52px; }
+    .device-header {
+      display: flex; align-items: center; gap: 14px;
+      padding: 18px 22px;
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      border-bottom: none;
+    }
+    .device-icon { font-size: 1.8rem; }
+    .device-name { font-size: 1.1rem; font-weight: 800; }
+    .device-sub  { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+    .device-badge {
+      margin-left: auto; font-size: 0.7rem; font-weight: 700; letter-spacing: .06em;
+      text-transform: uppercase; padding: 4px 10px; border-radius: 20px;
+    }
+    .badge-recommended { background: var(--green-glow); color: var(--green); border: 1px solid var(--green); }
+    .badge-desktop     { background: var(--blue-glow);  color: var(--blue);  border: 1px solid var(--blue);  }
+
+    .steps {
+      background: var(--surface-high); border: 1.5px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+      overflow: hidden;
+    }
+    .step {
+      display: flex; gap: 16px; padding: 20px 22px;
+      border-bottom: 1px solid var(--border);
+    }
+    .step:last-child { border-bottom: none; }
+    .step-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--gold-glow); border: 1.5px solid var(--gold);
+      color: var(--gold-bright); font-size: 0.78rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .step-body { flex: 1; }
+    .step-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
+    .step-desc  { font-size: 0.84rem; color: var(--text-muted); line-height: 1.55; }
+    .step-tag {
+      display: inline-block; background: var(--surface); border: 1px solid var(--border-light);
+      border-radius: 6px; padding: 2px 8px; font-size: 0.78rem;
+      color: var(--text); font-family: monospace; margin-top: 6px;
+    }
+    .step-img-hint {
+      margin-top: 8px; font-size: 0.78rem; color: var(--text-dim);
+      font-style: italic;
+    }
+
+    /* ── Kiosk note ── */
+    .kiosk-card {
+      background: var(--gold-glow); border: 1.5px solid var(--gold);
+      border-radius: var(--radius-lg); padding: 28px 26px; margin-bottom: 52px;
+    }
+    .kiosk-card h3 { font-size: 1rem; font-weight: 800; color: var(--gold-bright); margin-bottom: 10px; }
+    .kiosk-card p  { font-size: 0.88rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 10px; }
+    .kiosk-card p:last-child { margin-bottom: 0; }
+    .kiosk-card strong { color: var(--text); }
+
+    /* ── Divider ── */
+    .divider { width: 40px; height: 2px; background: var(--gold); margin: 0 0 48px; }
+
+    /* ── FAQ ── */
+    .faq { display: flex; flex-direction: column; gap: 0; margin-bottom: 52px; }
+    .faq-item { border-bottom: 1px solid var(--border); padding: 18px 0; }
+    .faq-q { font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; }
+    .faq-a { font-size: 0.86rem; color: var(--text-muted); line-height: 1.65; }
+
+    /* ── CTA ── */
+    .cta-block { text-align: center; }
+    .cta-block h2 { font-size: 1.4rem; font-weight: 800; margin-bottom: 10px; }
+    .cta-block p  { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 24px; line-height: 1.6; }
+    .cta-buttons  { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn-gold  { background: var(--gold); color: #0f0f10; font-weight: 700; font-size: 0.95rem; padding: 13px 26px; border-radius: 10px; text-decoration: none; }
+    .btn-ghost { background: transparent; border: 1.5px solid var(--border-light); color: var(--text); font-size: 0.95rem; padding: 13px 26px; border-radius: 10px; text-decoration: none; }
+    .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* ── Footer ── */
+    footer { border-top: 1px solid var(--border); padding: 24px 28px; display: flex; gap: 16px; align-items: center; justify-content: center; flex-wrap: wrap; margin-top: 80px; }
+    .footer-link { font-size: 0.8rem; color: var(--text-dim); text-decoration: none; }
+    .footer-link:hover { color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <img src="icons/icon.png" alt="Speak" />
+    <span class="nav-logo-text">Speak</span>
+  </a>
+  <div class="nav-right">
+    <a class="nav-link" href="index.html#features">Features</a>
+    <a class="nav-link" href="index.html#pricing">Pricing</a>
+    <a class="btn-nav" href="app.html">Open App</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="eyebrow">Setup Guide</div>
+  <h1>Install Speak on any <em>device.</em></h1>
+  <p class="lead">
+    Speak works in any browser — but installing it gives you a faster, more reliable experience with no address bar, offline support, and a real app icon on the home screen. This is the recommended setup for classroom iPads and home tablets.
+  </p>
+
+  <!-- Why install -->
+  <div class="why-grid">
+    <div class="why-card">
+      <div class="why-icon">📵</div>
+      <div class="why-title">No address bar</div>
+      <div class="why-desc">Opens like a native app — full screen, no browser chrome in the way.</div>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">📶</div>
+      <div class="why-title">Works offline</div>
+      <div class="why-desc">Cached automatically after first load. Communication doesn't stop when Wi-Fi does.</div>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">🔒</div>
+      <div class="why-title">Kiosk mode</div>
+      <div class="why-desc">Lock the app to just Speak — ideal for shared classroom tablets.</div>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">🏫</div>
+      <div class="why-title">Multi-device</div>
+      <div class="why-desc">Install on every classroom iPad. Each child's profile syncs through their account.</div>
+    </div>
+  </div>
+
+  <!-- iPad / iPhone -->
+  <div class="device-section">
+    <div class="device-header">
+      <div class="device-icon">📱</div>
+      <div>
+        <div class="device-name">iPad or iPhone</div>
+        <div class="device-sub">Safari browser required</div>
+      </div>
+      <div class="device-badge badge-recommended">Recommended for classrooms</div>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Open Safari and go to the app</div>
+          <div class="step-desc">Type the address into Safari's address bar.</div>
+          <div class="step-tag">speakaac.org/app.html</div>
+          <div class="step-img-hint">Must be Safari — Chrome on iOS cannot install web apps.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Tap the Share button</div>
+          <div class="step-desc">The Share button is the box with an arrow pointing up — at the bottom of the screen on iPhone, or at the top right on iPad.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Tap "Add to Home Screen"</div>
+          <div class="step-desc">Scroll down in the share sheet until you see it. Tap it, then tap Add in the top right corner.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Open from the home screen</div>
+          <div class="step-desc">Find the Speak icon on your home screen and tap it. It will open full screen — no browser, no address bar — exactly like a native app.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Android -->
+  <div class="device-section">
+    <div class="device-header">
+      <div class="device-icon">📲</div>
+      <div>
+        <div class="device-name">Android tablet or phone</div>
+        <div class="device-sub">Chrome browser</div>
+      </div>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Open Chrome and go to the app</div>
+          <div class="step-tag">speakaac.org/app.html</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Tap the three-dot menu</div>
+          <div class="step-desc">The ⋮ menu is in the top right corner of Chrome.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Tap "Add to Home screen" or "Install app"</div>
+          <div class="step-desc">The wording varies slightly by Android version. Either option installs Speak on your home screen.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Open from the home screen</div>
+          <div class="step-desc">Tap the Speak icon. Opens full screen, no browser UI.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mac / PC -->
+  <div class="device-section">
+    <div class="device-header">
+      <div class="device-icon">💻</div>
+      <div>
+        <div class="device-name">Mac or PC</div>
+        <div class="device-sub">Chrome or Edge browser</div>
+      </div>
+      <div class="device-badge badge-desktop">For providers &amp; clinics</div>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Open Chrome or Edge and go to the app</div>
+          <div class="step-tag">speakaac.org/app.html</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Look for the install icon in the address bar</div>
+          <div class="step-desc">You'll see a small computer screen icon (⊕) on the right side of Chrome's address bar, or a "+" in Edge. Click it.</div>
+          <div class="step-img-hint">If you don't see it, go to the three-dot menu → "Save and share" → "Install page as app".</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Click "Install"</div>
+          <div class="step-desc">A prompt will appear confirming the app name and icon. Click Install to add it to your desktop and taskbar.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Open from your desktop or taskbar</div>
+          <div class="step-desc">Speak opens in its own window — no browser tabs, no back button. Feels like a native desktop app.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kiosk mode note -->
+  <div class="kiosk-card">
+    <h3>🔒 For schools: enabling Kiosk Mode</h3>
+    <p>After installing on a classroom iPad, open Speak and log in to the child's profile. Then go to <strong>Provider Settings → Kiosk Mode</strong> and toggle it on. The app will lock to full screen and disable the home button from exiting — the child can only use Speak until a staff member enters the PIN to exit.</p>
+    <p>Each child's profile is tied to their account. Installing Speak on multiple iPads and logging in with the same account syncs their vocabulary, settings, and event history automatically. Teachers can monitor all events through the <strong>Teacher Dashboard</strong> without needing the child's login.</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- FAQ -->
+  <div class="faq">
+    <div class="faq-item">
+      <div class="faq-q">Is this the same app that's on the App Store?</div>
+      <div class="faq-a">Speak is currently web-only. Installing it from the browser gives you the full app experience — offline support, home screen icon, full-screen mode — without needing an App Store download. A native iOS/Android app is planned.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Will it work if the internet goes out?</div>
+      <div class="faq-a">Yes. After the first load, Speak caches everything it needs. The symbol grid, audio, and all core communication features work offline. The safety channel alert requires an internet connection to send, but the app will show a clear message if that happens.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">What if I install it on multiple iPads for one child?</div>
+      <div class="faq-a">Log in to the same account on each device. Settings, vocabulary, and the event log sync automatically across all of them.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Can I install it on a school-managed iPad (MDM)?</div>
+      <div class="faq-a">Yes. You can add speakaac.org to the MDM's allowed sites list and use Safari to install it as a web clip. If your district needs a formal setup guide, email <strong>support@speakaac.org</strong> and we'll walk through it with your IT team.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Does it cost anything to install?</div>
+      <div class="faq-a">Installing is always free. The app uses a plan-based model — see the <a href="index.html#pricing" style="color:var(--gold);">pricing page</a> for details. Underfunded schools and clinics can apply for free access through our <a href="mission.html" style="color:var(--gold);">school access program</a>.</div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-block">
+    <h2>Ready to set it up?</h2>
+    <p>Open the app in your device's browser and follow the steps above.<br>Questions? Email <strong style="color:var(--text);">support@speakaac.org</strong></p>
+    <div class="cta-buttons">
+      <a class="btn-gold" href="app.html">Open the App →</a>
+      <a class="btn-ghost" href="mission.html">About the Access Program</a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <a class="footer-link" href="index.html">Home</a>
+  <a class="footer-link" href="index.html#pricing">Pricing</a>
+  <a class="footer-link" href="mission.html">Mission</a>
+  <a class="footer-link" href="mailto:support@speakaac.org">support@speakaac.org</a>
+</footer>
+
+  <!-- Google Analytics — loaded only after cookie consent -->
+  <script>
+    function loadGA() {
+      if (document.getElementById('ga-script')) return;
+      var s = document.createElement('script');
+      s.id = 'ga-script'; s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID';
+      document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);} window.gtag = gtag;
+      gtag('js', new Date()); gtag('config', 'GA_MEASUREMENT_ID');
+    }
+    if (localStorage.getItem('speak_analytics') === 'yes') loadGA();
+  </script>
+  <div id="cookie-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:14px 20px;align-items:center;gap:12px;flex-wrap:wrap;z-index:9999;font-size:0.82rem;color:var(--text-muted);">
+    <span style="flex:1;min-width:200px;">We use analytics to understand how people find Speak and improve the experience. No personal data is sold. <a href="privacy.html" style="color:var(--gold);">Privacy policy</a></span>
+    <button onclick="consentGA(true)"  style="background:var(--gold);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:0.82rem;font-weight:700;cursor:pointer;">Accept</button>
+    <button onclick="consentGA(false)" style="background:var(--surface2);color:var(--text-muted);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:0.82rem;cursor:pointer;">Decline</button>
+  </div>
+  <script>
+    (function(){ if (!localStorage.getItem('speak_analytics')) document.getElementById('cookie-bar').style.display = 'flex'; })();
+    function consentGA(yes) { localStorage.setItem('speak_analytics', yes ? 'yes' : 'no'); document.getElementById('cookie-bar').style.display = 'none'; if (yes) loadGA(); }
+  </script>
+
+</body>
+</html>

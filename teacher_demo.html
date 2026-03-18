@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Speak — Teacher Dashboard (Demo)</title>
+  <link rel="icon" type="image/png" href="icons/icon.png" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0f0f10; --surface: #1a1a1e; --surface-high: #232328;
+      --border: #2e2e34; --border-light: #3a3a42;
+      --gold: #c9952a; --gold-bright: #e0a830; --gold-glow: rgba(201,149,42,0.15);
+      --text: #f0f0f2; --text-muted: #9999aa; --text-dim: #666672;
+      --red: #e05555; --blue: #4a90d9; --purple: #9b59b6; --green: #27ae60;
+      --radius: 10px; --radius-lg: 16px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,.4); --shadow-md: 0 4px 16px rgba(0,0,0,.5);
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg:          #f4efe6;
+        --surface:     #fffdf8;
+        --surface-high:#ede8de;
+        --border:      #ddd6c8;
+        --border-light:#ccc5b8;
+        --gold:        #a36818;
+        --gold-bright: #c07c10;
+        --gold-glow:   rgba(163,104,24,0.10);
+        --text:        #1a1008;
+        --text-muted:  #5a4028;
+        --text-dim:    #9a8468;
+      }
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); min-height: 100dvh; }
+
+    /* ── Demo banner ── */
+    .demo-banner {
+      background: var(--gold);
+      color: #0f0f10;
+      text-align: center;
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 8px;
+      letter-spacing: .04em;
+    }
+
+    /* ── Nav ── */
+    nav { display: flex; align-items: center; gap: 10px; padding: 14px 24px; border-bottom: 1px solid var(--border); background: var(--surface); }
+    nav img { width: 28px; height: 28px; border-radius: 7px; }
+    .nav-title { font-weight: 800; font-size: 1rem; color: var(--gold-bright); letter-spacing: .06em; }
+    .nav-sub   { font-size: 0.8rem; color: var(--text-muted); margin-left: 4px; }
+    .nav-right { margin-left: auto; display: flex; gap: 10px; align-items: center; }
+    .nav-user  { font-size: 0.82rem; color: var(--text-muted); }
+    .btn-sm { background: var(--surface-high); border: 1px solid var(--border-light); border-radius: 8px; color: var(--text); font-size: 0.82rem; padding: 6px 14px; cursor: pointer; font-family: inherit; }
+
+    /* ── Main ── */
+    main { max-width: 900px; margin: 0 auto; padding: 32px 20px; }
+    .dash-heading { font-size: 1.4rem; font-weight: 700; margin-bottom: 6px; }
+    .dash-sub { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 28px; }
+
+    /* ── Summary row ── */
+    .summary-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 28px; }
+    .summary-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 16px 18px; }
+    .summary-label { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
+    .summary-value { font-size: 1.6rem; font-weight: 800; color: var(--gold-bright); }
+    .summary-sub { font-size: 0.74rem; color: var(--text-dim); margin-top: 2px; }
+
+    /* ── Child cards ── */
+    #children-list { display: flex; flex-direction: column; gap: 14px; }
+    .child-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; cursor: pointer; transition: border-color 0.15s; }
+    .child-card:hover { border-color: var(--border-light); }
+    .child-card.open  { border-color: var(--gold); }
+
+    .child-header { display: flex; align-items: center; gap: 14px; padding: 18px 20px; }
+    .child-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--gold-glow); border: 2px solid var(--gold); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 700; color: var(--gold-bright); flex-shrink: 0; }
+    .child-info { flex: 1; }
+    .child-name { font-size: 1.05rem; font-weight: 700; }
+    .child-meta { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+    .child-badges { display: flex; gap: 8px; margin-left: auto; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+    .badge { font-size: 0.74rem; font-weight: 600; padding: 3px 9px; border-radius: 20px; }
+    .badge-alert  { background: rgba(224,85,85,.18); color: var(--red); }
+    .badge-events { background: rgba(74,144,217,.12); color: var(--blue); }
+    .badge-diag   { background: var(--surface-high); color: var(--text-muted); border: 1px solid var(--border); }
+    .chevron { color: var(--text-dim); transition: transform 0.2s; font-size: 1.1rem; margin-left: 4px; flex-shrink: 0; }
+    .child-card.open .chevron { transform: rotate(90deg); }
+
+    /* ── Event log ── */
+    .event-log { display: none; border-top: 1px solid var(--border); padding: 0 20px 20px; max-height: 460px; overflow-y: auto; }
+    .child-card.open .event-log { display: block; }
+
+    .log-section-head { font-size: 0.75rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: .06em; padding: 14px 0 8px; }
+
+    .event-item { display: flex; align-items: flex-start; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--border); }
+    .event-item:last-child { border-bottom: none; }
+    .event-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+    .dot-sentence { background: var(--blue); }
+    .dot-symbol   { background: var(--text-dim); }
+    .dot-ai       { background: var(--purple); }
+    .dot-keyboard { background: var(--text-muted); }
+    .dot-alert    { background: var(--red); }
+
+    .event-body { flex: 1; }
+    .event-text { font-size: 0.88rem; color: var(--text); line-height: 1.4; }
+    .event-time { font-size: 0.74rem; color: var(--text-dim); margin-top: 2px; }
+    .event-alert .event-text { color: var(--red); font-weight: 600; }
+
+    /* ── Legend ── */
+    .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.76rem; color: var(--text-muted); }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+
+<div class="demo-banner">DEMO — Sample data only. This is what a teacher sees after signing in.</div>
+
+<nav>
+  <img src="icons/icon.png" alt="Speak" />
+  <span class="nav-title">SPEAK</span>
+  <span class="nav-sub">Teacher Dashboard</span>
+  <div class="nav-right">
+    <span class="nav-user">ms.henderson@ridgeviewk12.edu</span>
+    <button class="btn-sm">Sign Out</button>
+  </div>
+</nav>
+
+<main>
+  <div class="dash-heading">Communication Dashboard</div>
+  <div class="dash-sub">3 students assigned to you · Ridgeview Elementary</div>
+
+  <!-- ── Summary row ── -->
+  <div class="summary-row">
+    <div class="summary-card">
+      <div class="summary-label">Total Events Today</div>
+      <div class="summary-value">47</div>
+      <div class="summary-sub">across all students</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">Safety Alerts</div>
+      <div class="summary-value" style="color:var(--red)">1</div>
+      <div class="summary-sub">this week</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">Most Active</div>
+      <div class="summary-value" style="font-size:1.1rem; padding-top:4px;">Marcus T.</div>
+      <div class="summary-sub">29 events today</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">Last Updated</div>
+      <div class="summary-value" style="font-size:1rem; padding-top:4px;">2 min ago</div>
+      <div class="summary-sub">live sync</div>
+    </div>
+  </div>
+
+  <!-- ── Legend ── -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot dot-sentence"></div> Sentence spoken</div>
+    <div class="legend-item"><div class="legend-dot dot-ai"></div> AI sentence</div>
+    <div class="legend-item"><div class="legend-dot dot-symbol"></div> Symbol tap</div>
+    <div class="legend-item"><div class="legend-dot dot-keyboard"></div> Typed</div>
+    <div class="legend-item"><div class="legend-dot dot-alert"></div> Safety alert</div>
+  </div>
+
+  <div id="children-list">
+
+    <!-- ── Child 1: Marcus ── -->
+    <div class="child-card open" id="card-marcus">
+      <div class="child-header">
+        <div class="child-avatar">M</div>
+        <div class="child-info">
+          <div class="child-name">Marcus T.</div>
+          <div class="child-meta">Last active 2 min ago · 29 events today</div>
+        </div>
+        <div class="child-badges">
+          <span class="badge badge-diag">Autism Spectrum</span>
+          <span class="badge badge-events">29 events</span>
+        </div>
+        <span class="chevron">›</span>
+      </div>
+      <div class="event-log">
+        <div class="log-section-head">Today — Mar 17, 2026</div>
+
+        <div class="event-item">
+          <div class="event-dot dot-sentence"></div>
+          <div class="event-body">
+            <div class="event-text">🗣 "I want to go outside please"</div>
+            <div class="event-time">Mar 17, 2026 · 10:42 AM</div>
+          </div>
+        </div>
+        <div class="event-item">
+          <div class="event-dot dot-ai"></div>
+          <div class="event-body">
+            <div class="event-text">✨ AI: "I feel frustrated and I need a break"</div>
+            <div class="event-time">Mar 17, 2026 · 10:38 AM</div>
+          </div>
+        </div>
+        <div class="event-item">
+          <div class="event-dot dot-symbol"></div>
+          <div class="event-body">
+            <div class="event-text">○ Frustrated</div>
+            <div class="event-time">Mar 17, 2026 · 10:37 AM</div>
+          </div>
+        </div>
+        <div class="event-item">
+          <div class="event-dot dot-sentence"></div>
+          <div class="event-body">
+            <div class="event-text">🗣 "Bathroom"</div>
+            <div class="event-time">Mar 17, 2026 · 10:21 AM</div>
+          </div>
+        </div>
+        <div class="event-item">
+          <div class="event-dot dot-sentence"></div>
+          <div class="event-body">
+            <div class="event-text">🗣 "I am hungry"</div>
+            <div class="event-time">Mar 17, 2026 · 9:58 AM</div>
+          </div>
+        </div>
+        <div class="event-item">
+          <div class="event-dot dot-symbol"></div>
+          <div class="event-body">
+            <div class="event-text">○ Happy</div>
+            <div class="event-time">Mar 17, 2026 · 9:44 AM</div>
+          </div>
+        </div>
+        <div class="event-item">
+          <div class="event-dot dot-sentence"></div>
+          <div class="event-body">
+            <div class="event-text">🗣 "I want juice"</div>
+            <div class="event-time">Mar 17, 2026 · 9:31 AM</div>
+          </div>
+        </div>
+
+        <div class="log-section-head">Yesterday — Mar 16, 2026</div>
+
+        <div class="event-item">
+          <div class="event-dot dot-sentence"></div>
+          <div class="event-body">
+            <div class="event-text">🗣 "I want to go home"</div>
+            <div class="event-time">Mar 16, 2026 · 2:47 PM</div>
+          </div>
+        </div>
+        <div class="event-item">
+          <div class="event-dot dot-ai"></div>
+          <div class="event-body">
+            <div class="event-text">✨ AI: "I need help with this activity"</div>
+            <div class="event-time">Mar 16, 2026 · 1:12 PM</div>
+          </div>
+        </div>
+        <div class="event-item">
+          <div class="event-dot dot-keyboard"></div>
+          <div class="event-body">
+            <div class="event-text">⌨ Typed: "no more math"</div>
+            <div class="event-time">Mar 16, 2026 · 11:03 AM</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Child 2: Lily ── -->
+    <div class="child-card" id="card-lily">
+      <div class="child-header">
+        <div class="child-avatar">L</div>
+        <div class="child-info">
+          <div class="child-name">Lily R.</div>
+          <div class="child-meta">Last active 18 min ago · 12 events today</div>
+        </div>
+        <div class="child-badges">
+          <span class="badge badge-alert">⚠ 1 alert this week</span>
+          <span class="badge badge-diag">Down Syndrome</span>
+          <span class="badge badge-events">12 events</span>
+        </div>
+        <span class="chevron">›</span>
+      </div>
+      <div class="event-log">
+        <div class="log-section-head">Today — Mar 17, 2026</div>
+
+        <div class="event-item">
+          <div class="event-dot dot-sentence"></div>
+          <div class="event-body">
+            <div class="event-text">🗣 "I love music class"</div>
+            <div class="event-time">Mar 17, 2026 · 10:24 AM</div>
+          </div>
+        </div>
+        <div class="event-item">
+          <div class="event-dot dot-symbol"></div>
+          <div class="event-body">
+            <div class="event-text">○ Happy</div>
+            <div class="event-time">Mar 17, 2026 · 10:19 AM</div>
+          </div>
+        </div>
+        <div class="event-item">
+          <div class="event-dot dot-sentence"></div>
+          <div class="event-body">
+            <div class="event-text">🗣 "Hungry. Snack please"</div>
+            <div class="event-time">Mar 17, 2026 · 9:47 AM</div>
+          </div>
+        </div>
+
+        <div class="log-section-head">Mar 15, 2026 — Safety alert</div>
+
+        <div class="event-item event-alert">
+          <div class="event-dot dot-alert"></div>
+          <div class="event-body">
+            <div class="event-text">⚠ Safety alert — I feel scared</div>
+            <div class="event-time">Mar 15, 2026 · 3:52 PM · Alert sent to trusted contact</div>
+          </div>
+        </div>
+        <div class="event-item">
+          <div class="event-dot dot-sentence"></div>
+          <div class="event-body">
+            <div class="event-text">🗣 "I want to go home"</div>
+            <div class="event-time">Mar 15, 2026 · 3:48 PM</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Child 3: Devon ── -->
+    <div class="child-card" id="card-devon">
+      <div class="child-header">
+        <div class="child-avatar">D</div>
+        <div class="child-info">
+          <div class="child-name">Devon K.</div>
+          <div class="child-meta">Last active 1 hr ago · 6 events today</div>
+        </div>
+        <div class="child-badges">
+          <span class="badge badge-diag">Cerebral Palsy</span>
+          <span class="badge badge-events">6 events</span>
+        </div>
+        <span class="chevron">›</span>
+      </div>
+      <div class="event-log">
+        <div class="log-section-head">Today — Mar 17, 2026</div>
+
+        <div class="event-item">
+          <div class="event-dot dot-ai"></div>
+          <div class="event-body">
+            <div class="event-text">✨ AI: "Can we do something different today?"</div>
+            <div class="event-time">Mar 17, 2026 · 9:55 AM</div>
+          </div>
+        </div>
+        <div class="event-item">
+          <div class="event-dot dot-symbol"></div>
+          <div class="event-body">
+            <div class="event-text">○ Tired</div>
+            <div class="event-time">Mar 17, 2026 · 9:41 AM</div>
+          </div>
+        </div>
+        <div class="event-item">
+          <div class="event-dot dot-symbol"></div>
+          <div class="event-body">
+            <div class="event-text">○ Tired</div>
+            <div class="event-time">Mar 17, 2026 · 9:40 AM</div>
+          </div>
+        </div>
+        <div class="event-item">
+          <div class="event-dot dot-sentence"></div>
+          <div class="event-body">
+            <div class="event-text">🗣 "Good morning"</div>
+            <div class="event-time">Mar 17, 2026 · 8:52 AM</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  document.querySelectorAll('.child-header').forEach(header => {
+    header.addEventListener('click', () => {
+      header.closest('.child-card').classList.toggle('open');
+    });
+  });
+</script>
+</body>
+</html>

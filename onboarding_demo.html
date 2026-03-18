@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Speak — See How Setup Works</title>
+<link rel="icon" type="image/png" href="icons/icon.png" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #1a120b;
+  --surface: #241a11;
+  --surface-high: #2e2218;
+  --border: #3d2e1e;
+  --border-light: #4a3828;
+  --gold: #c9952a;
+  --gold-bright: #e0a830;
+  --gold-glow: rgba(201,149,42,0.12);
+  --text: #f5efe8;
+  --text-muted: #b8a898;
+  --text-dim: #7a6a58;
+  --green: #4caf7a;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 18px;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0;
+}
+
+/* Theme variants */
+body.theme-sky     { --bg:#0d1f33; --surface:#122740; --surface-high:#173050; --border:#1e3d5c; --border-light:#254d72; --text:#e8f4ff; --text-muted:#8ab4d4; --text-dim:#4a7a9b; }
+body.theme-meadow  { --bg:#0d1f10; --surface:#122914; --surface-high:#173318; --border:#1e3d22; --border-light:#254d2a; --text:#e8f5ea; --text-muted:#8ab494; --text-dim:#4a7a52; }
+body.theme-lavender{ --bg:#180d28; --surface:#221035; --surface-high:#2a1442; --border:#38194f; --border-light:#461f63; --text:#f0e8ff; --text-muted:#b09ac8; --text-dim:#6a5480; }
+body.theme-minimal { --bg:#0e0e0e; --surface:#1a1a1a; --surface-high:#252525; --border:#333; --border-light:#404040; --text:#f0f0f0; --text-muted:#999; --text-dim:#555; }
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg:          #f4ede0;
+    --surface:     #fdf8f0;
+    --surface-high:#ede5d6;
+    --border:      #d6ccbb;
+    --border-light:#c8bfad;
+    --gold:        #a36818;
+    --gold-bright: #c07c10;
+    --gold-glow:   rgba(163,104,24,0.10);
+    --text:        #1a1008;
+    --text-muted:  #5a4028;
+    --text-dim:    #9a8468;
+  }
+}
+
+/* ── Page wrapper ── */
+.page-header {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 0;
+}
+.page-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+.page-logo img { width: 28px; height: 28px; border-radius: 6px; }
+.page-logo span { font-size: 1rem; font-weight: 800; color: var(--gold-bright); letter-spacing: .03em; }
+.demo-badge {
+  font-size: 0.7rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  background: var(--gold-glow); color: var(--gold); border: 1px solid var(--gold);
+  border-radius: 20px; padding: 3px 10px;
+}
+
+/* ── Card shell ── */
+.ob-card {
+  width: 100%; max-width: 480px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin: 14px 16px 24px;
+  overflow: hidden;
+}
+
+/* ── Top bar ── */
+.ob-topbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+#ob-progress-track { flex: 1; height: 4px; background: var(--surface-high); border-radius: 2px; overflow: hidden; }
+#ob-progress-fill  { height: 100%; background: var(--gold); border-radius: 2px; width: 0%; transition: width .4s ease; }
+#ob-skip-setup {
+  font-size: 0.72rem; font-weight: 700; color: var(--text-dim); background: none; border: none;
+  cursor: pointer; padding: 4px 2px; letter-spacing: .04em; white-space: nowrap;
+}
+#ob-skip-setup:hover { color: var(--text-muted); }
+
+/* ── Step content ── */
+#ob-content {
+  flex: 1; overflow-y: auto; padding: 24px 20px;
+  -webkit-overflow-scrolling: touch;
+}
+#ob-content::-webkit-scrollbar { width: 4px; }
+#ob-content::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 2px; }
+
+/* ── Bottom nav ── */
+.ob-nav {
+  display: flex; gap: 10px; padding: 14px 16px;
+  border-top: 1px solid var(--border); flex-shrink: 0;
+}
+#ob-back-btn {
+  padding: 16px 20px; border-radius: var(--radius);
+  background: var(--surface-high); border: 1.5px solid var(--border);
+  color: var(--text-muted); font-size: 0.9rem; font-weight: 700;
+  cursor: pointer; transition: border-color .15s, color .15s;
+}
+#ob-back-btn:hover { border-color: var(--gold); color: var(--gold-bright); }
+#ob-back-btn.hidden { display: none; }
+
+#ob-next-btn {
+  flex: 1; padding: 16px; border-radius: var(--radius);
+  background: var(--gold); border: none;
+  color: #1a0e00; font-size: 1rem; font-weight: 800;
+  cursor: pointer; transition: transform .1s, opacity .15s;
+}
+#ob-next-btn:hover   { opacity: 0.92; }
+#ob-next-btn:active  { transform: scale(0.97); }
+#ob-next-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+#ob-next-btn.hidden  { display: none; }
+
+/* ── Welcome ── */
+.ob-welcome { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 18px; padding: 8px 0 4px; }
+.ob-welcome-icon { font-size: 3.6rem; animation: pulse 3s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+.ob-welcome-title { font-size: 1.65rem; font-weight: 800; line-height: 1.2; }
+.ob-welcome-body  { font-size: 0.95rem; color: var(--text-muted); line-height: 1.55; max-width: 340px; }
+.ob-welcome-features { display: flex; flex-direction: column; gap: 10px; width: 100%; text-align: left; }
+.ob-welcome-feat { display: flex; align-items: center; gap: 12px; background: var(--surface-high); border-radius: var(--radius-sm); padding: 12px 14px; }
+.ob-wf-icon { font-size: 1.2rem; flex-shrink: 0; }
+.ob-wf-text { font-size: 0.88rem; color: var(--text-muted); line-height: 1.4; }
+.ob-welcome-note { font-size: 0.73rem; color: var(--text-dim); }
+
+/* ── Question wrap ── */
+.ob-qwrap { display: flex; flex-direction: column; gap: 16px; }
+.ob-question { font-size: 1.3rem; font-weight: 800; line-height: 1.25; }
+.ob-hint { font-size: 0.86rem; color: var(--text-muted); line-height: 1.5; margin-top: -6px; }
+.ob-optional { font-size: 0.76rem; color: var(--text-dim); text-align: center; }
+
+/* ── Text input ── */
+.ob-text-input {
+  width: 100%; background: var(--surface-high);
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-sm); padding: 14px 16px;
+  color: var(--text); font-size: 1rem;
+  outline: none; transition: border-color .15s;
+}
+.ob-text-input:focus { border-color: var(--gold); }
+.ob-text-input::placeholder { color: var(--text-dim); }
+
+/* ── Choices ── */
+.ob-choices { display: flex; flex-direction: column; gap: 8px; }
+.ob-choice {
+  width: 100%; padding: 15px 16px;
+  background: var(--surface-high); border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-sm); color: var(--text);
+  display: flex; align-items: center; gap: 12px;
+  cursor: pointer; transition: border-color .12s, background .12s, transform .08s;
+  text-align: left;
+}
+.ob-choice:active { transform: scale(0.98); }
+.ob-choice.ob-selected { border-color: var(--gold-bright); background: var(--gold-glow); }
+.ob-choice-icon  { font-size: 1.3rem; flex-shrink: 0; }
+.ob-choice-label { flex: 1; font-weight: 700; font-size: 0.95rem; }
+.ob-choice-sub   { font-size: 0.74rem; color: var(--text-muted); white-space: nowrap; }
+.ob-choice-multi.ob-selected { border-color: var(--gold-bright); background: var(--gold-glow); }
+
+/* ── Diagnosis ── */
+.ob-diag-list   { display: flex; flex-direction: column; gap: 16px; }
+.ob-diag-group  { display: flex; flex-direction: column; gap: 0; }
+.ob-diag-group-label {
+  font-size: 0.66rem; text-transform: uppercase; letter-spacing: .09em;
+  color: var(--text-dim); font-weight: 700; margin-bottom: 6px; padding-left: 2px;
+}
+.ob-diag-item {
+  width: 100%; padding: 13px 16px;
+  background: var(--surface-high); border: 1px solid var(--border-light);
+  border-bottom: none; color: var(--text-muted);
+  display: flex; align-items: center;
+  cursor: pointer; font-size: 0.9rem; text-align: left;
+  transition: background .1s, color .1s;
+}
+.ob-diag-item:first-of-type { border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
+.ob-diag-item:last-of-type  { border-bottom: 1px solid var(--border-light); border-radius: 0 0 var(--radius-sm) var(--radius-sm); }
+.ob-diag-item:only-of-type  { border-radius: var(--radius-sm); border-bottom: 1px solid var(--border-light); }
+.ob-diag-item:active         { background: var(--gold-glow); }
+.ob-diag-item.ob-selected    { background: var(--gold-glow); border-color: var(--gold); color: var(--gold-bright); font-weight: 700; }
+
+/* ── Contact fields ── */
+.ob-contact-fields { display: flex; flex-direction: column; gap: 12px; }
+.ob-field-label { display: flex; flex-direction: column; gap: 6px; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); letter-spacing: .04em; text-transform: uppercase; }
+
+/* ── Done ── */
+.ob-done-wrap { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 18px; padding: 4px 0; }
+.ob-done-icon  { font-size: 3.6rem; animation: pulse 2.2s ease-in-out infinite; }
+.ob-done-title { font-size: 1.4rem; font-weight: 800; line-height: 1.2; }
+.ob-done-config {
+  width: 100%; background: var(--surface-high);
+  border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+  padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; text-align: left;
+}
+.ob-done-bullet { font-size: 0.84rem; color: var(--text-muted); line-height: 1.45; }
+.ob-done-bullet strong { color: var(--green); }
+.ob-launch-btn {
+  width: 100%; padding: 18px; border-radius: var(--radius);
+  background: var(--gold); border: none;
+  color: #1a0e00; font-size: 1rem; font-weight: 800;
+  cursor: pointer; transition: opacity .15s, transform .1s;
+  text-decoration: none; display: block;
+}
+.ob-launch-btn:hover  { opacity: 0.92; }
+.ob-launch-btn:active { transform: scale(0.97); }
+.ob-done-note  { font-size: 0.76rem; color: var(--text-dim); }
+.ob-done-secondary {
+  font-size: 0.82rem; color: var(--text-muted); text-align: center; margin-top: -8px;
+}
+.ob-done-secondary a { color: var(--gold); text-decoration: none; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <a class="page-logo" href="index.html">
+    <img src="icons/icon.png" alt="Speak" />
+    <span>Speak</span>
+  </a>
+  <div class="demo-badge">Interactive Demo</div>
+</div>
+
+<div class="ob-card">
+
+  <!-- Top bar -->
+  <div class="ob-topbar">
+    <div id="ob-progress-track"><div id="ob-progress-fill"></div></div>
+    <button id="ob-skip-setup">Skip →</button>
+  </div>
+
+  <!-- Content -->
+  <div id="ob-content"></div>
+
+  <!-- Nav -->
+  <div class="ob-nav">
+    <button id="ob-back-btn" class="hidden">← Back</button>
+    <button id="ob-next-btn">Let's get started →</button>
+  </div>
+
+</div>
+
+<script>
+// ── Steps ──────────────────────────────────────────────────────────────────
+const OB_STEPS = [
+  { id: 'welcome',     type: 'welcome' },
+  { id: 'name',        type: 'text',   question: "What's their name?",               hint: "First name is fine",          placeholder: "e.g. Alex",                              key: 'userName',     optional: false },
+  { id: 'age',         type: 'choice', question: "How old is [name]?",               key: 'age',       choices: [{ label:'2 – 4', value:'2-4' },{ label:'5 – 8', value:'5-8' },{ label:'9 – 12', value:'9-12' },{ label:'13 – 17', value:'13-17' },{ label:'18 or older', value:'18+' }] },
+  { id: 'diagnosis',   type: 'diagnosis', question: "Do you know [name]'s diagnosis?", hint: "Choose the closest match — this helps us set up the right vocabulary and layout." },
+  { id: 'reading',     type: 'choice', question: "Can [name] read?",                 key: 'reading',   choices: [{ label:'Yes, reads well', value:'yes', icon:'📖' },{ label:'Some words', value:'some', icon:'🔤' },{ label:'Not yet', value:'no', icon:'🖼️' }] },
+  { id: 'motor',       type: 'choice', question: "How well can [name] use a touchscreen?", key: 'motor', choices: [{ label:'No problem', value:'full', icon:'👆' },{ label:'Works, but needs bigger buttons', value:'limited', icon:'🤏' },{ label:'Has real difficulty tapping', value:'very_limited', icon:'⚠️' }] },
+  { id: 'sensory',     type: 'multi',  question: "Any sensory sensitivities?",       hint: "Select all that apply", key: 'sensory', choices: [{ label:'Sensitive to sounds', value:'sound', icon:'🔇' },{ label:'Sensitive to bright screens', value:'light', icon:'🌑' },{ label:'Neither', value:'none', icon:'✓', exclusive:true }] },
+  { id: 'background',  type: 'choice', question: "Which background feels most comfortable for [name]?", hint: "Choose minimal if [name] gets overwhelmed by visual patterns.", key: 'backgroundTheme', choices: [{ label:'Warm & cozy', value:'default', icon:'🌅', sub:'Soft parchment — warm and friendly' },{ label:'Sky blue', value:'sky', icon:'🌤️', sub:'Calm and airy' },{ label:'Meadow green', value:'meadow', icon:'🌿', sub:'Natural and soothing' },{ label:'Soft lavender', value:'lavender', icon:'💜', sub:'Gentle and calm' },{ label:'Clean & minimal', value:'minimal', icon:'⬜', sub:'Simple white — no distractions' }] },
+  { id: 'primaryNeed', type: 'choice', question: "What does [name] most need to express?", key: 'primaryNeed', choices: [{ label:'Physical needs', value:'needs', icon:'🙌', sub:'Hungry, tired, pain, bathroom' },{ label:'Feelings', value:'feelings', icon:'💛', sub:'Happy, scared, frustrated, loved' },{ label:'Talking with people', value:'social', icon:'👋', sub:'Greetings, connection, conversation' },{ label:'All of these', value:'all', icon:'✨', sub:'Balanced vocabulary across everything' }] },
+  { id: 'interests',   type: 'text',   question: "Does [name] have any special interests?", hint: "Optional — we'll add a custom category just for them", placeholder: "e.g. dinosaurs, Minecraft, trains, music...", key: 'interests', optional: true },
+  { id: 'safety',      type: 'contact', question: "Add a trusted safety contact",   hint: "This person gets a private alert if [name] feels unsafe — bypassing the primary caretaker. Can be a grandparent, teacher, or therapist.", keys: { name: 'contactName', email: 'contactEmail' }, optional: true },
+  { id: 'done',        type: 'done' },
+];
+
+const DIAGNOSES = [
+  { group: 'Developmental', items: [
+    { label:'Autism Spectrum Disorder',    value:'autism' },
+    { label:'Down Syndrome',               value:'down_syndrome' },
+    { label:'Cerebral Palsy',              value:'cp' },
+    { label:'Childhood Apraxia of Speech', value:'apraxia' },
+    { label:'Fragile X Syndrome',          value:'fragile_x' },
+    { label:'Angelman Syndrome',           value:'angelman' },
+    { label:'Rett Syndrome',               value:'rett' },
+    { label:'Williams Syndrome',           value:'williams' },
+    { label:'Phelan-McDermid Syndrome',    value:'phelan_mcdermid' },
+    { label:'Intellectual Disability',     value:'intellectual_disability' },
+  ]},
+  { group: 'Acquired Conditions', items: [
+    { label:'Traumatic Brain Injury (TBI)', value:'tbi' },
+    { label:'Stroke / Aphasia',             value:'aphasia' },
+    { label:'ALS',                          value:'als' },
+    { label:'Multiple Sclerosis (MS)',       value:'ms' },
+  ]},
+  { group: 'Other', items: [
+    { label:'Selective Mutism',             value:'selective_mutism' },
+    { label:'Other condition',              value:'other' },
+    { label:'Not sure / Prefer not to say', value:'unknown' },
+  ]},
+];
+
+// ── State ──────────────────────────────────────────────────────────────────
+let step    = 0;
+let answers = {};
+
+const OB_QUESTION_STEPS = OB_STEPS.filter(s => s.type !== 'welcome' && s.type !== 'done');
+
+// ── DOM ────────────────────────────────────────────────────────────────────
+const content  = document.getElementById('ob-content');
+const backBtn  = document.getElementById('ob-back-btn');
+const nextBtn  = document.getElementById('ob-next-btn');
+const skipBtn  = document.getElementById('ob-skip-setup');
+const fill     = document.getElementById('ob-progress-fill');
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+function name() { return (answers.userName || '').trim() || 'them'; }
+function injectName(str) { return str.replace(/\[name\]/g, (answers.userName || '').trim() || 'them'); }
+
+function updateProgress() {
+  const s = OB_STEPS[step];
+  if (s.type === 'welcome')     fill.style.width = '0%';
+  else if (s.type === 'done')   fill.style.width = '100%';
+  else {
+    const idx = OB_QUESTION_STEPS.findIndex(x => x.id === s.id);
+    fill.style.width = `${((idx + 1) / OB_QUESTION_STEPS.length) * 100}%`;
+  }
+}
+
+// ── Render ─────────────────────────────────────────────────────────────────
+function render() {
+  const s = OB_STEPS[step];
+  content.innerHTML = '';
+  content.scrollTop = 0;
+  nextBtn.classList.remove('hidden');
+  updateProgress();
+  backBtn.classList.toggle('hidden', step === 0);
+  skipBtn.style.visibility = (s.type === 'welcome' || s.type === 'done') ? 'hidden' : 'visible';
+
+  switch (s.type) {
+    case 'welcome':   renderWelcome();    break;
+    case 'text':      renderText(s);      break;
+    case 'choice':    renderChoice(s);    break;
+    case 'diagnosis': renderDiagnosis(s); break;
+    case 'multi':     renderMulti(s);     break;
+    case 'contact':   renderContact(s);   break;
+    case 'done':      renderDone();       break;
+  }
+}
+
+function renderWelcome() {
+  nextBtn.textContent = "Let's get started →";
+  nextBtn.disabled = false;
+  content.innerHTML = `
+    <div class="ob-welcome">
+      <div class="ob-welcome-icon">🗣️</div>
+      <h1 class="ob-welcome-title">Every person deserves a voice — and a safe one.</h1>
+      <p class="ob-welcome-body">We'll ask a few quick questions to set up Speak specifically for the person who will use it. Takes about a minute.</p>
+      <div class="ob-welcome-features">
+        <div class="ob-welcome-feat"><span class="ob-wf-icon">🎯</span><span class="ob-wf-text">Personalized for their diagnosis, age &amp; needs</span></div>
+        <div class="ob-welcome-feat"><span class="ob-wf-icon">🛡️</span><span class="ob-wf-text">Private safety channel — always free, always on</span></div>
+        <div class="ob-welcome-feat"><span class="ob-wf-icon">✨</span><span class="ob-wf-text">AI sentences, real audio &amp; provider dashboard</span></div>
+      </div>
+      <p class="ob-welcome-note">You can skip any question and adjust everything later in Provider Settings.</p>
+    </div>
+  `;
+}
+
+function renderText(s) {
+  nextBtn.textContent = 'Continue →';
+  const val = answers[s.key] || '';
+  nextBtn.disabled = !s.optional && !val.trim();
+  content.innerHTML = `
+    <div class="ob-qwrap">
+      <div class="ob-question">${injectName(s.question)}</div>
+      ${s.hint ? `<div class="ob-hint">${s.hint}</div>` : ''}
+      <input class="ob-text-input" id="ob-tf" type="text" placeholder="${s.placeholder || ''}" value="${val}" autocomplete="off" spellcheck="false" />
+      ${s.optional ? '<div class="ob-optional">Optional — tap Continue to skip</div>' : ''}
+    </div>
+  `;
+  const tf = document.getElementById('ob-tf');
+  tf.focus();
+  tf.addEventListener('input', () => {
+    answers[s.key] = tf.value;
+    nextBtn.disabled = !s.optional && !tf.value.trim();
+  });
+  tf.addEventListener('keydown', e => { if (e.key === 'Enter' && !nextBtn.disabled) advance(); });
+}
+
+function renderChoice(s) {
+  nextBtn.textContent = 'Continue →';
+  const cur = answers[s.key];
+  nextBtn.disabled = !cur;
+  const html = s.choices.map(c => `
+    <button class="ob-choice ${cur === c.value ? 'ob-selected' : ''}" data-val="${c.value}">
+      ${c.icon ? `<span class="ob-choice-icon">${c.icon}</span>` : ''}
+      <span class="ob-choice-label">${c.label}</span>
+      ${c.sub ? `<span class="ob-choice-sub">${c.sub}</span>` : ''}
+    </button>
+  `).join('');
+  content.innerHTML = `<div class="ob-qwrap"><div class="ob-question">${injectName(s.question)}</div><div class="ob-choices">${html}</div></div>`;
+  content.querySelectorAll('.ob-choice').forEach(btn => {
+    btn.addEventListener('click', () => {
+      answers[s.key] = btn.dataset.val;
+      content.querySelectorAll('.ob-choice').forEach(b => b.classList.remove('ob-selected'));
+      btn.classList.add('ob-selected');
+      nextBtn.disabled = false;
+      if (s.key === 'backgroundTheme') {
+        ['sky','meadow','lavender','minimal'].forEach(t => document.body.classList.remove(`theme-${t}`));
+        if (btn.dataset.val !== 'default') document.body.classList.add(`theme-${btn.dataset.val}`);
+      }
+      setTimeout(advance, 240);
+    });
+  });
+}
+
+function renderDiagnosis(s) {
+  nextBtn.textContent = 'Continue →';
+  const cur = answers.diagnosis;
+  nextBtn.disabled = !cur;
+  const groups = DIAGNOSES.map(g => `
+    <div class="ob-diag-group">
+      <div class="ob-diag-group-label">${g.group}</div>
+      ${g.items.map(item => `
+        <button class="ob-diag-item ${cur === item.value ? 'ob-selected' : ''}" data-val="${item.value}">${item.label}</button>
+      `).join('')}
+    </div>
+  `).join('');
+  content.innerHTML = `
+    <div class="ob-qwrap">
+      <div class="ob-question">${injectName(s.question)}</div>
+      ${s.hint ? `<div class="ob-hint">${s.hint}</div>` : ''}
+      <div class="ob-diag-list">${groups}</div>
+    </div>
+  `;
+  content.querySelectorAll('.ob-diag-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      answers.diagnosis = btn.dataset.val;
+      content.querySelectorAll('.ob-diag-item').forEach(b => b.classList.remove('ob-selected'));
+      btn.classList.add('ob-selected');
+      nextBtn.disabled = false;
+      setTimeout(advance, 240);
+    });
+  });
+}
+
+function renderMulti(s) {
+  nextBtn.textContent = 'Continue →';
+  nextBtn.disabled = false;
+  const cur = answers[s.key] || [];
+  const html = s.choices.map(c => `
+    <button class="ob-choice ob-choice-multi ${cur.includes(c.value) ? 'ob-selected' : ''}" data-val="${c.value}" ${c.exclusive ? 'data-exclusive="true"' : ''}>
+      ${c.icon ? `<span class="ob-choice-icon">${c.icon}</span>` : ''}
+      <span class="ob-choice-label">${c.label}</span>
+    </button>
+  `).join('');
+  content.innerHTML = `
+    <div class="ob-qwrap">
+      <div class="ob-question">${injectName(s.question)}</div>
+      ${s.hint ? `<div class="ob-hint">${s.hint}</div>` : ''}
+      <div class="ob-choices">${html}</div>
+      <div class="ob-optional">Select all that apply — tap Continue when done</div>
+    </div>
+  `;
+  content.querySelectorAll('.ob-choice-multi').forEach(btn => {
+    btn.addEventListener('click', () => {
+      let sel = [...(answers[s.key] || [])];
+      const val = btn.dataset.val;
+      const isExcl = btn.dataset.exclusive === 'true';
+      if (isExcl) {
+        sel = sel.includes(val) ? [] : [val];
+      } else {
+        sel = sel.filter(v => { const c = s.choices.find(x => x.value === v); return c && !c.exclusive; });
+        if (sel.includes(val)) sel = sel.filter(v => v !== val);
+        else sel.push(val);
+      }
+      answers[s.key] = sel;
+      content.querySelectorAll('.ob-choice-multi').forEach(b => b.classList.toggle('ob-selected', sel.includes(b.dataset.val)));
+    });
+  });
+}
+
+function renderContact(s) {
+  nextBtn.textContent = 'Continue →';
+  nextBtn.disabled = false;
+  content.innerHTML = `
+    <div class="ob-qwrap">
+      <div class="ob-question">${injectName(s.question)}</div>
+      <div class="ob-hint">${s.hint}</div>
+      <div class="ob-contact-fields">
+        <label class="ob-field-label">Contact Name<input class="ob-text-input" id="ob-cname" type="text" placeholder="e.g. Grandma Susan" value="${answers[s.keys.name] || ''}" autocomplete="name" /></label>
+        <label class="ob-field-label">Contact Email<input class="ob-text-input" id="ob-cemail" type="email" placeholder="trusted@example.com" value="${answers[s.keys.email] || ''}" autocomplete="email" /></label>
+      </div>
+      <div class="ob-optional">Optional — tap Continue to skip</div>
+    </div>
+  `;
+  document.getElementById('ob-cname').addEventListener('input', e => { answers[s.keys.name] = e.target.value; });
+  document.getElementById('ob-cemail').addEventListener('input', e => { answers[s.keys.email] = e.target.value; });
+}
+
+function renderDone() {
+  nextBtn.classList.add('hidden');
+  backBtn.classList.add('hidden');
+  fill.style.width = '100%';
+
+  const n = (answers.userName || '').trim();
+  const cfg = buildConfig(answers);
+  const bullets = [];
+
+  const catLabel = { needs:'Needs', feelings:'Feelings', social:'Social' }[cfg.startCategory] || 'Needs';
+  bullets.push(`Starting on the <strong>${catLabel}</strong> category`);
+  if (cfg.gridColumns === 3)       bullets.push('<strong>Simplified grid</strong> — 3 columns, core vocabulary only');
+  else                             bullets.push('<strong>Standard grid</strong> — 4 columns');
+  if (cfg.largeTargets)            bullets.push('<strong>Large buttons</strong> for easier tapping');
+  if (cfg.soundMuted)              bullets.push('<strong>Sound off</strong> — sensory-friendly mode');
+  if (cfg.highContrast)            bullets.push('<strong>High contrast display</strong>');
+  if (cfg.reducedAnimations)       bullets.push('<strong>Reduced animations</strong>');
+  if (cfg.keyboardForward)         bullets.push('<strong>Keyboard promoted</strong> for text-based communication');
+  if (cfg.adultMode)               bullets.push('<strong>Adult-appropriate vocabulary</strong> and tone');
+  if (cfg.customInterest)          bullets.push(`Custom <strong>"${cfg.customInterest}"</strong> category created`);
+  if (answers.contactName)         bullets.push(`Safety contact set: <strong>${answers.contactName}</strong>`);
+  if (answers.diagnosis && answers.diagnosis !== 'unknown') {
+    const diagLabel = (() => {
+      for (const g of DIAGNOSES) { const item = g.items.find(i => i.value === answers.diagnosis); if (item) return item.label; }
+      return null;
+    })();
+    if (diagLabel) bullets.push(`Profile tuned for <strong>${diagLabel}</strong>`);
+  }
+
+  content.innerHTML = `
+    <div class="ob-done-wrap">
+      <div class="ob-done-icon">💛</div>
+      <h2 class="ob-done-title">${n ? `${n} is ready` : 'All set'} to be heard.</h2>
+      <div class="ob-done-config">
+        ${bullets.map(b => `<div class="ob-done-bullet">${b}</div>`).join('')}
+      </div>
+      <a class="ob-launch-btn" href="app.html">Open the real app →</a>
+      <div class="ob-done-secondary">Or <a href="index.html">learn more</a> about Speak — including pricing and the safety channel.</div>
+      <div class="ob-done-note">In the real app, this setup is saved to your account and can be adjusted anytime.</div>
+    </div>
+  `;
+}
+
+// ── Config engine (mirrors onboarding.js) ─────────────────────────────────
+function buildConfig(a) {
+  const cfg  = {};
+  const diag = a.diagnosis || 'unknown';
+  const age  = a.age       || '5-8';
+  const sens = a.sensory   || [];
+
+  cfg.gridColumns   = (age === '2-4' || a.reading === 'no') ? 3 : 4;
+  cfg.coreOnly      = cfg.gridColumns === 3;
+  cfg.largeTargets  = ['limited','very_limited'].includes(a.motor) || age === '2-4' || ['cp','rett','als'].includes(diag);
+  cfg.soundMuted    = sens.includes('sound');
+  cfg.highContrast  = sens.includes('light');
+  cfg.reducedAnimations = diag === 'autism' || diag === 'fragile_x' || sens.includes('light');
+
+  const socialFirst   = ['down_syndrome','williams','selective_mutism'];
+  const feelingsFirst = ['fragile_x','angelman','rett'];
+  if      (feelingsFirst.includes(diag)) cfg.startCategory = 'feelings';
+  else if (socialFirst.includes(diag))   cfg.startCategory = 'social';
+  else                                   cfg.startCategory = 'needs';
+  if (a.primaryNeed && a.primaryNeed !== 'all') cfg.startCategory = a.primaryNeed;
+
+  cfg.adultMode       = ['13-17','18+'].includes(age) || ['tbi','aphasia','als','ms','selective_mutism'].includes(diag);
+  cfg.keyboardForward = ['apraxia','selective_mutism','aphasia','tbi','als','ms'].includes(diag);
+  if (a.interests && a.interests.trim()) cfg.customInterest = a.interests.trim();
+  cfg.backgroundTheme = a.backgroundTheme || 'default';
+  if (!a.backgroundTheme && sens.includes('light')) cfg.backgroundTheme = 'minimal';
+
+  return cfg;
+}
+
+// ── Nav ────────────────────────────────────────────────────────────────────
+function advance() { if (step < OB_STEPS.length - 1) { step++; render(); } }
+function retreat() { if (step > 0) { step--; render(); } }
+
+nextBtn.addEventListener('click', advance);
+backBtn.addEventListener('click', retreat);
+skipBtn.addEventListener('click', () => {
+  if (confirm('Skip to the end? You can see what a finished setup looks like.')) {
+    step = OB_STEPS.length - 1; render();
+  }
+});
+
+// ── Boot ───────────────────────────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
