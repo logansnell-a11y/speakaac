@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Speak for Clinics & SLPs — Speak AAC</title>
+  <link rel="icon" type="image/png" href="icons/icon.png" />
+  <meta name="description" content="Speak AAC for speech-language pathologists and clinics. Free to start, HIPAA BAA available, diagnosis-personalized setup in under 2 minutes, private safety channel for every client." />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0f0f10; --surface: #1a1a1e; --surface-high: #232328;
+      --border: #2e2e34; --border-light: #3a3a42;
+      --gold: #c9952a; --gold-bright: #e0a830; --gold-glow: rgba(201,149,42,0.12);
+      --text: #f0f0f2; --text-muted: #9999aa; --text-dim: #666672;
+      --green: #27ae60; --red: #e05555;
+      --radius: 10px; --radius-lg: 16px;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg:          #f4efe6;
+        --surface:     #fffdf8;
+        --surface2:    #ede8de;
+        --border:      #ddd6c8;
+        --border-light:#ccc5b8;
+        --gold:        #a36818;
+        --gold-bright: #c07c10;
+        --gold-glow:   rgba(163,104,24,0.10);
+        --text:        #1a1008;
+        --text-muted:  #5a4028;
+        --text-dim:    #9a8468;
+        --green:       #1a7a40;
+      }
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+
+    /* Nav */
+    nav { display: flex; align-items: center; gap: 10px; padding: 16px 28px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg); z-index: 100; }
+    .nav-logo { display: flex; align-items: center; gap: 9px; text-decoration: none; }
+    .nav-logo img { width: 28px; height: 28px; border-radius: 7px; }
+    .nav-logo-text { font-weight: 900; font-size: 1rem; color: var(--gold-bright); letter-spacing: .1em; text-transform: uppercase; }
+    .nav-right { margin-left: auto; display: flex; gap: 16px; align-items: center; }
+    .nav-link { font-size: 0.85rem; color: var(--text-muted); text-decoration: none; }
+    .nav-link:hover { color: var(--text); }
+    .btn-nav { background: var(--gold); color: #0f0f10; font-weight: 700; font-size: 0.85rem; padding: 8px 18px; border-radius: 8px; text-decoration: none; }
+
+    /* Layout */
+    .page { max-width: 780px; margin: 0 auto; padding: 72px 24px 100px; }
+
+    /* Hero */
+    .eyebrow { font-size: 0.78rem; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: .12em; margin-bottom: 16px; }
+    h1 { font-size: 2.4rem; font-weight: 900; line-height: 1.15; margin-bottom: 20px; }
+    h1 em { color: var(--gold-bright); font-style: normal; }
+    .lead { font-size: 1.05rem; color: var(--text-muted); line-height: 1.8; margin-bottom: 48px; max-width: 640px; }
+
+    /* Divider */
+    .divider { width: 40px; height: 2px; background: var(--gold); margin: 48px 0; }
+
+    /* Section */
+    .section { margin-bottom: 48px; }
+    .section h2 { font-size: 1.2rem; font-weight: 800; margin-bottom: 14px; }
+    .section p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.8; margin-bottom: 14px; }
+    .section p strong { color: var(--text); font-weight: 600; }
+
+    /* Highlight box */
+    .highlight {
+      background: var(--gold-glow); border: 1.5px solid var(--gold);
+      border-radius: var(--radius-lg); padding: 24px 22px; margin: 32px 0;
+    }
+    .highlight p { font-size: 0.93rem; color: var(--text-muted); margin-bottom: 8px; }
+    .highlight p:last-child { margin-bottom: 0; }
+
+    /* Benefit cards */
+    .benefit-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin: 28px 0; }
+    .benefit-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px 20px; }
+    .benefit-icon { font-size: 1.6rem; margin-bottom: 10px; }
+    .benefit-title { font-size: 0.92rem; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+    .benefit-body { font-size: 0.84rem; color: var(--text-muted); line-height: 1.6; }
+
+    /* Comparison table */
+    .compare-wrap { overflow-x: auto; margin: 28px 0; border-radius: var(--radius-lg); border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    thead th { background: var(--surface); padding: 14px 16px; text-align: left; font-weight: 800; color: var(--text); border-bottom: 1px solid var(--border); white-space: nowrap; }
+    thead th:first-child { color: var(--text-dim); font-weight: 600; }
+    thead th.speak-col { color: var(--gold-bright); }
+    tbody td { padding: 12px 16px; border-bottom: 1px solid var(--border); color: var(--text-muted); vertical-align: top; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody td:first-child { font-weight: 600; color: var(--text); }
+    .check { color: var(--green); font-weight: 700; }
+    .cross { color: var(--red); }
+    .speak-col-data { color: var(--gold-bright); font-weight: 600; }
+
+    /* Plan cards */
+    .plan-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin: 28px 0; }
+    .plan-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 26px 22px; display: flex; flex-direction: column; gap: 12px; }
+    .plan-card.featured { border-color: var(--gold); background: var(--gold-glow); }
+    .plan-badge { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold); }
+    .plan-name { font-size: 1.15rem; font-weight: 900; color: var(--text); }
+    .plan-price { font-size: 1.8rem; font-weight: 900; color: var(--gold-bright); line-height: 1; }
+    .plan-price span { font-size: 0.8rem; font-weight: 400; color: var(--text-dim); }
+    .plan-features { list-style: none; display: flex; flex-direction: column; gap: 7px; flex: 1; }
+    .plan-features li { font-size: 0.85rem; color: var(--text-muted); padding-left: 20px; position: relative; }
+    .plan-features li::before { content: "✓"; position: absolute; left: 0; color: var(--green); font-weight: 700; }
+    .plan-btn { display: block; text-align: center; padding: 11px 0; border-radius: 9px; font-weight: 700; font-size: 0.88rem; text-decoration: none; margin-top: 4px; }
+    .plan-btn-gold { background: var(--gold); color: #0f0f10; }
+    .plan-btn-ghost { border: 1.5px solid var(--border-light); color: var(--text-muted); }
+    .plan-btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* Checklist */
+    .checklist { list-style: none; display: flex; flex-direction: column; gap: 12px; margin: 20px 0; }
+    .checklist li { font-size: 0.93rem; color: var(--text-muted); padding-left: 28px; position: relative; line-height: 1.6; }
+    .checklist li::before { content: "→"; position: absolute; left: 0; color: var(--gold); font-weight: 700; }
+    .checklist li strong { color: var(--text); }
+
+    /* Steps */
+    .steps { display: flex; flex-direction: column; gap: 20px; margin: 24px 0; }
+    .step { display: flex; gap: 16px; align-items: flex-start; }
+    .step-num { width: 32px; height: 32px; min-width: 32px; background: var(--gold); color: #0f0f10; border-radius: 50%; font-weight: 900; font-size: 0.88rem; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+    .step-body h4 { font-size: 0.95rem; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+    .step-body p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; margin: 0; }
+
+    /* BAA block */
+    .baa-block { background: var(--surface); border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 26px 24px; margin: 32px 0; }
+    .baa-block h3 { font-size: 1rem; font-weight: 800; margin-bottom: 10px; }
+    .baa-block p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 10px; }
+    .baa-block p:last-child { margin-bottom: 0; }
+    .baa-block a { color: var(--gold); }
+
+    /* CTA */
+    .cta-block { text-align: center; padding: 48px 0 0; }
+    .cta-block h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 12px; }
+    .cta-block p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 28px; }
+    .cta-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn-gold { background: var(--gold); color: #0f0f10; font-weight: 700; font-size: 0.95rem; padding: 13px 28px; border-radius: 10px; text-decoration: none; }
+    .btn-ghost { border: 1.5px solid var(--border-light); color: var(--text-muted); font-size: 0.95rem; padding: 13px 28px; border-radius: 10px; text-decoration: none; }
+    .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* Footer */
+    footer { border-top: 1px solid var(--border); padding: 24px 28px; display: flex; gap: 16px; align-items: center; justify-content: center; flex-wrap: wrap; }
+    .footer-link { font-size: 0.8rem; color: var(--text-dim); text-decoration: none; }
+    .footer-link:hover { color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <img src="icons/icon.png" alt="Speak" />
+    <span class="nav-logo-text">Speak</span>
+  </a>
+  <div class="nav-right">
+    <a class="nav-link" href="guide.html">User Guide</a>
+    <a class="nav-link" href="teacher_demo.html">Dashboard Demo</a>
+    <a class="btn-nav" href="app.html">Open App</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="eyebrow">For Clinics & SLPs</div>
+  <h1>AAC built for <em>clinical practice</em> —<br>not just for home.</h1>
+  <p class="lead">
+    Speak is a free, browser-based AAC app that configures itself to each client's diagnosis in under two minutes. Clinic and Institution plans include a full provider dashboard, exportable session reports, teacher read-only access, and a HIPAA Business Associate Agreement — at a fraction of the cost of existing solutions.
+  </p>
+
+  <!-- ── Why SLPs choose Speak ── -->
+  <div class="benefit-grid">
+    <div class="benefit-card">
+      <div class="benefit-icon">⚡</div>
+      <div class="benefit-title">Setup in under 2 minutes</div>
+      <div class="benefit-body">17 diagnosis profiles configure the symbol grid, vocabulary complexity, motor targeting, and visual layout automatically — no manual customization required.</div>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">🖥</div>
+      <div class="benefit-title">No app store. Any device.</div>
+      <div class="benefit-body">Speak runs in any browser. Install on an iPad, Android tablet, Chromebook, or Windows device in one tap — no App Store account, no MDM policy to navigate.</div>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">📊</div>
+      <div class="benefit-title">Provider dashboard</div>
+      <div class="benefit-body">Session-by-session communication logs, symbol frequency charts, category usage, and CSV export — all viewable per client from a single provider account.</div>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">🔒</div>
+      <div class="benefit-title">Private safety channel</div>
+      <div class="benefit-body">Every client has a silent help button that routes to a trusted contact outside the caretaker relationship. Free on every plan, forever. No other AAC tool has this.</div>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">🤖</div>
+      <div class="benefit-title">AI sentence builder</div>
+      <div class="benefit-body">Claude (Anthropic) constructs natural sentences from the symbols a client selects — reinforcing language modeling and extending practice beyond structured sessions.</div>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">📋</div>
+      <div class="benefit-title">HIPAA BAA included</div>
+      <div class="benefit-body">Clinic and Institution plans include a HIPAA Business Associate Agreement. Email us and receive a signed BAA same business day.</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ── Comparison table ── -->
+  <div class="section">
+    <h2>How Speak compares</h2>
+    <p>For most clinical settings, Speak costs 90% less than traditional options with setup that's measured in minutes rather than months.</p>
+
+    <div class="compare-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th class="speak-col">Speak AAC</th>
+            <th>Proloquo2Go</th>
+            <th>TouchChat HD</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Cost to start</td>
+            <td class="speak-col-data">Free</td>
+            <td>$299.99 one-time</td>
+            <td>$149.99 one-time</td>
+          </tr>
+          <tr>
+            <td>Clinic plan</td>
+            <td class="speak-col-data">$29.99/mo</td>
+            <td>Per-device purchase</td>
+            <td>Per-device purchase</td>
+          </tr>
+          <tr>
+            <td>Device requirement</td>
+            <td class="speak-col-data">Any browser</td>
+            <td>iOS only</td>
+            <td>iOS / Android</td>
+          </tr>
+          <tr>
+            <td>App store required</td>
+            <td class="speak-col-data"><span class="check">✓ No</span></td>
+            <td><span class="cross">✗ Yes</span></td>
+            <td><span class="cross">✗ Yes</span></td>
+          </tr>
+          <tr>
+            <td>Diagnosis-personalized setup</td>
+            <td class="speak-col-data"><span class="check">✓ 17 profiles</span></td>
+            <td><span class="cross">✗ Manual</span></td>
+            <td><span class="cross">✗ Manual</span></td>
+          </tr>
+          <tr>
+            <td>Private safety channel</td>
+            <td class="speak-col-data"><span class="check">✓ Built in, free</span></td>
+            <td><span class="cross">✗ None</span></td>
+            <td><span class="cross">✗ None</span></td>
+          </tr>
+          <tr>
+            <td>AI sentence builder</td>
+            <td class="speak-col-data"><span class="check">✓ Claude (Anthropic)</span></td>
+            <td><span class="cross">✗ None</span></td>
+            <td><span class="cross">✗ None</span></td>
+          </tr>
+          <tr>
+            <td>Provider dashboard</td>
+            <td class="speak-col-data"><span class="check">✓ Clinic plan</span></td>
+            <td>Limited</td>
+            <td>Limited</td>
+          </tr>
+          <tr>
+            <td>HIPAA BAA available</td>
+            <td class="speak-col-data"><span class="check">✓ Clinic/Institution</span></td>
+            <td>Not standard</td>
+            <td>Not standard</td>
+          </tr>
+          <tr>
+            <td>Communication log export</td>
+            <td class="speak-col-data"><span class="check">✓ CSV export</span></td>
+            <td>Limited</td>
+            <td>Limited</td>
+          </tr>
+          <tr>
+            <td>Offline capable</td>
+            <td class="speak-col-data"><span class="check">✓ PWA / service worker</span></td>
+            <td><span class="check">✓</span></td>
+            <td><span class="check">✓</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:0.78rem; color:var(--text-dim); margin-top:8px;">Proloquo2Go and TouchChat pricing as of March 2026. Speak is not affiliated with or endorsed by either company.</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ── Plans ── -->
+  <div class="section">
+    <h2>Plans for clinical use</h2>
+    <p>The safety channel is free on every plan. Upgrade for the provider dashboard, session logging, and HIPAA compliance.</p>
+
+    <div class="plan-grid">
+      <div class="plan-card">
+        <div class="plan-badge">Start here</div>
+        <div class="plan-name">Free</div>
+        <div class="plan-price">$0 <span>/ always</span></div>
+        <ul class="plan-features">
+          <li>Full AAC symbol grid + audio</li>
+          <li>17 diagnosis profiles</li>
+          <li>Private safety channel</li>
+          <li>5 AI sentences per day</li>
+          <li>Kiosk mode + session lock</li>
+          <li>Works on any device/browser</li>
+        </ul>
+        <a class="plan-btn plan-btn-ghost" href="app.html">Open Free App</a>
+      </div>
+
+      <div class="plan-card featured">
+        <div class="plan-badge">Most popular for clinics</div>
+        <div class="plan-name">Clinic</div>
+        <div class="plan-price">$29.99 <span>/ month per provider</span></div>
+        <ul class="plan-features">
+          <li>Everything in Free</li>
+          <li>Unlimited AI sentences</li>
+          <li>Full provider dashboard</li>
+          <li>Multiple client profiles</li>
+          <li>Communication log + CSV export</li>
+          <li>Custom symbol sets per client</li>
+          <li>HIPAA BAA available</li>
+        </ul>
+        <a class="plan-btn plan-btn-gold" href="https://buy.stripe.com/00w9AM9Lm5Ec0eF5KCdwc01" target="_blank" rel="noopener">Get Clinic Plan</a>
+      </div>
+
+      <div class="plan-card">
+        <div class="plan-badge">For schools & programs</div>
+        <div class="plan-name">Institution</div>
+        <div class="plan-price">$49 <span>/ month · up to 10 clients</span></div>
+        <ul class="plan-features">
+          <li>Everything in Clinic</li>
+          <li>One admin, 10 child profiles</li>
+          <li>Teacher read-only accounts</li>
+          <li>Admin dashboard</li>
+          <li>Bulk communication reports</li>
+          <li>School enrollment support</li>
+          <li>HIPAA + FERPA BAA available</li>
+        </ul>
+        <a class="plan-btn plan-btn-ghost" href="https://buy.stripe.com/7sY7sE3mY6Ig5yZ5KCdwc02" target="_blank" rel="noopener">Get Institution Plan</a>
+      </div>
+    </div>
+
+    <p style="font-size:0.85rem; color:var(--text-muted); margin-top:12px;">
+      Underfunded school or nonprofit? <a href="mission.html" style="color:var(--gold); font-weight:700;">Learn about free access →</a>
+    </p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ── Getting started ── -->
+  <div class="section">
+    <h2>Getting started — SLP checklist</h2>
+    <p>From first open to a configured client profile in under 5 minutes.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Open the app — no download required</h4>
+          <p>Visit <strong>speakaac.org/app.html</strong> on any browser. Bookmark it or tap "Add to Home Screen" for a native-app feel on iPad or Android.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Create a provider account</h4>
+          <p>Tap <strong>Sign In → Create Account</strong>. One account manages all your client profiles. Your account is what the Clinic or Institution plan is attached to.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Run the setup wizard for your first client</h4>
+          <p>Tap <strong>Provider Settings → Run Setup Again</strong>. The 10-step wizard asks about diagnosis, age range, motor ability, sensory profile, and preferred vocabulary level. Speak configures the symbol grid automatically.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Configure the safety contact</h4>
+          <p>In Provider Settings → <strong>Trusted Safety Contact</strong>, enter the name and email of the trusted adult (parent, other clinician, supervisor). This is the person notified if the client activates the private help channel.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h4>Enable kiosk mode for session use</h4>
+          <p>In Provider Settings → <strong>Kiosk Mode</strong>, lock the app to fullscreen. The client cannot navigate away. Exit requires your 4-digit Provider PIN.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-body">
+          <h4>Review session data from the dashboard</h4>
+          <p>After each session, tap <strong>Log</strong> to see the full timestamped communication history. The Provider Dashboard shows weekly activity charts, most-used symbols, and category breakdown. Export to CSV for documentation.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ── Safety channel in clinical context ── -->
+  <div class="section">
+    <h2>The safety channel — clinical context</h2>
+    <p>
+      Children with communication disabilities are abused at 3–4 times the rate of their non-disabled peers, and the traditional reporting pipeline breaks down entirely when a child cannot speak. Speak's private safety channel gives every client a mechanism to silently alert a trusted adult outside the primary caretaker relationship — with no visible action on the device and no sound.
+    </p>
+    <p>
+      In a clinical setting, you can configure the trusted contact as a supervising clinician, a school social worker, or another trusted professional. The alert fires immediately via email and includes the reason the client selected and a timestamp.
+    </p>
+    <p>
+      <strong>The safety channel is free on every plan, forever.</strong> It is never paywalled, regardless of subscription tier.
+    </p>
+
+    <div class="highlight">
+      <p><strong>Important:</strong> The private safety channel notifies a trusted contact by email. It is a supplement to — not a replacement for — emergency services. In an immediate emergency, call 911. See our <a href="terms.html" style="color:var(--gold);">Terms of Service</a> for full details.</p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ── HIPAA BAA ── -->
+  <div class="baa-block">
+    <h3>HIPAA Business Associate Agreement</h3>
+    <p>
+      If you are a healthcare provider or clinic using Speak to support clients and you bill insurance, you may require a HIPAA Business Associate Agreement (BAA). Speak is HIPAA-capable on Clinic and Institution plans — your client data is encrypted at rest (AES-256) and in transit (TLS 1.2+) via Supabase, which is SOC 2 Type II certified and supports HIPAA.
+    </p>
+    <p>
+      To receive a signed BAA: email <a href="mailto:support@speakaac.org">support@speakaac.org</a> with the subject line <strong>"BAA Request"</strong> and your clinic or practice name. We'll return a signed agreement within one business day.
+    </p>
+    <p>
+      For FERPA agreements (school districts), use subject line <strong>"FERPA Request"</strong>.
+    </p>
+  </div>
+
+  <!-- ── Clinical philosophy ── -->
+  <div class="section">
+    <h2>Our clinical philosophy</h2>
+    <p>
+      Speak is built on the belief that AAC is a complete, valid, permanent communication system — not a stepping stone toward verbal speech. We do not frame nonverbal communication as a deficit to be corrected. The app is designed to give clients more power to communicate in the way that works for them, with no implicit pressure toward a "better" outcome.
+    </p>
+    <p>
+      If you have questions about clinical fit, symbol vocabulary alignment, or how Speak maps to LAMP (Language Acquisition through Motor Planning) or core vocabulary approaches, email <a href="mailto:support@speakaac.org" style="color:var(--gold);">support@speakaac.org</a>. We're happy to talk through implementation.
+    </p>
+  </div>
+
+  <!-- ── CTA ── -->
+  <div class="cta-block">
+    <h2>Start free. Upgrade when you're ready.</h2>
+    <p>No commitment. No app store. The full symbol grid and safety channel are free forever.</p>
+    <div class="cta-buttons">
+      <a class="btn-gold" href="app.html">Open Free App</a>
+      <a class="btn-ghost" href="teacher_demo.html">See Dashboard Demo</a>
+      <a class="btn-ghost" href="mailto:support@speakaac.org?subject=BAA Request">Request a BAA</a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <a class="footer-link" href="index.html">Home</a>
+  <a class="footer-link" href="guide.html">User Guide</a>
+  <a class="footer-link" href="mission.html">Mission</a>
+  <a class="footer-link" href="teacher_demo.html">Dashboard Demo</a>
+  <a class="footer-link" href="privacy.html">Privacy</a>
+  <a class="footer-link" href="terms.html">Terms</a>
+  <a class="footer-link" href="mailto:support@speakaac.org">support@speakaac.org</a>
+</footer>
+
+  <!-- Google Analytics — loaded only after cookie consent -->
+  <script>
+    function loadGA() {
+      if (document.getElementById('ga-script')) return;
+      var s = document.createElement('script');
+      s.id = 'ga-script'; s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID';
+      document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);} window.gtag = gtag;
+      gtag('js', new Date()); gtag('config', 'GA_MEASUREMENT_ID');
+    }
+    if (localStorage.getItem('speak_analytics') === 'yes') loadGA();
+  </script>
+  <div id="cookie-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:14px 20px;align-items:center;gap:12px;flex-wrap:wrap;z-index:9999;font-size:0.82rem;color:var(--text-muted);">
+    <span style="flex:1;min-width:200px;">We use analytics to understand how people find Speak and improve the experience. No personal data is sold. <a href="privacy.html" style="color:var(--gold);">Privacy policy</a></span>
+    <button onclick="consentGA(true)"  style="background:var(--gold);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:0.82rem;font-weight:700;cursor:pointer;">Accept</button>
+    <button onclick="consentGA(false)" style="background:var(--surface2);color:var(--text-muted);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:0.82rem;cursor:pointer;">Decline</button>
+  </div>
+  <script>
+    (function(){ if (!localStorage.getItem('speak_analytics')) document.getElementById('cookie-bar').style.display = 'flex'; })();
+    function consentGA(yes) { localStorage.setItem('speak_analytics', yes ? 'yes' : 'no'); document.getElementById('cookie-bar').style.display = 'none'; if (yes) loadGA(); }
+  </script>
+
+</body>
+</html>

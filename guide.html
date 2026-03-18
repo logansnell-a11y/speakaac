@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How to Use Speak — User Guide</title>
+  <link rel="icon" type="image/png" href="icons/icon.png" />
+  <meta name="description" content="Complete guide to using Speak AAC — onboarding, the symbol grid, AI sentences, the private safety channel, session history, kiosk mode, and custom symbols." />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0f0f10; --surface: #1a1a1e; --surface-high: #232328;
+      --border: #2e2e34; --border-light: #3a3a42;
+      --gold: #c9952a; --gold-bright: #e0a830; --gold-glow: rgba(201,149,42,0.12);
+      --text: #f0f0f2; --text-muted: #9999aa; --text-dim: #666672;
+      --green: #27ae60;
+      --radius: 10px; --radius-lg: 16px;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg:          #f4efe6;
+        --surface:     #fffdf8;
+        --surface2:    #ede8de;
+        --border:      #ddd6c8;
+        --border-light:#ccc5b8;
+        --gold:        #a36818;
+        --gold-bright: #c07c10;
+        --gold-glow:   rgba(163,104,24,0.10);
+        --text:        #1a1008;
+        --text-muted:  #5a4028;
+        --text-dim:    #9a8468;
+        --green:       #1a7a40;
+      }
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+
+    nav { display: flex; align-items: center; gap: 10px; padding: 16px 28px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg); z-index: 100; }
+    .nav-logo { display: flex; align-items: center; gap: 9px; text-decoration: none; }
+    .nav-logo img { width: 28px; height: 28px; border-radius: 7px; }
+    .nav-logo-text { font-weight: 900; font-size: 1rem; color: var(--gold-bright); letter-spacing: .1em; text-transform: uppercase; }
+    .nav-right { margin-left: auto; display: flex; gap: 16px; align-items: center; }
+    .nav-link { font-size: 0.85rem; color: var(--text-muted); text-decoration: none; }
+    .nav-link:hover { color: var(--text); }
+    .btn-nav { background: var(--gold); color: #0f0f10; font-weight: 700; font-size: 0.85rem; padding: 8px 18px; border-radius: 8px; text-decoration: none; }
+
+    /* Layout */
+    .page { max-width: 740px; margin: 0 auto; padding: 64px 24px 100px; }
+    .eyebrow { font-size: 0.78rem; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: .12em; margin-bottom: 16px; }
+    h1 { font-size: 2.2rem; font-weight: 900; margin-bottom: 16px; }
+    .lead { font-size: 1.02rem; color: var(--text-muted); line-height: 1.8; margin-bottom: 52px; max-width: 600px; }
+
+    /* TOC */
+    .toc { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px 24px; margin-bottom: 52px; }
+    .toc-title { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); margin-bottom: 12px; }
+    .toc-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .toc-list li a { font-size: 0.9rem; color: var(--gold); text-decoration: none; }
+    .toc-list li a:hover { text-decoration: underline; }
+
+    /* Sections */
+    .guide-section { margin-bottom: 60px; scroll-margin-top: 80px; }
+    .guide-section h2 { font-size: 1.35rem; font-weight: 900; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+    .guide-section p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.8; margin-bottom: 14px; }
+    .guide-section p strong { color: var(--text); font-weight: 600; }
+
+    /* Steps */
+    .steps { display: flex; flex-direction: column; gap: 18px; margin: 20px 0; }
+    .step { display: flex; gap: 16px; align-items: flex-start; }
+    .step-num { width: 30px; height: 30px; min-width: 30px; background: var(--gold); color: #0f0f10; border-radius: 50%; font-weight: 900; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; margin-top: 3px; }
+    .step-body h4 { font-size: 0.93rem; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+    .step-body p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; margin: 0; }
+
+    /* Feature cards */
+    .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin: 24px 0; }
+    .feature-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 16px; }
+    .feature-icon { font-size: 1.4rem; margin-bottom: 8px; }
+    .feature-label { font-size: 0.88rem; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+    .feature-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.55; }
+
+    /* Tip box */
+    .tip { background: var(--gold-glow); border-left: 3px solid var(--gold); border-radius: 0 var(--radius) var(--radius) 0; padding: 14px 18px; margin: 20px 0; }
+    .tip p { font-size: 0.88rem; color: var(--text-muted); margin: 0; }
+    .tip strong { color: var(--gold-bright); }
+
+    /* Warning */
+    .warn { background: rgba(224,85,85,0.07); border-left: 3px solid #e05555; border-radius: 0 var(--radius) var(--radius) 0; padding: 14px 18px; margin: 20px 0; }
+    .warn p { font-size: 0.88rem; color: var(--text-muted); margin: 0; }
+    .warn strong { color: #e05555; }
+
+    /* Vocab approach section */
+    .approach-card { background: var(--surface); border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 24px 22px; margin: 24px 0; }
+    .approach-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold); margin-bottom: 10px; }
+    .approach-card h3 { font-size: 0.98rem; font-weight: 800; margin-bottom: 8px; }
+    .approach-card p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.7; margin: 0; }
+
+    /* CTA */
+    .cta-block { background: var(--gold-glow); border: 1.5px solid var(--gold); border-radius: var(--radius-lg); padding: 32px 28px; text-align: center; margin-top: 40px; }
+    .cta-block h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 10px; }
+    .cta-block p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 20px; }
+    .cta-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn-gold { background: var(--gold); color: #0f0f10; font-weight: 700; font-size: 0.92rem; padding: 12px 26px; border-radius: 9px; text-decoration: none; }
+    .btn-ghost { border: 1.5px solid var(--border-light); color: var(--text-muted); font-size: 0.92rem; padding: 12px 26px; border-radius: 9px; text-decoration: none; }
+    .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+    footer { border-top: 1px solid var(--border); padding: 24px 28px; display: flex; gap: 16px; align-items: center; justify-content: center; flex-wrap: wrap; }
+    .footer-link { font-size: 0.8rem; color: var(--text-dim); text-decoration: none; }
+    .footer-link:hover { color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <img src="icons/icon.png" alt="Speak" />
+    <span class="nav-logo-text">Speak</span>
+  </a>
+  <div class="nav-right">
+    <a class="nav-link" href="clinic_guide.html">For Clinics</a>
+    <a class="nav-link" href="install_guide.html">Install Guide</a>
+    <a class="btn-nav" href="app.html">Open App</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="eyebrow">User Guide</div>
+  <h1>How to use Speak</h1>
+  <p class="lead">
+    Everything you need to know to get set up, communicate, and stay safe — for families, caregivers, teachers, and SLPs using Speak AAC for the first time.
+  </p>
+
+  <!-- Table of Contents -->
+  <div class="toc">
+    <div class="toc-title">On this page</div>
+    <ol class="toc-list">
+      <li><a href="#onboarding">1. Setting up for the first time</a></li>
+      <li><a href="#grid">2. Using the symbol grid</a></li>
+      <li><a href="#core-vocab">3. Core vocabulary bar</a></li>
+      <li><a href="#ai">4. AI sentence builder</a></li>
+      <li><a href="#safety">5. The private safety channel</a></li>
+      <li><a href="#history">6. Session history</a></li>
+      <li><a href="#custom">7. Custom symbols</a></li>
+      <li><a href="#kiosk">8. Kiosk mode & tablet setup</a></li>
+      <li><a href="#approach">9. Clinical vocabulary approach</a></li>
+    </ol>
+  </div>
+
+  <!-- 1. Onboarding -->
+  <div class="guide-section" id="onboarding">
+    <h2>1. Setting up for the first time</h2>
+    <p>
+      When you first open Speak, a 10-step setup wizard configures the app for the specific person using it. This takes under two minutes and replaces the months-long manual customization that traditional AAC apps require.
+    </p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Who is this app for?</h4>
+          <p>Choose child, teenager, or adult. This sets default font sizes and vocabulary complexity.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Diagnosis profile</h4>
+          <p>Select from 17 supported profiles including Autism Spectrum Disorder, Down syndrome, Cerebral Palsy, Apraxia, Angelman syndrome, Rett syndrome, acquired brain injury, and more. Speak adjusts symbol categories, motor targeting, and visual layout automatically.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3–10</div>
+        <div class="step-body">
+          <h4>Motor ability, sensory profile, vocabulary level, and more</h4>
+          <p>The remaining steps configure motor access mode (direct select, switch access support), color sensitivity, symbol density, and which categories appear first. Everything can be changed later in Provider Settings.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tip">
+      <p><strong>Tip:</strong> You can re-run the setup wizard at any time from Provider Settings → <strong>Run Setup Again</strong>. Use this when starting with a new child or when a client's needs change.</p>
+    </div>
+  </div>
+
+  <!-- 2. Symbol grid -->
+  <div class="guide-section" id="grid">
+    <h2>2. Using the symbol grid</h2>
+    <p>
+      The symbol grid is the main communication surface. It shows ARASAAC pictograms organized into color-coded categories — the same clinical color standard used in professional AAC practice worldwide.
+    </p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🟣</div>
+        <div class="feature-label">People (purple)</div>
+        <div class="feature-desc">Family, teachers, and social relationships</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🟠</div>
+        <div class="feature-label">Verbs (orange)</div>
+        <div class="feature-desc">Actions: eat, go, play, stop, want, and more</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🟡</div>
+        <div class="feature-label">Feelings (yellow)</div>
+        <div class="feature-desc">Happy, sad, scared, frustrated, loved, and more</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🟢</div>
+        <div class="feature-label">Food (green)</div>
+        <div class="feature-desc">Common foods and drinks</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔵</div>
+        <div class="feature-label">Places (blue)</div>
+        <div class="feature-desc">Home, school, park, hospital, and more</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <div class="feature-label">Quick Phrases</div>
+        <div class="feature-desc">18 full pre-built phrases for fast communication</div>
+      </div>
+    </div>
+
+    <p>
+      Tap any symbol to speak it aloud and add it to the message bar at the top. Tap the message bar to hear the full message read back. Tap <strong>✕ Clear</strong> to start a new message.
+    </p>
+  </div>
+
+  <!-- 3. Core vocab bar -->
+  <div class="guide-section" id="core-vocab">
+    <h2>3. Core vocabulary bar</h2>
+    <p>
+      Directly above the symbol grid is a row of 14 always-visible high-frequency words: <em>I, want, need, like, don't, yes, no, more, stop, go, help, eat, drink, the.</em> These words appear on every screen regardless of which category is selected — because the most-used words in communication shouldn't require navigation.
+    </p>
+    <p>
+      This design follows the <strong>core vocabulary</strong> approach used in clinical AAC practice, which research shows significantly increases communication rate and language development compared to category-only navigation.
+    </p>
+  </div>
+
+  <!-- 4. AI sentence builder -->
+  <div class="guide-section" id="ai">
+    <h2>4. AI sentence builder</h2>
+    <p>
+      After tapping symbols to build a message, tap the <strong>AI</strong> button to have Claude (Anthropic's AI) construct a natural sentence from what was selected. For example, tapping <em>NO + EAT</em> might produce "I don't want to eat right now."
+    </p>
+    <p>
+      The AI sentence builder is available 5 times per day on the free plan and unlimited on paid plans. It is designed to support language modeling — showing how individual symbols can combine into full sentences — not to replace the child's own communication.
+    </p>
+
+    <div class="tip">
+      <p><strong>Clinical note:</strong> AI sentences are a modeling tool. Research in AAC supports aided language input (ALI) as a strategy for expanding expressive language. Use AI sentences as a demonstration, not as the primary communication mode.</p>
+    </div>
+  </div>
+
+  <!-- 5. Safety channel -->
+  <div class="guide-section" id="safety">
+    <h2>5. The private safety channel</h2>
+    <p>
+      Every Speak account includes a private safety channel — a way for the person using the app to silently alert a trusted adult outside the primary caretaker relationship. There is no sound. Nothing visible happens on screen. The person in the room does not know it was activated.
+    </p>
+
+    <p><strong>Setting it up:</strong></p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Go to Provider Settings → Trusted Safety Contact</h4>
+          <p>Enter the name and email of the trusted adult — a grandparent, teacher, therapist, or other trusted person outside the primary caretaker relationship.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>The trusted contact receives a silent email immediately</h4>
+          <p>When the child activates the safety channel, the trusted contact gets an email with the child's name, the reason selected, a timestamp, and the last message the child built. No account required on their end.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="warn">
+      <p><strong>The private safety channel is not a substitute for emergency services.</strong> In an immediate emergency, call 911. The safety channel depends on the trusted contact checking their email promptly — it is not an instant emergency alert.</p>
+    </div>
+
+    <p>
+      The safety channel is <strong>free on every plan, forever</strong>. It is never paywalled.
+    </p>
+  </div>
+
+  <!-- 6. Session history -->
+  <div class="guide-section" id="history">
+    <h2>6. Session history</h2>
+    <p>
+      Tap the <strong>Log</strong> button (bottom of the main screen) to open the session history drawer. It shows every symbol tapped during the current session with timestamps — useful for reviewing what a child communicated, identifying patterns, and providing documentation for clinical notes.
+    </p>
+    <p>
+      On Clinic and Institution plans, the full communication history is available in the Provider Dashboard with per-session breakdowns, symbol frequency charts, and CSV export for documentation.
+    </p>
+  </div>
+
+  <!-- 7. Custom symbols -->
+  <div class="guide-section" id="custom">
+    <h2>7. Custom symbols</h2>
+    <p>
+      In Provider Settings → <strong>My Symbols</strong>, you can upload photos of people, pets, places, or objects that matter to this specific child. Each photo becomes a tappable symbol in the "Mine" category — tapping it speaks the label aloud.
+    </p>
+    <p>
+      Custom symbol photos are stored <strong>only on the device</strong> in browser local storage. They are never uploaded to any server. They can be deleted at any time from the same settings screen.
+    </p>
+    <div class="tip">
+      <p><strong>Tip:</strong> Add photos of the child's specific teachers, family members, and pets by name. Familiar faces in the vocabulary significantly increase engagement, especially for children with autism.</p>
+    </div>
+  </div>
+
+  <!-- 8. Kiosk mode -->
+  <div class="guide-section" id="kiosk">
+    <h2>8. Kiosk mode &amp; tablet setup</h2>
+    <p>
+      For classroom, clinical, or shared tablet use, enable <strong>Kiosk Mode</strong> in Provider Settings. The app locks to fullscreen — the child cannot navigate away, open other apps, or access the home screen. Exiting requires the 4-digit Provider PIN.
+    </p>
+    <p>
+      For tablet installation, see the full <a href="install_guide.html" style="color:var(--gold);">Install Guide</a> for iPad, Android, and Windows step-by-step instructions. Speak installs as a PWA (Progressive Web App) — it appears on the home screen and runs in fullscreen like a native app.
+    </p>
+    <div class="tip">
+      <p><strong>iPad tip:</strong> After adding Speak to the Home Screen, use iOS Guided Access (Settings → Accessibility → Guided Access) as an additional layer of lock for classroom environments where Kiosk Mode alone isn't enough.</p>
+    </div>
+  </div>
+
+  <!-- 9. Clinical vocabulary approach -->
+  <div class="guide-section" id="approach">
+    <h2>9. Clinical vocabulary approach</h2>
+    <p>
+      Speak is designed to be compatible with established AAC clinical frameworks. Here's how it aligns with the most widely-used approaches:
+    </p>
+
+    <div class="approach-card">
+      <div class="approach-label">Core vocabulary approach</div>
+      <h3>High-frequency words always visible</h3>
+      <p>The core vocabulary bar (14 always-visible words) is directly aligned with core vocabulary AAC practice. Research shows 200–400 core words account for 80%+ of daily communication. Speak keeps the most important words accessible at all times without navigation.</p>
+    </div>
+
+    <div class="approach-card">
+      <div class="approach-label">LAMP (Language Acquisition through Motor Planning)</div>
+      <h3>Consistent motor patterns</h3>
+      <p>Speak's symbol grid maintains consistent symbol placement across sessions — the same symbol is always in the same location. This supports the motor learning principle behind LAMP: that consistent, repeated motor pathways reduce cognitive load and increase communication speed over time.</p>
+    </div>
+
+    <div class="approach-card">
+      <div class="approach-label">Aided language input (ALI)</div>
+      <h3>Modeling with the AI sentence builder</h3>
+      <p>The AI sentence builder can be used as an ALI tool: a caregiver or SLP taps symbols while speaking, demonstrating how symbols combine into language. Research shows aided language input increases symbol use and expressive vocabulary in AAC users.</p>
+    </div>
+
+    <p style="margin-top:20px;">
+      Speak does not claim to replace clinical judgment or SLP-led AAC implementation. It is a tool designed to be as compatible as possible with clinical best practices — and to be accessible to families who don't yet have access to a dedicated SLP.
+    </p>
+    <p>
+      Questions about clinical alignment? Email <a href="mailto:support@speakaac.org" style="color:var(--gold);">support@speakaac.org</a>.
+    </p>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-block">
+    <h3>Ready to get started?</h3>
+    <p>The full app is free. No account required to begin.</p>
+    <div class="cta-buttons">
+      <a class="btn-gold" href="app.html">Open Speak</a>
+      <a class="btn-ghost" href="install_guide.html">Install on iPad</a>
+      <a class="btn-ghost" href="clinic_guide.html">I'm an SLP or clinic</a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <a class="footer-link" href="index.html">Home</a>
+  <a class="footer-link" href="install_guide.html">Install Guide</a>
+  <a class="footer-link" href="clinic_guide.html">For Clinics</a>
+  <a class="footer-link" href="mission.html">Mission</a>
+  <a class="footer-link" href="privacy.html">Privacy</a>
+  <a class="footer-link" href="terms.html">Terms</a>
+  <a class="footer-link" href="mailto:support@speakaac.org">support@speakaac.org</a>
+</footer>
+
+  <!-- Google Analytics — loaded only after cookie consent -->
+  <script>
+    function loadGA() {
+      if (document.getElementById('ga-script')) return;
+      var s = document.createElement('script');
+      s.id = 'ga-script'; s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID';
+      document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);} window.gtag = gtag;
+      gtag('js', new Date()); gtag('config', 'GA_MEASUREMENT_ID');
+    }
+    if (localStorage.getItem('speak_analytics') === 'yes') loadGA();
+  </script>
+  <div id="cookie-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:14px 20px;align-items:center;gap:12px;flex-wrap:wrap;z-index:9999;font-size:0.82rem;color:var(--text-muted);">
+    <span style="flex:1;min-width:200px;">We use analytics to understand how people find Speak and improve the experience. No personal data is sold. <a href="privacy.html" style="color:var(--gold);">Privacy policy</a></span>
+    <button onclick="consentGA(true)"  style="background:var(--gold);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:0.82rem;font-weight:700;cursor:pointer;">Accept</button>
+    <button onclick="consentGA(false)" style="background:var(--surface2);color:var(--text-muted);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:0.82rem;cursor:pointer;">Decline</button>
+  </div>
+  <script>
+    (function(){ if (!localStorage.getItem('speak_analytics')) document.getElementById('cookie-bar').style.display = 'flex'; })();
+    function consentGA(yes) { localStorage.setItem('speak_analytics', yes ? 'yes' : 'no'); document.getElementById('cookie-bar').style.display = 'none'; if (yes) loadGA(); }
+  </script>
+
+</body>
+</html>
