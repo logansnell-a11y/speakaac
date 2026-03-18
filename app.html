@@ -657,6 +657,25 @@
     </div>
   </div>
 
+  <!-- ── Review / Feedback modal ─────────────────────────────── -->
+  <div id="review-modal" class="hidden">
+    <div id="review-inner">
+      <p id="review-title">How's Speak working for you?</p>
+      <p id="review-body">We're a small team. Your feedback shapes everything we build next.</p>
+      <div id="review-stars" aria-label="Rate 1 to 5 stars">
+        <span class="review-star" data-v="1" role="button" aria-label="1 star">★</span>
+        <span class="review-star" data-v="2" role="button" aria-label="2 stars">★</span>
+        <span class="review-star" data-v="3" role="button" aria-label="3 stars">★</span>
+        <span class="review-star" data-v="4" role="button" aria-label="4 stars">★</span>
+        <span class="review-star" data-v="5" role="button" aria-label="5 stars">★</span>
+      </div>
+      <textarea id="review-comment" placeholder="Anything you'd like us to know? (optional)" rows="3"></textarea>
+      <button id="review-submit" disabled>Send Feedback</button>
+      <button id="review-dismiss">Not right now</button>
+      <p id="review-fine">Takes 30 seconds. Feedback goes directly to the developer.</p>
+    </div>
+  </div>
+
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(() => {});

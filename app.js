@@ -1767,3 +1767,82 @@ document.getElementById('setup-open-about').addEventListener('click', () => {
   setupModal.classList.add('hidden');
   openAboutModal();
 });
+
+// ── "How are we doing?" review prompt ──────────────────────────
+(function initReviewPrompt() {
+  const REVIEW_KEY    = 'speak_review_submitted';
+  const DISMISS_KEY   = 'speak_review_dismissed';
+  const SESSION_KEY   = 'speak_session_count';
+  const SESSIONS_NEEDED = 5;
+
+  // Increment session counter (only for return visits with a completed profile)
+  const count = (parseInt(localStorage.getItem(SESSION_KEY), 10) || 0) + 1;
+  localStorage.setItem(SESSION_KEY, count);
+
+  if (count < SESSIONS_NEEDED) return;
+  if (localStorage.getItem(REVIEW_KEY)) return;
+  if (localStorage.getItem(DISMISS_KEY)) return;
+
+  // Wait for finishInit to run (it's async), then show after session lock settles
+  // _returnVisit is set by finishInit — by 2.5s it's guaranteed to be set
+  setTimeout(() => {
+    if (!_returnVisit) return; // only show for return visitors (not mid-onboarding)
+    document.getElementById('review-modal').classList.remove('hidden');
+  }, 2500);
+
+  const reviewModal  = document.getElementById('review-modal');
+  const stars        = reviewModal.querySelectorAll('.review-star');
+  const submitBtn    = document.getElementById('review-submit');
+  const dismissBtn   = document.getElementById('review-dismiss');
+  const commentEl    = document.getElementById('review-comment');
+  let _rating = 0;
+
+  stars.forEach(star => {
+    star.addEventListener('click', () => {
+      _rating = parseInt(star.dataset.v, 10);
+      stars.forEach(s => s.classList.toggle('active', parseInt(s.dataset.v, 10) <= _rating));
+      submitBtn.disabled = false;
+    });
+    // Hover preview
+    star.addEventListener('mouseenter', () => {
+      const v = parseInt(star.dataset.v, 10);
+      stars.forEach(s => s.classList.toggle('active', parseInt(s.dataset.v, 10) <= v));
+    });
+    star.addEventListener('mouseleave', () => {
+      stars.forEach(s => s.classList.toggle('active', parseInt(s.dataset.v, 10) <= _rating));
+    });
+  });
+
+  submitBtn.addEventListener('click', () => {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending…';
+
+    const settings = loadSettings();
+    const payload = {
+      to_email:     'support@speakaac.org',
+      to_name:      'Logan',
+      user_name:    settings.childName || 'App User',
+      reason:       `${_rating}/5 stars — In-app feedback`,
+      last_message: commentEl.value.trim() || '(no comment)',
+      timestamp:    new Date().toLocaleString(),
+    };
+
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, payload, EMAILJS_PUBLIC_KEY)
+      .then(() => {
+        localStorage.setItem(REVIEW_KEY, '1');
+        submitBtn.textContent = 'Thank you!';
+        setTimeout(() => reviewModal.classList.add('hidden'), 1200);
+      })
+      .catch(() => {
+        // Still mark submitted so we don't keep asking if EmailJS fails
+        localStorage.setItem(REVIEW_KEY, '1');
+        submitBtn.textContent = 'Sent!';
+        setTimeout(() => reviewModal.classList.add('hidden'), 1200);
+      });
+  });
+
+  dismissBtn.addEventListener('click', () => {
+    localStorage.setItem(DISMISS_KEY, '1');
+    reviewModal.classList.add('hidden');
+  });
+})();

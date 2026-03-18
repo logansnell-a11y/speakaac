@@ -17,7 +17,7 @@ Speak is a free, open-access AAC application for nonverbal and minimally verbal 
 
 **2. Private safety reporting channel.** A child can silently alert a designated trusted adult (outside the primary caretaker relationship) by activating a hidden symbol sequence or a dedicated Help button. The alert fires an immediate, silent email to the trusted contact — no visible action on the device, no mail app opened, no caretaker awareness. This is the first feature of its kind in any publicly available AAC system.
 
-The app is live, installable on iPads and Android tablets, and accessible at speakaac.org.
+The app is live, installable on iPads and Android tablets, and accessible at speakaac.org. It includes a clinical guide for SLPs (speakaac.org/clinic_guide.html) and a comprehensive user guide (speakaac.org/guide.html).
 
 ---
 

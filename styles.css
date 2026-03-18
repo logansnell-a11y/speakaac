@@ -3433,3 +3433,97 @@ body.large-targets .core-word-emoji {
   transition: border-color 0.15s, color 0.15s;
 }
 .custom-sym-delete:hover { border-color: #e05555; color: #e05555; }
+
+/* ── Review / Feedback modal ─────────────────────────────────── */
+#review-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.80);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+  padding: 24px;
+}
+#review-inner {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--border-light);
+  padding: 36px 28px 28px;
+  max-width: 360px;
+  width: 100%;
+  text-align: center;
+}
+#review-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+#review-body {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+#review-stars {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.review-star {
+  font-size: 2rem;
+  color: var(--border-light);
+  cursor: pointer;
+  transition: color 0.1s, transform 0.1s;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.review-star.active { color: var(--gold); }
+.review-star:hover  { transform: scale(1.15); }
+#review-comment {
+  width: 100%;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 0.88rem;
+  padding: 10px 12px;
+  resize: none;
+  margin-bottom: 16px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+}
+#review-comment:focus { border-color: var(--gold); }
+#review-submit {
+  width: 100%;
+  background: var(--gold);
+  color: #000;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: var(--radius);
+  padding: 12px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: opacity 0.15s;
+}
+#review-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+#review-submit:not(:disabled):hover { opacity: 0.88; }
+#review-dismiss {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  text-decoration: underline;
+  margin-bottom: 12px;
+}
+#review-fine {
+  font-size: 0.75rem;
+  color: var(--text-dim, var(--text-muted));
+  margin: 0;
+}
