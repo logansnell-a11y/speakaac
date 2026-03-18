@@ -1,3 +1,17 @@
+// ── Toast notifications ────────────────────────────────────────────
+function showToast(message, type = 'success', duration = 3000) {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.textContent = message;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.classList.add('toast-out');
+    toast.addEventListener('animationend', () => toast.remove(), { once: true });
+  }, duration);
+}
+
 // ── HTML escape helper ─────────────────────────────────────────────
 function esc(s) {
   return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -332,6 +346,7 @@ async function buildAISentence() {
     updateDisplay();
     speak(aiText);
     logEvent('ai_sentence', { input: prevSentence, output: aiText });
+    showToast('✦ AI sentence built', 'info', 2500);
   } catch (e) {
     console.error("AI sentence error:", e);
     sentence = prevSentence;
@@ -923,6 +938,7 @@ setupSave.addEventListener("click", () => {
 
   setupSaved.classList.remove("hidden");
   setTimeout(() => setupSaved.classList.add("hidden"), 2500);
+  showToast('Settings saved', 'success', 2500);
 
   // Refresh AI button visibility
   updateDisplay();
@@ -1505,7 +1521,12 @@ async function init() {
   finishInit();
 }
 
+function hideAppLoading() {
+  document.getElementById('app-loading').classList.add('hidden');
+}
+
 function finishInit() {
+  hideAppLoading();
   document.getElementById('onboarding-overlay').classList.add('hidden');
   applyProfileConfig();
   renderCoreBar();
@@ -1548,6 +1569,7 @@ function showAuthModal(mode = false) {
   document.getElementById('auth-error').classList.add('hidden');
   document.getElementById('auth-email').value = '';
   document.getElementById('auth-password').value = '';
+  hideAppLoading();
   document.getElementById('auth-modal').classList.remove('hidden');
 }
 

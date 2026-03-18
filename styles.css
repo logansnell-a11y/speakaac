@@ -3434,6 +3434,96 @@ body.large-targets .core-word-emoji {
 }
 .custom-sym-delete:hover { border-color: #e05555; color: #e05555; }
 
+/* ── Toast notifications ─────────────────────────────────────── */
+#toast-container {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+}
+.toast {
+  background: var(--surface);
+  border: 1.5px solid var(--border-light, var(--border));
+  border-radius: 100px;
+  padding: 9px 18px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  animation: toast-in 0.22s ease-out both;
+  pointer-events: auto;
+}
+.toast.toast-success { border-color: #27ae60; color: #27ae60; }
+.toast.toast-error   { border-color: #e05555; color: #e05555; }
+.toast.toast-info    { border-color: var(--gold); color: var(--gold); }
+.toast.toast-out     { animation: toast-out 0.2s ease-in both; }
+@keyframes toast-in  { from { opacity: 0; transform: translateY(10px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes toast-out { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(6px) scale(0.95); } }
+
+/* ── App loading screen ──────────────────────────────────────── */
+#app-loading {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 590; /* below password-gate (600) — hidden behind it on first visit */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+#loading-logo {
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+  animation: loading-pulse 2s ease-in-out infinite;
+}
+#loading-spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid var(--border);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes loading-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.75; transform: scale(0.96); }
+}
+#loading-text {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+}
+
+/* ── Modal entrance animations ───────────────────────────────── */
+@keyframes modal-pop {
+  from { opacity: 0; transform: scale(0.95) translateY(6px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+#help-modal-inner,
+#plans-inner,
+#upgrade-inner,
+#setup-inner,
+#auth-inner,
+#review-inner,
+#about-inner {
+  animation: modal-pop 0.18s ease-out both;
+}
+
 /* ── Review / Feedback modal ─────────────────────────────────── */
 #review-modal {
   position: fixed;
