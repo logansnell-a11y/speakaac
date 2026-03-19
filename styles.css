@@ -98,8 +98,17 @@ html, body {
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   -webkit-tap-highlight-color: transparent;
-  overflow: hidden;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
   user-select: none;
+  overflow: hidden;
+}
+
+button, [role="button"] {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
 }
 
 /* ── Sentence Bar — top, full width ──────────────────────────── */
