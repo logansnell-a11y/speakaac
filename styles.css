@@ -2,6 +2,7 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
+  color-scheme: light dark;
   /* Three clean levels — ground, lifted, highest — warm light (default) */
   --bg:           #d6c9b2;
   --surface:      #f0e6d4;
@@ -72,6 +73,23 @@
     --red-glow:     rgba(224, 85, 85, 0.15);
     --green:        #4caf76;
   }
+}
+
+/* ── Mobile — shrink all layout vars so UI fits on phone ──────── */
+@media (max-width: 480px) {
+  :root {
+    --topbar-h:    72px;
+    --corebar-h:   52px;
+    --sidebar-w:   68px;
+    --bottombar-h: 58px;
+  }
+  .core-word-btn {
+    height: 40px;
+    min-width: 44px;
+    padding: 0 6px;
+  }
+  .core-word-emoji { font-size: 0.9rem; }
+  .core-word-label { font-size: 0.55rem; }
 }
 
 html, body {
