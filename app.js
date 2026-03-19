@@ -1144,8 +1144,8 @@ const slErrorEl      = document.getElementById('sl-error');
 
 function showSessionLock() {
   const name = loadSettings().userName || '';
-  slNameEl.textContent    = name || 'your app';
-  slGreetingEl.textContent = name ? 'Welcome back,' : 'Welcome back';
+  slNameEl.textContent     = name || 'Speak';
+  slGreetingEl.textContent = name ? 'Welcome back,' : 'Welcome back to';
   _slEntry = '';
   slErrorEl.classList.add('hidden');
   updateSlDots();
