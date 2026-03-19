@@ -147,6 +147,18 @@
     footer { border-top: 1px solid var(--border); padding: 24px 28px; display: flex; gap: 16px; align-items: center; justify-content: center; flex-wrap: wrap; margin-top: 80px; }
     .footer-link { font-size: 0.8rem; color: var(--text-dim); text-decoration: none; }
     .footer-link:hover { color: var(--text-muted); }
+    #nav-burger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 6px; border-radius: 6px; }
+    #nav-burger span { display: block; width: 22px; height: 2px; background: var(--text-muted); border-radius: 2px; transition: transform 0.2s, opacity 0.2s; }
+    #nav-burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    #nav-burger.open span:nth-child(2) { opacity: 0; }
+    #nav-burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    #nav-mobile { display: none; position: fixed; top: 53px; left: 0; right: 0; background: color-mix(in srgb, var(--bg) 96%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 16px 20px 20px; flex-direction: column; gap: 4px; z-index: 99; }
+    #nav-mobile.open { display: flex; animation: nav-slide 0.15s ease-out both; }
+    @keyframes nav-slide { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+    #nav-mobile a { font-size: 0.95rem; font-weight: 600; color: var(--text-muted); padding: 10px 6px; border-radius: 8px; transition: color 0.15s, background 0.15s; text-decoration: none; }
+    #nav-mobile a:hover { color: var(--text); background: var(--surface); }
+    #nav-mobile .nav-cta-mobile { margin-top: 8px; background: var(--gold); color: #000; font-weight: 800; text-align: center; padding: 12px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.06em; }
+    @media (max-width: 600px) { #nav-burger { display: flex; } .nav-link { display: none; } }
   </style>
 </head>
 <body>
@@ -160,8 +172,18 @@
     <a class="nav-link" href="index.html#features">Features</a>
     <a class="nav-link" href="index.html#pricing">Pricing</a>
     <a class="btn-nav" href="app.html">Open App</a>
+    <button id="nav-burger" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
   </div>
 </nav>
+<div id="nav-mobile">
+  <a href="index.html">Home</a>
+  <a href="index.html#features">Features</a>
+  <a href="index.html#pricing">Pricing</a>
+  <a href="guide.html">User Guide</a>
+  <a href="clinic_guide.html">For Clinics</a>
+  <a href="app.html" class="nav-cta-mobile">Open App →</a>
+</div>
+<script>(function(){var b=document.getElementById('nav-burger'),d=document.getElementById('nav-mobile');b.addEventListener('click',function(){var o=d.classList.toggle('open');b.classList.toggle('open',o);b.setAttribute('aria-expanded',o);});d.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){d.classList.remove('open');b.classList.remove('open');b.setAttribute('aria-expanded','false');});});})();</script>
 
 <div class="page">
 

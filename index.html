@@ -1826,5 +1826,20 @@
     function consentGA(yes) { localStorage.setItem('speak_analytics', yes ? 'yes' : 'no'); document.getElementById('cookie-bar').style.display = 'none'; if (yes) loadGA(); }
   </script>
 
+  <script>
+    // Scroll-triggered fade-in for sections
+    (function() {
+      var style = document.createElement('style');
+      style.textContent = '.fade-in{opacity:0;transform:translateY(22px);transition:opacity 0.55s ease,transform 0.55s ease}.fade-in.visible{opacity:1;transform:none}';
+      document.head.appendChild(style);
+      document.querySelectorAll('section, .feature-card, .plan-card, .how-step, .safety-stat-box').forEach(function(el){
+        el.classList.add('fade-in');
+      });
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); } });
+      }, { threshold: 0.08 });
+      document.querySelectorAll('.fade-in').forEach(function(el){ io.observe(el); });
+    })();
+  </script>
 </body>
 </html>
