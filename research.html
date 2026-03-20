@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Research Collaboration — Speak AAC</title>
+  <link rel="icon" type="image/png" href="icons/icon.png" />
+  <meta name="description" content="Speak AAC is seeking a university research partner to formally study whether a private safety reporting channel in AAC software can increase abuse disclosures among nonverbal children." />
+  <meta property="og:title"       content="Research Collaboration — Speak AAC" />
+  <meta property="og:description" content="A private safety reporting channel for nonverbal children. Seeking IRB-backed university research partner." />
+  <meta property="og:url"         content="https://speakaac.org/research.html" />
+  <meta property="og:image"       content="https://speakaac.org/icons/icon.png" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #0e0e0e;
+      --surface:     #161616;
+      --surface2:    #1c1c1c;
+      --border:      #2a2a2a;
+      --gold:        #C8922A;
+      --gold-bright: #E5A535;
+      --gold-glow:   rgba(200,146,42,0.12);
+      --text:        #f0ece4;
+      --text-muted:  #a09880;
+      --text-dim:    #5a5448;
+      --green:       #27ae60;
+      --blue:        #4a9ede;
+      --blue-glow:   rgba(74,158,222,0.10);
+      --radius:      14px;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg:          #f4efe6;
+        --surface:     #fffdf8;
+        --surface2:    #ede8de;
+        --border:      #ddd6c8;
+        --gold:        #a36818;
+        --gold-bright: #c07c10;
+        --gold-glow:   rgba(163,104,24,0.10);
+        --text:        #1a1008;
+        --text-muted:  #5a4028;
+        --text-dim:    #9a8468;
+        --green:       #1d7a44;
+        --blue:        #1a6fa8;
+        --blue-glow:   rgba(26,111,168,0.10);
+      }
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* Nav */
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 28px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: color-mix(in srgb, var(--bg) 90%, transparent);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 100;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 9px; }
+    .nav-logo img { width: 28px; height: 28px; border-radius: 7px; }
+    .nav-logo-text { font-weight: 900; font-size: 1rem; color: var(--gold-bright); letter-spacing: .1em; text-transform: uppercase; }
+    .nav-right { margin-left: auto; display: flex; gap: 16px; align-items: center; }
+    .nav-link { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
+    .nav-link:hover { color: var(--text); }
+    .btn-nav { background: var(--gold); color: #fff; font-weight: 700; font-size: 0.85rem; padding: 8px 18px; border-radius: 8px; }
+
+    /* Mobile nav */
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; background: none; border: none; }
+    .hamburger span { display: block; width: 22px; height: 2px; background: var(--text-muted); border-radius: 2px; transition: 0.2s; }
+    .mobile-menu { display: none; flex-direction: column; gap: 12px; padding: 16px 28px 20px; border-bottom: 1px solid var(--border); background: var(--surface); }
+    .mobile-menu a { font-size: 0.95rem; font-weight: 600; color: var(--text-muted); padding: 6px 0; }
+    .mobile-menu a:hover { color: var(--text); }
+    .mobile-menu .btn-mobile { background: var(--gold); color: #fff; padding: 10px 20px; border-radius: 8px; text-align: center; margin-top: 4px; font-weight: 700; }
+    @media (max-width: 600px) {
+      .nav-right { display: none; }
+      .hamburger { display: flex; margin-left: auto; }
+      .mobile-menu.open { display: flex; }
+    }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 72px 24px 48px;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .hero-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      font-weight: 900;
+      line-height: 1.15;
+      margin-bottom: 18px;
+    }
+    .hero p {
+      font-size: 1rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      max-width: 580px;
+      margin: 0 auto;
+    }
+
+    /* Content */
+    .content {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* Section blocks */
+    .section-block {
+      margin-bottom: 48px;
+    }
+    .section-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+    .section-block h2 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 14px;
+      color: var(--text);
+    }
+    .section-block p {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      line-height: 1.75;
+      margin-bottom: 12px;
+    }
+    .section-block p:last-child { margin-bottom: 0; }
+
+    /* Divider */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 48px 0;
+    }
+
+    /* Feature cards */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 18px;
+    }
+    @media (max-width: 560px) { .feature-grid { grid-template-columns: 1fr; } }
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+    .feature-num {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+    .feature-card h3 {
+      font-size: 0.95rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+    .feature-card p {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      line-height: 1.65;
+      margin: 0;
+    }
+
+    /* Research questions list */
+    .rq-list {
+      list-style: none;
+      margin-top: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .rq-list li {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .rq-num {
+      font-size: 0.75rem;
+      font-weight: 900;
+      color: var(--gold);
+      min-width: 22px;
+      padding-top: 1px;
+    }
+
+    /* Stat chips */
+    .stat-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .stat-chip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .stat-chip strong { color: var(--text); }
+
+    /* Tech live box */
+    .live-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      margin-top: 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .live-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px rgba(39,174,96,0.5);
+      flex-shrink: 0;
+    }
+    .live-box-text { flex: 1; min-width: 180px; }
+    .live-box-text strong { font-size: 0.95rem; color: var(--text); }
+    .live-box-text p { font-size: 0.82rem; color: var(--text-muted); margin: 4px 0 0; }
+    .live-box a {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--gold-bright);
+      border: 1px solid rgba(200,146,42,0.3);
+      border-radius: 7px;
+      padding: 6px 14px;
+      white-space: nowrap;
+    }
+    .live-box a:hover { background: var(--gold-glow); }
+
+    /* Citations */
+    .citations {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-top: 16px;
+    }
+    .citation {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .citation:last-child { border-bottom: none; padding-bottom: 0; }
+    .citation-num {
+      font-weight: 700;
+      color: var(--gold);
+      margin-right: 6px;
+    }
+    .citation em { color: var(--text); font-style: normal; font-weight: 600; }
+
+    /* CTA */
+    .cta-box {
+      background: var(--gold-glow);
+      border: 1px solid rgba(200,146,42,0.3);
+      border-radius: var(--radius);
+      padding: 30px;
+      text-align: center;
+      margin-top: 16px;
+    }
+    .cta-box h3 {
+      font-size: 1.15rem;
+      font-weight: 900;
+      margin-bottom: 10px;
+    }
+    .cta-box p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      max-width: 500px;
+      margin: 0 auto 20px;
+      line-height: 1.65;
+    }
+    .btn-cta {
+      display: inline-block;
+      background: var(--gold);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 12px 28px;
+      border-radius: 10px;
+    }
+    .btn-cta:hover { opacity: 0.9; }
+
+    /* Footnote markers */
+    sup {
+      font-size: 0.65em;
+      color: var(--gold);
+      font-weight: 700;
+      vertical-align: super;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 24px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+    footer a { color: var(--gold); }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="nav-logo" href="index.html">
+      <img src="icons/icon.png" alt="Speak" />
+      <span class="nav-logo-text">Speak</span>
+    </a>
+    <div class="nav-right">
+      <a class="nav-link" href="mission.html">Mission</a>
+      <a class="nav-link" href="press.html">Press</a>
+      <a class="nav-link" href="milestones.html">Milestones</a>
+      <a class="btn-nav" href="app.html">Open App</a>
+    </div>
+    <button class="hamburger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="mission.html">Mission</a>
+    <a href="press.html">Press</a>
+    <a href="milestones.html">Milestones</a>
+    <a class="btn-mobile" href="app.html">Open App</a>
+  </div>
+
+  <div class="hero">
+    <div class="hero-label">Research Collaboration</div>
+    <h1>Can a private safety channel help nonverbal children report abuse?</h1>
+    <p>Speak AAC includes the first-of-its-kind silent safety reporting feature in any publicly available AAC system. We're seeking a university research partner to study its real-world impact.</p>
+  </div>
+
+  <div class="content">
+
+    <!-- The Problem -->
+    <div class="section-block">
+      <div class="section-label">The Problem</div>
+      <h2>Nonverbal children are 3–4× more likely to be abused — and have no way to report it</h2>
+      <p>Children with disabilities are maltreated at significantly higher rates than their speaking peers — a gap well-documented in the epidemiological literature.<sup>1</sup> The same communication barriers that define their disability also prevent them from disclosing abuse, seeking help, or alerting a trusted adult.</p>
+      <p>Existing augmentative and alternative communication (AAC) tools provide no pathway for a child to silently signal distress to someone outside the primary caretaker relationship. Speech-language pathologists, educators, and clinicians working with this population lack a technology-supported method for facilitating or detecting disclosures from nonverbal users.<sup>2</sup></p>
+      <div class="stat-row">
+        <div class="stat-chip"><strong>3–4×</strong> higher abuse risk vs. speaking peers <sup>1</sup></div>
+        <div class="stat-chip"><strong>0</strong> existing AAC apps with a safety channel</div>
+        <div class="stat-chip"><strong>~1.3M</strong> nonverbal children in the U.S. use AAC</div>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- The Technology -->
+    <div class="section-block">
+      <div class="section-label">The Technology</div>
+      <h2>Speak AAC — live, free, and installable today</h2>
+      <p>Speak is a free, open-access AAC application for nonverbal and minimally verbal children. It includes two features absent from all existing commercial tools:</p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-num">Feature 01</div>
+          <h3>Diagnosis-personalized onboarding</h3>
+          <p>Speak automatically configures the symbol grid, vocabulary complexity, motor targeting, and visual layout based on the child's diagnosis, age range, motor ability, and sensory profile — across 17 supported conditions including autism spectrum disorder, Down syndrome, cerebral palsy, apraxia, and acquired brain injury. Setup that typically requires months of SLP customization takes under two minutes.<sup>3</sup></p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-num">Feature 02</div>
+          <h3>Private safety reporting channel</h3>
+          <p>A child can silently alert a designated trusted adult (outside the primary caretaker relationship) by activating a hidden symbol sequence or a dedicated Help button. The alert fires an immediate, silent email to the trusted contact — no visible action on the device, no mail app opened, no caretaker awareness. This is the first feature of its kind in any publicly available AAC system.</p>
+        </div>
+      </div>
+
+      <div class="live-box">
+        <div class="live-dot"></div>
+        <div class="live-box-text">
+          <strong>Speak is live at speakaac.org</strong>
+          <p>Installable on iPad and Android tablets. Includes a full clinical guide for SLPs and a user guide for families.</p>
+        </div>
+        <a href="app.html">Open App</a>
+        <a href="clinic_guide.html">Clinical Guide</a>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- Research Questions -->
+    <div class="section-block">
+      <div class="section-label">Research Questions</div>
+      <h2>What we want to learn</h2>
+      <ul class="rq-list">
+        <li>
+          <span class="rq-num">RQ1</span>
+          Does diagnosis-personalized AAC configuration reduce time-to-functional-communication compared to standard manual setup by an SLP?
+        </li>
+        <li>
+          <span class="rq-num">RQ2</span>
+          Does access to a private safety reporting channel increase the rate of abuse disclosures among nonverbal children in clinical and school settings over a 6-month period?
+        </li>
+        <li>
+          <span class="rq-num">RQ3</span>
+          What barriers exist to reliable use of a private safety channel by nonverbal children, and how can the interface be modified to reduce them?
+        </li>
+      </ul>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- Proposed Design -->
+    <div class="section-block">
+      <div class="section-label">Proposed Study Design</div>
+      <h2>6-month pilot, 30–50 participants</h2>
+      <p>A 6-month pilot study with 30–50 nonverbal children (ages 4–16) across clinical and school-based settings. Participants would be randomized to Speak with the safety channel active vs. Speak with the safety channel inactive.</p>
+      <p><strong>Outcome measures:</strong> number of safety alerts generated, response time from trusted contacts, caretaker-reported communication milestones, SLP-reported ease of setup, and structured disclosure interviews at 3 and 6 months.</p>
+      <p>All participants would receive a functional AAC tool regardless of group assignment. IRB oversight, participant recruitment, clinical assessment, and data analysis would be provided by the university research partner. The app itself is fully developed, deployed, and maintained by the Speak team.</p>
+      <div class="stat-row">
+        <div class="stat-chip"><strong>Target funding:</strong> NIDILRR Field-Initiated Projects</div>
+        <div class="stat-chip"><strong>Scope:</strong> $100k–$500k over 3–5 years</div>
+        <div class="stat-chip"><strong>App status:</strong> Fully functional, deployed</div>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- What We're Looking For -->
+    <div class="section-block">
+      <div class="section-label">Partner Profile</div>
+      <h2>What we're looking for in a research partner</h2>
+      <p>We are seeking a university faculty member or clinical research team with:</p>
+      <ul style="margin: 12px 0 12px 20px; display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem; color: var(--text-muted); line-height: 1.65;">
+        <li>IRB access and experience with pediatric populations or individuals with disabilities</li>
+        <li>Expertise in speech-language pathology, AAC, or communication sciences</li>
+        <li>An established participant network or clinical pipeline in AAC-using populations</li>
+        <li>Interest in co-authorship on NIDILRR Field-Initiated Projects or similar federal research funding</li>
+      </ul>
+      <p>The technology is built. The problem is documented. The app is live. What's needed is a clinical and academic partner to bring the rigor that turns a compelling tool into evidence-based practice.</p>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- Citations -->
+    <div class="section-block">
+      <div class="section-label">References</div>
+      <h2>Supporting literature</h2>
+      <div class="citations">
+        <div class="citation">
+          <span class="citation-num">[1]</span>
+          Sullivan, P. M., &amp; Knutson, J. F. (2000). Maltreatment and disabilities: A population-based epidemiological study. <em>Child Abuse &amp; Neglect, 24</em>(10), 1257–1273. <a href="https://doi.org/10.1016/S0145-2134(00)00190-3" target="_blank" rel="noopener" style="color:var(--gold-bright);font-size:0.78rem;">doi:10.1016/S0145-2134(00)00190-3</a>
+        </div>
+        <div class="citation">
+          <span class="citation-num">[2]</span>
+          Beukelman, D. R., &amp; Light, J. C. (2020). <em>Augmentative and alternative communication: Supporting children and adults with complex communication needs</em> (5th ed.). Paul H. Brookes Publishing Co.
+        </div>
+        <div class="citation">
+          <span class="citation-num">[3]</span>
+          Light, J., &amp; McNaughton, D. (2014). Communicative competence for individuals who require augmentative and alternative communication: A new definition for a new era of communication? <em>Augmentative and Alternative Communication, 30</em>(1), 18–31. <a href="https://doi.org/10.3109/07434618.2014.885080" target="_blank" rel="noopener" style="color:var(--gold-bright);font-size:0.78rem;">doi:10.3109/07434618.2014.885080</a>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- CTA -->
+    <div class="section-block">
+      <div class="section-label">Get Involved</div>
+      <div class="cta-box">
+        <h3>Interested in collaborating?</h3>
+        <p>If you're a researcher, SLP faculty member, or clinician with IRB access and interest in AAC and child safety — we'd like to hear from you. Response within 24 hours.</p>
+        <a class="btn-cta" href="mailto:hello@speakaac.org?subject=Research%20Collaboration%20Interest%20%E2%80%94%20Speak%20AAC">Email us at hello@speakaac.org</a>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>Built by <strong>Logan J. Snell</strong>, Kansas · <a href="mailto:hello@speakaac.org">hello@speakaac.org</a> · <a href="index.html">speakaac.org</a> · <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></p>
+  </footer>
+
+  <script>
+    function toggleMenu() {
+      document.getElementById('mobile-menu').classList.toggle('open');
+    }
+  </script>
+
+</body>
+</html>

@@ -987,9 +987,9 @@ plansClose.addEventListener("click", () => {
 // Stripe payment links — keyed by tier
 const STRIPE_LINKS = {
   family:      'https://buy.stripe.com/8x25kw1eQfeMgdDeh8dwc00',
-  lifetime:    null, // TODO: create one-time payment product in Stripe → paste link here
+  lifetime:    'https://buy.stripe.com/dRm4gscXy5Ec5yZ0qidwc04',
   clinic:      'https://buy.stripe.com/00w9AM9Lm5Ec0eF5KCdwc01',
-  institution: null, // contact email instead
+  institution: 'https://buy.stripe.com/28EfZa9LmeaI1iJb4Wdwc03',
 };
 
 document.querySelectorAll(".plan-btn[data-select]").forEach(btn => {

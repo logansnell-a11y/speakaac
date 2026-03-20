@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Speak — Project Log</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f0f10; --surface: #1a1a1e; --surface-high: #232328;
+    --border: #2e2e34; --gold: #c9952a; --gold-bright: #e0a830;
+    --text: #f0f0f2; --text-muted: #9999aa; --text-dim: #666672;
+    --green: #27ae60; --blue: #4a90d9; --red: #e05555;
+    --radius: 10px; --radius-lg: 16px;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); padding: 40px 20px; }
+  .page { max-width: 860px; margin: 0 auto; }
+
+  h1 { font-size: 2rem; font-weight: 800; color: var(--gold-bright); letter-spacing: .04em; }
+  .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-top: 4px; margin-bottom: 40px; }
+
+  /* ── Stat cards ── */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 40px; }
+  .stat-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 20px 22px; }
+  .stat-label { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 6px; }
+  .stat-value { font-size: 2rem; font-weight: 800; color: var(--gold-bright); line-height: 1; }
+  .stat-sub { font-size: 0.78rem; color: var(--text-dim); margin-top: 4px; }
+
+  /* ── Section headings ── */
+  h2 { font-size: 1rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .08em; margin: 36px 0 14px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+
+  /* ── Timeline ── */
+  .timeline { display: flex; flex-direction: column; gap: 0; }
+  .day { display: flex; gap: 20px; }
+  .day-left { display: flex; flex-direction: column; align-items: center; width: 100px; flex-shrink: 0; }
+  .day-date { font-size: 0.78rem; font-weight: 700; color: var(--gold); text-align: center; white-space: nowrap; padding-top: 2px; }
+  .day-line { width: 1px; background: var(--border); flex: 1; margin-top: 6px; min-height: 20px; }
+  .day-content { padding-bottom: 28px; flex: 1; }
+  .day-title { font-size: 0.95rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .day-duration { display: inline-block; font-size: 0.72rem; font-weight: 600; background: var(--surface-high); border: 1px solid var(--border); border-radius: 20px; padding: 2px 9px; color: var(--text-muted); margin-bottom: 8px; }
+  .day-items { list-style: none; display: flex; flex-direction: column; gap: 3px; }
+  .day-items li { font-size: 0.84rem; color: var(--text-muted); padding-left: 14px; position: relative; line-height: 1.5; }
+  .day-items li::before { content: '·'; position: absolute; left: 0; color: var(--gold); font-weight: 700; }
+  .day-items li strong { color: var(--text); font-weight: 600; }
+  .confirmed { display: inline-block; font-size: 0.68rem; font-weight: 700; background: rgba(39,174,96,0.15); color: var(--green); border: 1px solid rgba(39,174,96,0.3); border-radius: 10px; padding: 1px 7px; margin-left: 6px; }
+
+  /* ── Money table ── */
+  table { width: 100%; border-collapse: collapse; }
+  th { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+  td { font-size: 0.88rem; padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text-muted); }
+  td:first-child { color: var(--text); font-weight: 500; }
+  td:last-child { font-weight: 700; }
+  .cost-free { color: var(--green); }
+  .cost-paid { color: var(--gold-bright); }
+  .total-row td { color: var(--text); font-weight: 700; border-top: 2px solid var(--border); border-bottom: none; padding-top: 14px; }
+
+  /* ── Code breakdown ── */
+  .file-list { display: flex; flex-direction: column; gap: 6px; }
+  .file-row { display: flex; align-items: center; gap: 12px; }
+  .file-name { font-size: 0.82rem; font-family: monospace; color: var(--text); width: 200px; flex-shrink: 0; }
+  .file-bar-wrap { flex: 1; background: var(--surface-high); border-radius: 4px; height: 8px; overflow: hidden; }
+  .file-bar { height: 100%; background: var(--gold); border-radius: 4px; }
+  .file-count { font-size: 0.78rem; color: var(--text-muted); width: 60px; text-align: right; flex-shrink: 0; }
+  .new-badge { font-size: 0.68rem; font-weight: 700; background: rgba(39,174,96,0.15); color: var(--green); border: 1px solid rgba(39,174,96,0.3); border-radius: 10px; padding: 1px 7px; margin-left: 6px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <h1>SPEAK AAC</h1>
+  <div class="subtitle">Project log · Started Feb 26, 2026 · Last updated Mar 20, 2026</div>
+
+  <!-- ── Stats ── -->
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-label">Lines of Code</div>
+      <div class="stat-value">16,300</div>
+      <div class="stat-sub">across 27 source files</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Est. Hours Worked</div>
+      <div class="stat-value">~52</div>
+      <div class="stat-sub">across ~26 sessions</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Spent</div>
+      <div class="stat-value">~$61</div>
+      <div class="stat-sub">Claude Pro + Netlify + Domain</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Days Active</div>
+      <div class="stat-value">23</div>
+      <div class="stat-sub">Feb 26 → Mar 20, 2026</div>
+    </div>
+  </div>
+
+  <!-- ── Timeline ── -->
+  <h2>Progress by Day</h2>
+  <div class="timeline">
+
+    <div class="day">
+      <div class="day-left"><div class="day-date">Feb 26</div><div class="day-line"></div></div>
+      <div class="day-content">
+        <div class="day-title">First Spark</div>
+        <div class="day-duration">~30 min</div>
+        <ul class="day-items">
+          <li>Conceived the AAC app idea — nonverbal children, safety channel concept</li>
+          <li>First conversation: "AAC App Business Idea"</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="day">
+      <div class="day-left"><div class="day-date">Mar 6</div><div class="day-line"></div></div>
+      <div class="day-content">
+        <div class="day-title">Early Research</div>
+        <div class="day-duration">~30 min</div>
+        <ul class="day-items">
+          <li>Website creation inquiry — exploring what building this would take</li>
+          <li>Market research on existing AAC tools, gap analysis</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="day">
+      <div class="day-left"><div class="day-date">Mar 10</div><div class="day-line"></div></div>
+      <div class="day-content">
+        <div class="day-title">Business Planning + Decision to Build</div>
+        <div class="day-duration">~2 hrs</div>
+        <ul class="day-items">
+          <li>Full market analysis — confirmed no AAC app has a private safety channel</li>
+          <li>Defined brand: Speak, with Speak Guides / Shield / Friends ecosystem</li>
+          <li>Identified NIDILRR grant track ($100k–$500k)</li>
+          <li>Decided to build an MVP immediately, not just plan</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="day">
+      <div class="day-left"><div class="day-date">Mar 11–12</div><div class="day-line"></div></div>
+      <div class="day-content">
+        <div class="day-title">Core App Build — Session 1 & 2</div>
+        <div class="day-duration">~6 hrs total</div>
+        <ul class="day-items">
+          <li><strong>Password gate</strong> (access code: speak2026)</li>
+          <li><strong>10-step onboarding wizard</strong> with 17 diagnosis profiles (autism, Down syndrome, CP, apraxia, etc.)</li>
+          <li><strong>Profile config engine</strong> — auto-configures interface based on diagnosis, age, motor ability, sensory profile</li>
+          <li><strong>Symbol grid</strong> with ARASAAC pictograms (real AAC symbols)</li>
+          <li><strong>93 pre-generated audio files</strong> (gTTS)</li>
+          <li>Category tabs (Needs, Feelings, Food, Actions, People, Places, More)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="day">
+      <div class="day-left"><div class="day-date">Mar 13</div><div class="day-line"></div></div>
+      <div class="day-content">
+        <div class="day-title">Safety Channel + Provider Features</div>
+        <div class="day-duration">~5 hrs</div>
+        <ul class="day-items">
+          <li><strong>Private safety channel</strong> — hidden symbol sequence + Help button → silent EmailJS alert to trusted contact (tested + working)</li>
+          <li>Crisis resources embedded (911, Childhelp 1-800-422-4453, Crisis Text Line, 988)</li>
+          <li><strong>Provider dashboard</strong> — communication log, event history</li>
+          <li><strong>Kiosk mode</strong> — fullscreen lock, exit requires PIN</li>
+          <li><strong>AI sentence builder</strong> — Claude API, ✨ button, turns symbol taps into full sentences</li>
+          <li>Privacy/Security FAQ modal (10-question accordion)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="day">
+      <div class="day-left"><div class="day-date">Mar 14</div><div class="day-line"></div></div>
+      <div class="day-content">
+        <div class="day-title">Landing Page + Netlify Deploy + Domain</div>
+        <div class="day-duration">~4 hrs</div>
+        <ul class="day-items">
+          <li><strong>Landing page</strong> (index.html) — hero, features, pricing, FAQ, About</li>
+          <li>Deployed to Netlify → <strong>speakaac.org live</strong></li>
+          <li>PWA manifest + service worker (installable on iPad/Android)</li>
+          <li>Welcome screen with feature cards, stronger headline</li>
+          <li>"← Home" navigation links throughout</li>
+          <li>Scholarship essays written and organized (all 5 scholarships)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="day">
+      <div class="day-left"><div class="day-date">Mar 15</div><div class="day-line"></div></div>
+      <div class="day-content">
+        <div class="day-title">Session Lock + Institution Tier + Supabase + Logo</div>
+        <div class="day-duration">~5 hrs</div>
+        <ul class="day-items">
+          <li><strong>Session lock screen</strong> — PIN pad, auto-locks after 10 min, re-locks on tab hide</li>
+          <li><strong>Institution pricing tier</strong> — $49/mo, up to 10 profiles, teacher accounts, admin dashboard</li>
+          <li><strong>Auth-before-onboarding</strong> — new users sign in/create account before setup</li>
+          <li><strong>Supabase backend</strong> — live project, auth (sign up/in/out), profile sync, event logging</li>
+          <li><strong>Logo designed</strong> (Ideogram AI) — speech bubble icon, PNG converted and deployed</li>
+          <li>Logo live on all tabs, nav, footer, session lock, PWA install icon</li>
+          <li>Social media color variants generated (Instagram, TikTok, email accounts)</li>
+          <li>@speakaac accounts created on Instagram and TikTok</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="day">
+      <div class="day-left"><div class="day-date">Mar 16</div><div class="day-line"></div></div>
+      <div class="day-content">
+        <div class="day-title">Teacher Dashboard + Outreach + Social</div>
+        <div class="day-duration">~4 hrs</div>
+        <ul class="day-items">
+          <li><strong>Teacher dashboard</strong> (teacher.html) — separate Supabase login, read-only communication log per child, safety alert badges, event timeline</li>
+          <li><strong>logEvent() defined</strong> — event logging now actually working (symbols, sentences, AI, safety alerts)</li>
+          <li>Teacher email field added to Provider Settings</li>
+          <li><strong>KU email sent</strong> — Dr. Nancy Brady, nbrady@ku.edu, research collaboration proposal</li>
+          <li>Research concept document saved (~/aac-app/research_concept.md)</li>
+          <li>Netlify upgraded to Personal ($9/mo) — site back online after credit limit</li>
+          <li>Profile pics uploaded to @speakaac Instagram and TikTok</li>
+          <li>Pony Express scholarship hand-delivered to Lyle Ladner in Frankfort, KS (Mar 17)</li>
+          <li>4 awareness video scripts written with full production direction</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="day">
+      <div class="day-left"><div class="day-date">Mar 17 — S1</div><div class="day-line"></div></div>
+      <div class="day-content">
+        <div class="day-title">Messaging Overhaul + Stripe Live + New Pages + Security</div>
+        <div class="day-duration">~4 hrs</div>
+        <ul class="day-items">
+          <li><strong>Messaging corrected everywhere</strong> — removed "free app" language from landing page, GoFundMe, social bios, and all 4 video scripts</li>
+          <li><strong>Stripe account live</strong> — 3 payment links generated (Family $9.99/mo, Clinic $29.99/mo, Institution $49.99/mo), wired into all pricing buttons; account under review 2–3 days</li>
+          <li><strong>onboarding_demo.html</strong> — full interactive 10-step setup demo, no login required</li>
+          <li><strong>install_guide.html</strong> — iPad + desktop PWA install guide with screenshots</li>
+          <li><strong>privacy.html</strong> — COPPA-compliant privacy policy</li>
+          <li><strong>_headers</strong> — Netlify CSP + security headers (X-Frame-Options, X-Content-Type, CSP)</li>
+          <li><strong>Teacher dashboard demo</strong> (teacher_demo.html) — mock data version, no login required</li>
+          <li><strong>Mission page</strong> (mission.html) — story, equity angle, school access program</li>
+          <li>GoFundMe live: gofundme.com/f/giving-nonverbal-children-a-voice-and-a-way-to-stay-safe</li>
+          <li>Supabase RLS confirmed ON for both tables (events + profiles)</li>
+          <li>Project log (this file) created</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="day">
+      <div class="day-left"><div class="day-date">Mar 17 — S2</div><div class="day-line"></div></div>
+      <div class="day-content">
+        <div class="day-title">Core Vocab Bar + Teacher Rebuild + Custom Symbols + Offline</div>
+        <div class="day-duration">~4 hrs</div>
+        <ul class="day-items">
+          <li><strong>Core vocabulary bar</strong> — always-visible strip of 14 high-frequency words above grid; clinical AAC standard</li>
+          <li><strong>Category color coding</strong> — clinical-standard color accents per category</li>
+          <li><strong>Quick Phrases category</strong> (⚡) — 18 full phrases added as a grid category</li>
+          <li><strong>Session history drawer</strong> — 📋 Log button slides up timestamped log of everything communicated</li>
+          <li><strong>Teacher dashboard complete rebuild</strong> — summary stats, per-child charts, CSV export</li>
+          <li><strong>Custom symbol upload</strong> ("Mine" category 📷) — parent uploads photo, becomes tappable symbol; localStorage; deletable</li>
+          <li><strong>Offline indicator badge</strong> — pulsing badge appears/disappears on network change</li>
+          <li>Service worker bumped to v2; styles.css +367 lines; app.js +314 lines</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="day">
+      <div class="day-left"><div class="day-date">Mar 17 — S3</div><div class="day-line"></div></div>
+      <div class="day-content">
+        <div class="day-title">Full Deployment Sprint — App Goes Live End-to-End</div>
+        <div class="day-duration">~6 hrs</div>
+        <ul class="day-items">
+          <li><strong>Supabase ai_usage table created</strong> — tracks AI sentence usage per user per day; RLS on; ai_usage_summary view for cost monitoring</li>
+          <li><strong>Secure AI proxy deployed</strong> — netlify/functions/ai-sentence.js: Anthropic API key never in browser; free tier 5/day server-enforced; paid tiers unlimited; anon 3 lifetime</li>
+          <li><strong>Netlify env vars set</strong> — ANTHROPIC_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY live</li>
+          <li><strong>speakaac.org confirmed as custom domain</strong> — green dot in Netlify; all code references updated from boisterous-eclair subdomain</li>
+          <li><strong>Global email fix</strong> — all support@speakaac.app references replaced with support@speakaac.org; Zoho Mail confirmed working</li>
+          <li><strong>speak-store deployed</strong> — ~/speak-store/ live as a separate Netlify site (coming-soon merch/cause page)</li>
+          <li><strong>Stripe redirect URLs set</strong> — all 3 payment links now redirect to payment-success.html?tier= after purchase</li>
+          <li><strong>Supabase redirect URLs configured</strong> — speakaac.org added to allowed redirect list</li>
+          <li><strong>Forgot password feature built</strong> — reset-password.html, "Forgot password?" link in auth modal, Sync.resetPassword() in sync.js</li>
+          <li><strong>Service worker bumped to v5</strong> — forces full cache refresh; Typekit + Google Fonts added to NETWORK_ONLY bypass list</li>
+          <li><strong>CSP updated</strong> — Google Analytics, Typekit, Google Fonts all allowed in headers</li>
+          <li><strong>Console errors fixed</strong> — null addEventListener guard on index.html; stale SW cache resolved</li>
+          <li><strong>milestones.html created</strong> — public build log showing journey from idea to launch with pending milestone slots</li>
+          <li><strong>Cookie consent bar</strong> — on all 5 marketing pages; localStorage-based; shows once per browser</li>
+          <li><strong>Google Analytics snippet</strong> — added to all marketing pages with GA_MEASUREMENT_ID placeholder; consent-gated; CSP updated</li>
+          <li><strong>AI sentence builder CONFIRMED WORKING</strong> <span class="confirmed">✓ live</span> — tapped NO + EAT → Claude returned "I don't want to eat." — end-to-end verified</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="day">
+      <div class="day-left"><div class="day-date">Mar 18</div><div class="day-line"></div></div>
+      <div class="day-content">
+        <div class="day-title">Major Polish Sprint — 10+ Features Shipped</div>
+        <div class="day-duration">~3 hrs</div>
+        <ul class="day-items">
+          <li><strong>Mobile hamburger nav</strong> on all pages — responsive menu for phones</li>
+          <li><strong>Loading screen</strong> with progress bar on app launch</li>
+          <li><strong>Toast notifications</strong> — non-blocking feedback for all user actions</li>
+          <li><strong>Modal entrance animations</strong> — smooth open/close transitions</li>
+          <li><strong>Scroll-triggered fade-in animations</strong> on index.html sections</li>
+          <li><strong>404 page</strong> (404.html) + netlify.toml redirect rule</li>
+          <li><strong>Social footer links</strong> — Instagram + TikTok @speakaac on all pages</li>
+          <li><strong>"A message from the creator"</strong> section on mission.html</li>
+          <li><strong>User review prompt</strong> — fires on 5th session via EmailJS (EmailJS service: service_v5znqrd)</li>
+          <li><strong>clinic_guide.html</strong> — full clinical guide for SLPs; <strong>guide.html</strong> — user guide for families</li>
+          <li><strong>Mobile responsive layout</strong> — sidebar, topbar, corebar scale down at ≤480px breakpoint</li>
+          <li><strong>iOS long-press fix</strong> — -webkit-touch-callout, -webkit-user-select on all buttons</li>
+          <li><strong>color-scheme: light dark</strong> declared — prevents browser Smart Invert forcing black/white</li>
+          <li>Session lock greeting fixed — shows "Welcome back, [name]" or "Welcome back to Speak"</li>
+          <li><strong>Supabase ai_usage table</strong> SQL applied; ai_usage row logging confirmed working end-to-end</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="day">
+      <div class="day-left"><div class="day-date">Mar 19</div><div class="day-line"></div></div>
+      <div class="day-content">
+        <div class="day-title">First Real-World Clinical Demo</div>
+        <div class="day-duration">~1 hr</div>
+        <ul class="day-items">
+          <li><strong>Hospital social worker demo</strong> — showed speakaac.org on phone; she liked it</li>
+          <li>Walked away with: local school contact number + care home contact number</li>
+          <li>Issues noted for follow-up: grey globe favicon on hospital computer, browser "risky site" warning on new domain</li>
+          <li>research_concept.md drafted — NIDILRR Field-Initiated Projects one-pager</li>
+          <li>Dr. Brady email (hello@speakaac.org → nbrady@ku.edu) finalized for morning send</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="day">
+      <div class="day-left"><div class="day-date">Mar 20</div><div class="day-line"></div></div>
+      <div class="day-content">
+        <div class="day-title">GitHub Launch · Pricing Locked · Research Page · Dr. Brady</div>
+        <div class="day-duration">~3 hrs</div>
+        <ul class="day-items">
+          <li><strong>GitHub repo live</strong> <span class="confirmed">✓</span> — full history pushed to <strong>github.com/logansnell-a11y/speakaac</strong>; auto-deploy to Netlify connected</li>
+          <li><strong>Pricing finalized</strong> — Institution corrected to $49.99/mo; <strong>Lifetime plan added at $79.99</strong> (buy.stripe.com/dRm4gscXy5Ec5yZ0qidwc04); all Stripe links confirmed live</li>
+          <li><strong>research.html built</strong> — speakaac.org/research.html: full public research concept page with citations, live app links, CTA for university partners</li>
+          <li>Citations added: Sullivan &amp; Knutson (2000), Beukelman &amp; Light (2020), Light &amp; McNaughton (2014)</li>
+          <li><strong>Dr. Brady email sent</strong> <span class="confirmed">✓ sent</span> — hello@speakaac.org → nbrady@ku.edu @ 10:00 AM; research collaboration introduction; access code line removed</li>
+          <li><strong>ARASAAC email sent</strong> — support@speakaac.org → arasaac@aragon.es; formal commercial use permission request</li>
+          <li><strong>milestones.html updated</strong> — Mar 20 entries added: GitHub, pricing, research page, Dr. Brady, ARASAAC</li>
+          <li>Old exposed Anthropic API key deleted at console.anthropic.com</li>
+          <li>Research link added to nav on press.html, milestones.html</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Code breakdown ── -->
+  <h2>Codebase Breakdown</h2>
+  <div class="file-list">
+    <div class="file-row"><div class="file-name">styles.css</div><div class="file-bar-wrap"><div class="file-bar" style="width:100%"></div></div><div class="file-count">3,684</div></div>
+    <div class="file-row"><div class="file-name">app.js</div><div class="file-bar-wrap"><div class="file-bar" style="width:51%"></div></div><div class="file-count">1,886</div></div>
+    <div class="file-row"><div class="file-name">index.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:51%"></div></div><div class="file-count">1,863</div></div>
+    <div class="file-row"><div class="file-name">teacher.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:26%"></div></div><div class="file-count">952</div></div>
+    <div class="file-row"><div class="file-name">app.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:20%"></div></div><div class="file-count">723</div></div>
+    <div class="file-row"><div class="file-name">mission.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:17%"></div></div><div class="file-count">625</div></div>
+    <div class="file-row"><div class="file-name">onboarding_demo.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:16%"></div></div><div class="file-count">601</div></div>
+    <div class="file-row"><div class="file-name">onboarding.js</div><div class="file-bar-wrap"><div class="file-bar" style="width:16%"></div></div><div class="file-count">597</div></div>
+    <div class="file-row"><div class="file-name">research.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:14%"></div></div><div class="file-count">529 <span class="new-badge">new</span></div></div>
+    <div class="file-row"><div class="file-name">clinic_guide.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:14%"></div></div><div class="file-count">520 <span class="new-badge">new</span></div></div>
+    <div class="file-row"><div class="file-name">press.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:14%"></div></div><div class="file-count">514</div></div>
+    <div class="file-row"><div class="file-name">milestones.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:13%"></div></div><div class="file-count">496</div></div>
+    <div class="file-row"><div class="file-name">install_guide.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:12%"></div></div><div class="file-count">429</div></div>
+    <div class="file-row"><div class="file-name">guide.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:12%"></div></div><div class="file-count">429 <span class="new-badge">new</span></div></div>
+    <div class="file-row"><div class="file-name">payment-success.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:11%"></div></div><div class="file-count">414</div></div>
+    <div class="file-row"><div class="file-name">teacher_demo.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:10%"></div></div><div class="file-count">377</div></div>
+    <div class="file-row"><div class="file-name">dashboard.js</div><div class="file-bar-wrap"><div class="file-bar" style="width:8%"></div></div><div class="file-count">300</div></div>
+    <div class="file-row"><div class="file-name">ai-sentence.js</div><div class="file-bar-wrap"><div class="file-bar" style="width:6%"></div></div><div class="file-count">233</div></div>
+    <div class="file-row"><div class="file-name">terms.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:6%"></div></div><div class="file-count">201 <span class="new-badge">new</span></div></div>
+    <div class="file-row"><div class="file-name">privacy.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:6%"></div></div><div class="file-count">207</div></div>
+    <div class="file-row"><div class="file-name">reset-password.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:5%"></div></div><div class="file-count">187</div></div>
+    <div class="file-row"><div class="file-name">symbols.js</div><div class="file-bar-wrap"><div class="file-bar" style="width:5%"></div></div><div class="file-count">168</div></div>
+    <div class="file-row"><div class="file-name">sync.js</div><div class="file-bar-wrap"><div class="file-bar" style="width:3%"></div></div><div class="file-count">107</div></div>
+    <div class="file-row"><div class="file-name">arasaac.js</div><div class="file-bar-wrap"><div class="file-bar" style="width:2%"></div></div><div class="file-count">88</div></div>
+    <div class="file-row"><div class="file-name">404.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:2%"></div></div><div class="file-count">92 <span class="new-badge">new</span></div></div>
+    <div class="file-row"><div class="file-name">sw.js</div><div class="file-bar-wrap"><div class="file-bar" style="width:2%"></div></div><div class="file-count">66</div></div>
+    <div class="file-row" style="margin-top:10px; padding-top:10px; border-top:1px solid var(--border)">
+      <div class="file-name" style="font-weight:700;color:var(--gold)">TOTAL</div>
+      <div class="file-bar-wrap"></div>
+      <div class="file-count" style="color:var(--gold);font-weight:700">~16,300</div>
+    </div>
+  </div>
+
+  <!-- ── Money spent ── -->
+  <h2>Money Spent</h2>
+  <table>
+    <thead>
+      <tr><th>Service</th><th>What For</th><th>Cost</th><th>Recurring</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Claude Pro</td>
+        <td>All development sessions (Claude Code)</td>
+        <td class="cost-paid">$20.00</td>
+        <td>Monthly</td>
+      </tr>
+      <tr>
+        <td>Netlify Personal</td>
+        <td>Hosting speakaac.org (upgraded Mar 16)</td>
+        <td class="cost-paid">$9.00</td>
+        <td>Monthly</td>
+      </tr>
+      <tr>
+        <td>speakaac.org domain</td>
+        <td>Custom domain for the app</td>
+        <td class="cost-paid">~$12.00</td>
+        <td>Yearly</td>
+      </tr>
+      <tr>
+        <td>Anthropic API</td>
+        <td>Claude Haiku — AI sentence builder (pay-as-you-go, ~$0.00025/call)</td>
+        <td class="cost-free">~$0.00</td>
+        <td>Usage-based</td>
+      </tr>
+      <tr>
+        <td>Stripe</td>
+        <td>Payment processing — Family, Clinic, Institution plans</td>
+        <td class="cost-free">Free</td>
+        <td>2.9% + 30¢ per transaction</td>
+      </tr>
+      <tr>
+        <td>Supabase</td>
+        <td>Auth + database backend + ai_usage logging</td>
+        <td class="cost-free">Free</td>
+        <td>Free tier</td>
+      </tr>
+      <tr>
+        <td>Zoho Mail</td>
+        <td>support@speakaac.org business email</td>
+        <td class="cost-free">Free</td>
+        <td>Free tier</td>
+      </tr>
+      <tr>
+        <td>EmailJS</td>
+        <td>Silent safety channel alerts</td>
+        <td class="cost-free">Free</td>
+        <td>Free tier</td>
+      </tr>
+      <tr>
+        <td>ARASAAC</td>
+        <td>AAC symbol pictograms</td>
+        <td class="cost-free">Free</td>
+        <td>Free (CC license)</td>
+      </tr>
+      <tr>
+        <td>Ideogram</td>
+        <td>Logo generation</td>
+        <td class="cost-free">Free</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>GoFundMe</td>
+        <td>Fundraising page</td>
+        <td class="cost-free">Free</td>
+        <td>% of donations</td>
+      </tr>
+      <tr class="total-row">
+        <td>TOTAL</td>
+        <td></td>
+        <td>~$41.00</td>
+        <td>~$29/mo ongoing</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top:48px; font-size:0.78rem; color:var(--text-dim); text-align:center;">
+    Last updated March 20, 2026 · speakaac.org · github.com/logansnell-a11y/speakaac · AI sentence builder confirmed working ✓
+  </div>
+
+</div>
+</body>
+</html>
