@@ -239,7 +239,7 @@ function speak(text) {
   const audio = new Audio(path);
   audio.addEventListener("canplaythrough", () => {
     audioCache[key] = audio;
-    audio.play();
+    audio.play().catch(() => speakViaServer(text));
   }, { once: true });
 
   audio.addEventListener("error", () => {

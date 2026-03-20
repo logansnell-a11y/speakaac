@@ -22,8 +22,8 @@ const BLOCKLIST = [
   'fuck','shit','ass','bitch','nigger','faggot','cunt','bastard',
 ];
 function containsBlocked(text) {
-  const lower = text.toLowerCase();
-  return BLOCKLIST.some(w => lower.includes(w));
+  const words = text.toLowerCase().split(/\W+/);
+  return BLOCKLIST.some(w => words.includes(w));
 }
 
 // ── In-memory anon IP tracker (resets on function cold-start) ────────
@@ -179,8 +179,8 @@ exports.handler = async function (event) {
   }
 
   const prompt =
-    `A nonverbal child using an AAC communication app tapped these symbols in order: ` +
-    `"${cleaned.join(', ')}". Write one warm, natural, first-person sentence that captures ` +
+    `A nonverbal person using an AAC communication app tapped these symbols in order: ` +
+    `"${cleaned.join(', ')}". Write one clear, natural, first-person sentence that captures ` +
     `what they're most likely trying to express. Return ONLY the sentence with no explanation.`;
 
   try {
