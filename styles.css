@@ -90,6 +90,25 @@
   }
   .core-word-emoji { font-size: 0.9rem; }
   .core-word-label { font-size: 0.55rem; }
+
+  /* Plans modal — horizontal swipe instead of long vertical scroll */
+  #plans-grid {
+    flex-direction: row;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 8px;
+    gap: 12px;
+  }
+  #plans-grid::-webkit-scrollbar { display: none; }
+  .plan-card {
+    flex-shrink: 0;
+    width: 82vw;
+    scroll-snap-align: start;
+  }
+  .plan-features { font-size: 0.8rem; }
+  #plans-inner { padding: 16px 16px 32px; gap: 14px; }
 }
 
 html, body {
@@ -3165,15 +3184,15 @@ body.theme-minimal {
 /* ══════════════════════════════════════════════════════════════════
    CATEGORY COLOR CODING — clinical standard color accents
    ══════════════════════════════════════════════════════════════════ */
-.symbol-card[data-cat="needs"]    { border-top: 3px solid #e05555; }
-.symbol-card[data-cat="feelings"] { border-top: 3px solid #9b59b6; }
-.symbol-card[data-cat="people"]   { border-top: 3px solid #e0a830; }
-.symbol-card[data-cat="places"]   { border-top: 3px solid #e07820; }
-.symbol-card[data-cat="actions"]  { border-top: 3px solid #4a90d9; }
-.symbol-card[data-cat="food"]     { border-top: 3px solid #27ae60; }
-.symbol-card[data-cat="social"]   { border-top: 3px solid #e054a0; }
-.symbol-card[data-cat="quick"]    { border-top: 3px solid var(--gold); }
-.symbol-card[data-cat="custom"]   { border-top: 3px solid var(--gold); }
+.symbol-card[data-cat="needs"]    { border-top: 4px solid #e05555; background: rgba(224,85,85,0.07); }
+.symbol-card[data-cat="feelings"] { border-top: 4px solid #9b59b6; background: rgba(155,89,182,0.07); }
+.symbol-card[data-cat="people"]   { border-top: 4px solid #e0a830; background: rgba(224,168,48,0.07); }
+.symbol-card[data-cat="places"]   { border-top: 4px solid #e07820; background: rgba(224,120,32,0.07); }
+.symbol-card[data-cat="actions"]  { border-top: 4px solid #4a90d9; background: rgba(74,144,217,0.07); }
+.symbol-card[data-cat="food"]     { border-top: 4px solid #27ae60; background: rgba(39,174,96,0.07); }
+.symbol-card[data-cat="social"]   { border-top: 4px solid #e054a0; background: rgba(224,84,160,0.07); }
+.symbol-card[data-cat="quick"]    { border-top: 4px solid var(--gold); background: var(--gold-glow); }
+.symbol-card[data-cat="custom"]   { border-top: 4px solid var(--gold); background: var(--gold-glow); }
 
 /* Category dot indicators in sidebar */
 .cat-dot {

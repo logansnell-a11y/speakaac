@@ -1732,7 +1732,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "What is the AI sentence builder and who sees those requests?",
-    a: "When a child taps 2 or more symbols, the ✨ button turns those symbols into a full natural sentence spoken aloud. Free accounts get 5 AI sentences per day. Paid plans (Family and up) get unlimited AI sentences. Requests are processed through Speak's secure backend — no API key needed."
+    a: "When a child taps 2 or more symbols, the ✨ button turns those symbols into a full natural sentence spoken aloud. Free accounts get 10 AI sentences per day. Paid plans (Family and up) get unlimited AI sentences. Requests are processed through Speak's secure backend — no API key needed."
   },
   {
     q: "Who built this app?",
