@@ -1299,6 +1299,25 @@ button, [role="button"] {
   box-shadow: 0 4px 20px rgba(184, 116, 24, 0.18), var(--shadow-card);
 }
 
+.plan-card.plan-lifetime {
+  border-color: #4a90d9;
+  background: linear-gradient(160deg, rgba(74,144,217,0.08), var(--surface));
+  box-shadow: 0 4px 20px rgba(74,144,217,0.15), var(--shadow-card);
+}
+
+.plan-badge-lifetime {
+  background: #4a90d9;
+  color: #fff;
+}
+
+.plan-btn-lifetime {
+  background: #4a90d9;
+  color: #fff;
+  border: none;
+  font-weight: 800;
+}
+.plan-btn-lifetime:hover { background: #3a7bc8; }
+
 .plan-badge {
   position: absolute;
   top: -11px;

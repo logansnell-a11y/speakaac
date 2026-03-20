@@ -171,8 +171,8 @@ function getTier() {
 function tierUnlocks(feature) {
   const tier = getTier();
   const access = {
-    ai:          ["family", "clinic", "institution"],
-    history:     ["family", "clinic", "institution"],
+    ai:          ["family", "lifetime", "clinic", "institution"],
+    history:     ["family", "lifetime", "clinic", "institution"],
     dashboard:   ["clinic", "institution"],
     institution: ["institution"],
   };
@@ -877,8 +877,8 @@ function openSetupModal() {
   kioskStatusEl.className = `key-status ${settings.kiosk ? "ok" : "missing"}`;
 
   // Show current tier
-  const tierNames  = { free: "Free", family: "Family", clinic: "Clinic", institution: "Institution" };
-  const tierColors = { free: "missing", family: "ok", clinic: "ok", institution: "ok" };
+  const tierNames  = { free: "Free", family: "Family", lifetime: "Lifetime", clinic: "Clinic", institution: "Institution" };
+  const tierColors = { free: "missing", family: "ok", lifetime: "ok", clinic: "ok", institution: "ok" };
   const tierEl = document.getElementById("setup-tier-display");
   const currentTier = settings.tier || "free";
   tierEl.textContent = `Current plan: ${tierNames[currentTier] || "Free"}`;
@@ -958,6 +958,7 @@ upgradeCancel.addEventListener("click", () => {
 function planBtnLabel(t) {
   if (t === "free")        return "Get Started Free";
   if (t === "family")      return "Get Family";
+  if (t === "lifetime")    return "Buy Once — Own It";
   if (t === "clinic")      return "Get Clinic";
   if (t === "institution") return "Contact Us";
   return "Select";
@@ -986,6 +987,7 @@ plansClose.addEventListener("click", () => {
 // Stripe payment links — keyed by tier
 const STRIPE_LINKS = {
   family:      'https://buy.stripe.com/8x25kw1eQfeMgdDeh8dwc00',
+  lifetime:    null, // TODO: create one-time payment product in Stripe → paste link here
   clinic:      'https://buy.stripe.com/00w9AM9Lm5Ec0eF5KCdwc01',
   institution: null, // contact email instead
 };
@@ -1015,6 +1017,20 @@ document.querySelectorAll(".plan-btn[data-select]").forEach(btn => {
         "mailto:support@speakaac.org?subject=Institution%20Plan%20Inquiry&body=Hi%20Logan%2C%20I'm%20interested%20in%20the%20Institution%20plan%20for%20Speak.",
         "_blank"
       );
+      return;
+    }
+
+    // Lifetime — redirect to Stripe one-time payment when link is ready
+    if (selected === "lifetime") {
+      if (STRIPE_LINKS.lifetime) {
+        window.open(STRIPE_LINKS.lifetime, "_blank");
+        showToast("Redirecting to checkout…", "info", 3000);
+      } else {
+        window.open(
+          "mailto:support@speakaac.org?subject=Lifetime%20Plan&body=Hi%2C%20I'd%20like%20to%20purchase%20the%20Speak%20Lifetime%20plan.",
+          "_blank"
+        );
+      }
       return;
     }
 
