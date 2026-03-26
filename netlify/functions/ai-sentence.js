@@ -26,8 +26,7 @@ function containsBlocked(text) {
   return BLOCKLIST.some(w => words.includes(w));
 }
 
-// ── In-memory anon IP tracker (resets on function cold-start) ────────
-const anonIpCount = {};
+// ── Anon IP tracker — persisted in Supabase (survives cold starts) ───
 
 // ── Supabase helpers (pure fetch — no npm needed) ────────────────────
 async function verifySupabaseJWT(jwt) {
@@ -90,6 +89,21 @@ async function logUsage({ userId, ip, wordsCount, tier }) {
   });
 }
 
+async function getAnonLifetimeCount(ip) {
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/ai_usage?user_id=is.null&ip=eq.${encodeURIComponent(ip)}&select=id`,
+    {
+      headers: {
+        'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+        'apikey': SUPABASE_SERVICE_KEY,
+      },
+    }
+  );
+  if (!res.ok) return 0;
+  const rows = await res.json();
+  return rows.length;
+}
+
 // ── Main handler ─────────────────────────────────────────────────────
 exports.handler = async function (event) {
   if (event.httpMethod !== 'POST') {
@@ -135,9 +149,9 @@ exports.handler = async function (event) {
   let tier   = 'anon';
 
   if (!jwt) {
-    // Unauthenticated — lifetime cap per IP
-    anonIpCount[ip] = (anonIpCount[ip] || 0) + 1;
-    if (anonIpCount[ip] > ANON_LIFETIME_LIMIT) {
+    // Unauthenticated — lifetime cap per IP, enforced in Supabase (persists across cold starts)
+    const anonCount = await getAnonLifetimeCount(ip);
+    if (anonCount >= ANON_LIFETIME_LIMIT) {
       return {
         statusCode: 429,
         body: JSON.stringify({
