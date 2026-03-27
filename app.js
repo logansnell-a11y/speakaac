@@ -283,6 +283,11 @@ let aiLoading = false;
 async function buildAISentence() {
   if (aiLoading || sentence.length < 2) return;
 
+  if (!navigator.onLine) {
+    showToast('AI sentences need an internet connection', 'warn', 3000);
+    return;
+  }
+
   const isPaid = tierUnlocks("ai");
 
   // Client-side gate (fast UI feedback — server enforces the real limit)

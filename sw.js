@@ -1,5 +1,5 @@
 // Speak Service Worker — offline support + asset caching
-const CACHE = 'speak-v5';
+const CACHE = 'speak-v6';
 
 const PRECACHE = [
   '/app.html',
@@ -17,11 +17,11 @@ const PRECACHE = [
 ];
 
 // External origins — always go to network, never cache
+// Note: arasaac.org removed so symbol images cache after first load (enables offline use)
 const NETWORK_ONLY = [
   'supabase.co',
   'emailjs.com',
   'anthropic.com',
-  'arasaac.org',
   'jsdelivr.net',
   'typekit.net',
   'googleapis.com',

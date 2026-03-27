@@ -104,10 +104,28 @@ async function getAnonLifetimeCount(ip) {
   return rows.length;
 }
 
+// ── CORS ─────────────────────────────────────────────────────────────
+const ALLOWED_ORIGIN = 'https://speakaac.org';
+
+function corsHeaders(origin) {
+  return {
+    'Access-Control-Allow-Origin': origin === ALLOWED_ORIGIN ? ALLOWED_ORIGIN : '',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  };
+}
+
 // ── Main handler ─────────────────────────────────────────────────────
 exports.handler = async function (event) {
+  const origin = event.headers['origin'] || '';
+  const headers = corsHeaders(origin);
+
+  if (event.httpMethod === 'OPTIONS') {
+    return { statusCode: 204, headers, body: '' };
+  }
+
   if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: JSON.stringify({ error: 'Method not allowed' }) };
+    return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
   }
 
   const ip = (event.headers['x-forwarded-for'] || 'unknown').split(',')[0].trim();
@@ -117,11 +135,11 @@ exports.handler = async function (event) {
   try {
     words = JSON.parse(event.body || '{}').words;
   } catch {
-    return { statusCode: 400, body: JSON.stringify({ error: 'Invalid JSON' }) };
+    return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid JSON' }) };
   }
 
   if (!Array.isArray(words) || words.length < 1 || words.length > 20) {
-    return { statusCode: 400, body: JSON.stringify({ error: 'words must be an array of 1–20 items' }) };
+    return { statusCode: 400, headers, body: JSON.stringify({ error: 'words must be an array of 1–20 items' }) };
   }
 
   const cleaned = words
@@ -130,13 +148,14 @@ exports.handler = async function (event) {
     .slice(0, 20);
 
   if (cleaned.length === 0) {
-    return { statusCode: 400, body: JSON.stringify({ error: 'No valid words provided' }) };
+    return { statusCode: 400, headers, body: JSON.stringify({ error: 'No valid words provided' }) };
   }
 
   // Safety: blocklist input — return a safe fallback silently
   if (cleaned.some(w => containsBlocked(w))) {
     return {
       statusCode: 200,
+      headers,
       body: JSON.stringify({ sentence: 'I would like ' + cleaned.join(', ') + '.' }),
     };
   }
@@ -154,6 +173,7 @@ exports.handler = async function (event) {
     if (anonCount >= ANON_LIFETIME_LIMIT) {
       return {
         statusCode: 429,
+        headers,
         body: JSON.stringify({
           error: 'Create a free account to keep using AI sentences.',
           limitReached: true,
@@ -164,7 +184,7 @@ exports.handler = async function (event) {
     // Verify Supabase JWT
     const user = await verifySupabaseJWT(jwt);
     if (!user || !user.id) {
-      return { statusCode: 401, body: JSON.stringify({ error: 'Session expired — please sign in again.' }) };
+      return { statusCode: 401, headers, body: JSON.stringify({ error: 'Session expired — please sign in again.' }) };
     }
     userId = user.id;
     tier   = await getUserTier(userId);
@@ -175,6 +195,7 @@ exports.handler = async function (event) {
       if (usedToday >= FREE_DAILY_LIMIT) {
         return {
           statusCode: 429,
+          headers,
           body: JSON.stringify({
             error: `You've used your ${FREE_DAILY_LIMIT} free AI sentences for today. Upgrade to Family for unlimited.`,
             limitReached: true,
@@ -189,7 +210,7 @@ exports.handler = async function (event) {
   // ── Call Claude Haiku ───────────────────────────────────────────────
   if (!ANTHROPIC_KEY) {
     console.error('ANTHROPIC_API_KEY not set');
-    return { statusCode: 500, body: JSON.stringify({ error: 'AI service temporarily unavailable' }) };
+    return { statusCode: 500, headers, body: JSON.stringify({ error: 'AI service temporarily unavailable' }) };
   }
 
   const prompt =
@@ -233,7 +254,7 @@ exports.handler = async function (event) {
 
     return {
       statusCode: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...headers, 'Content-Type': 'application/json' },
       body: JSON.stringify({ sentence }),
     };
 
@@ -241,6 +262,7 @@ exports.handler = async function (event) {
     console.error('ai-sentence handler error:', e);
     return {
       statusCode: 500,
+      headers,
       body: JSON.stringify({ error: 'Could not build sentence — please try again.' }),
     };
   }
