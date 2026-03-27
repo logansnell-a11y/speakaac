@@ -48,8 +48,10 @@ window.Sync = {
     try {
       const session = await this.getSession();
       if (!session) return;
+      // Strip tier before saving — tier is set only by Stripe webhook via service role key
+      const { tier, ...safeSettings } = settings;
       await _sb.from('profiles').upsert(
-        { user_id: session.user.id, settings, updated_at: new Date().toISOString() },
+        { user_id: session.user.id, settings: safeSettings, updated_at: new Date().toISOString() },
         { onConflict: 'user_id' }
       );
     } catch (e) { console.warn('Sync save failed:', e); }
