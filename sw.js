@@ -17,7 +17,7 @@ const PRECACHE = [
 ];
 
 // External origins — always go to network, never cache
-// Note: arasaac.org removed so symbol images cache after first load (enables offline use)
+// Note: jsdelivr.net excluded so Mulberry symbol images cache after first load (enables offline use)
 const NETWORK_ONLY = [
   'supabase.co',
   'emailjs.com',
