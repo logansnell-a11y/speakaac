@@ -9,7 +9,7 @@ const PRECACHE = [
   '/onboarding.js',
   '/dashboard.js',
   '/symbols.js',
-  '/arasaac.js',
+  '/mulberry.js',
   '/sync.js',
   '/manifest.json',
   '/icons/icon.png',
