@@ -859,6 +859,21 @@ pinCancel.addEventListener("click", () => {
   pinEntry = "";
 });
 
+document.addEventListener("keydown", (e) => {
+  if (pinModal.classList.contains("hidden")) return;
+  if (e.key >= "0" && e.key <= "9") {
+    if (pinEntry.length < 4) {
+      pinEntry += e.key;
+      updatePinDots();
+      if (pinEntry.length === 4) setTimeout(submitPin, 200);
+    }
+  } else if (e.key === "Backspace" || e.key === "Delete") {
+    pinEntry = pinEntry.slice(0, -1);
+    updatePinDots();
+    pinError.classList.add("hidden");
+  }
+});
+
 // ── Setup Modal ────────────────────────────────────────────────────
 function openSetupModal() {
   const settings = loadSettings();
@@ -1225,6 +1240,21 @@ document.getElementById('sl-forgot')?.addEventListener('click', () => {
     slErrorEl.textContent = 'Incorrect PIN — try again';
     slErrorEl.classList.add('hidden');
   }, 5000);
+});
+
+document.addEventListener('keydown', (e) => {
+  if (sessionLockEl.classList.contains('hidden')) return;
+  if (e.key >= '0' && e.key <= '9') {
+    if (_slEntry.length < 4) {
+      _slEntry += e.key;
+      updateSlDots();
+      if (_slEntry.length === 4) setTimeout(submitSessionPin, 200);
+    }
+  } else if (e.key === 'Backspace' || e.key === 'Delete') {
+    _slEntry = _slEntry.slice(0, -1);
+    updateSlDots();
+    slErrorEl.classList.add('hidden');
+  }
 });
 
 // Reset inactivity timer on any user interaction
