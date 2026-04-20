@@ -722,7 +722,7 @@ button, [role="button"] {
   width: 220px;
   height: 220px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(212,146,10,0.18) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(37,99,196,0.18) 0%, transparent 70%);
   pointer-events: none;
   animation: glow-pulse 3s ease-in-out infinite;
 }
@@ -839,7 +839,7 @@ button, [role="button"] {
   height: 62px;
   border-radius: var(--radius);
   border: 1.5px solid var(--gold-bright);
-  background: linear-gradient(135deg, rgba(184,116,24,0.18), rgba(212,146,10,0.22));
+  background: linear-gradient(135deg, rgba(37,99,196,0.18), rgba(37,99,196,0.22));
   color: var(--gold-bright);
   font-size: 1.5rem;
   cursor: pointer;
@@ -1779,7 +1779,7 @@ body.reduced-animations #pc-shield          { animation: none; }
   text-align: center;
 }
 
-#pw-logo { width: 72px; height: 72px; border-radius: 18px; display: block; }
+#pw-logo { width: 72px; height: 72px; border-radius: 18px; display: block; filter: hue-rotate(200deg) saturate(1.4) brightness(0.9); }
 
 #pw-title {
   font-size: 1.8rem;
@@ -2769,7 +2769,7 @@ body.theme-minimal {
   gap: 12px;
 }
 
-#auth-logo { width: 56px; height: 56px; border-radius: 14px; display: block; }
+#auth-logo { width: 56px; height: 56px; border-radius: 14px; display: block; filter: hue-rotate(200deg) saturate(1.4) brightness(0.9); }
 
 #auth-inner h2 {
   font-size: 1.35rem;
@@ -2966,7 +2966,7 @@ body.theme-minimal {
   justify-content: center;
   cursor: pointer;
   flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(184,116,24,0.30);
+  box-shadow: 0 2px 6px rgba(37,99,196,0.30);
   transition: transform 0.12s, box-shadow 0.12s;
   padding: 0;
   overflow: hidden;
@@ -2976,11 +2976,12 @@ body.theme-minimal {
   width: 32px;
   height: 32px;
   display: block;
+  filter: hue-rotate(200deg) saturate(1.4) brightness(0.9);
 }
 
 #app-logo:active {
   transform: scale(0.91);
-  box-shadow: 0 1px 3px rgba(184,116,24,0.20);
+  box-shadow: 0 1px 3px rgba(37,99,196,0.20);
 }
 
 /* ── Polish: tighter topbar speak button ────────────────────────── */
@@ -3038,6 +3039,7 @@ body.theme-minimal {
   height: 64px;
   border-radius: 16px;
   margin-bottom: 10px;
+  filter: hue-rotate(200deg) saturate(1.4) brightness(0.9);
 }
 
 #sl-greeting {
@@ -3554,6 +3556,7 @@ body.large-targets .core-word-emoji {
   height: 72px;
   border-radius: 18px;
   animation: loading-pulse 2s ease-in-out infinite;
+  filter: hue-rotate(200deg) saturate(1.4) brightness(0.9);
 }
 #loading-spinner {
   width: 30px;
