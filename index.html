@@ -149,7 +149,7 @@
       position: relative;
       overflow: hidden;
       /* Subtle dot grid for texture */
-      background-image: radial-gradient(rgba(200,146,42,0.07) 1px, transparent 1px);
+      background-image: radial-gradient(rgba(37,99,196,0.07) 1px, transparent 1px);
       background-size: 36px 36px;
     }
 
@@ -158,9 +158,9 @@
       position: absolute;
       inset: 0;
       background:
-        radial-gradient(ellipse 80% 55% at 50% 15%, rgba(200,146,42,0.13) 0%, transparent 65%),
-        radial-gradient(ellipse 45% 35% at 15% 85%, rgba(200,146,42,0.05) 0%, transparent 60%),
-        radial-gradient(ellipse 45% 35% at 85% 85%, rgba(200,146,42,0.05) 0%, transparent 60%),
+        radial-gradient(ellipse 80% 55% at 50% 15%, rgba(37,99,196,0.13) 0%, transparent 65%),
+        radial-gradient(ellipse 45% 35% at 15% 85%, rgba(37,99,196,0.05) 0%, transparent 60%),
+        radial-gradient(ellipse 45% 35% at 85% 85%, rgba(37,99,196,0.05) 0%, transparent 60%),
         linear-gradient(to bottom, rgba(14,14,14,0.0) 0%, rgba(14,14,14,0.45) 100%);
       pointer-events: none;
     }
@@ -235,7 +235,7 @@
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      box-shadow: 0 4px 20px rgba(200,146,42,0.35);
+      box-shadow: 0 4px 20px rgba(37,99,196,0.35);
       transition: transform 0.12s, background 0.15s;
       display: inline-block;
     }
@@ -310,7 +310,7 @@
 
     /* ── Safety channel feature ──────────────────────────────── */
     .safety-section {
-      background: linear-gradient(135deg, #0f0f0f 0%, #141008 100%);
+      background: var(--bg);
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
     }
@@ -566,7 +566,7 @@
 
     .price-card.featured {
       border-color: var(--gold);
-      background: linear-gradient(160deg, #1a1508 0%, var(--surface) 60%);
+      background: linear-gradient(160deg, var(--bg) 0%, var(--surface) 60%);
     }
 
     .price-badge {
@@ -979,10 +979,10 @@
 
     /* ── Safety section glow enhancement ─────────────────────── */
     .safety-section {
-      background: linear-gradient(135deg, #0d0d0d 0%, #13100a 50%, #0d0d0d 100%);
+      background: var(--bg);
     }
     .safety-stat-box {
-      background: linear-gradient(160deg, #1a1a1a 0%, #181208 100%);
+      background: var(--bg);
       border-color: rgba(200,146,42,0.2);
       box-shadow: 0 8px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(200,146,42,0.08), inset 0 1px 0 rgba(200,146,42,0.1);
     }
