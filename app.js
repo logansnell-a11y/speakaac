@@ -34,6 +34,8 @@ const LANG_KEY  = 'aac_lang';
 const VOICE_KEY = 'aac_voice';
 function getLang() { return localStorage.getItem(LANG_KEY) || 'en'; }
 function setLang(l) { localStorage.setItem(LANG_KEY, l); }
+function getBilingual() { return localStorage.getItem('aac_bilingual') === '1'; }
+function setBilingual(on) { localStorage.setItem('aac_bilingual', on ? '1' : '0'); }
 
 // Returns translated {label, speech} for a symbol, falling back to English
 function symT(sym) {
@@ -356,7 +358,7 @@ async function buildAISentence() {
     const res = await fetch("/.netlify/functions/ai-sentence", {
       method: "POST",
       headers,
-      body: JSON.stringify({ words: prevSentence })
+      body: JSON.stringify({ words: prevSentence, lang: getLang() })
     });
 
     const data = await res.json();
@@ -429,8 +431,14 @@ function makeCard(sym, cat) {
   }
 
   const label = document.createElement("div");
-  label.className   = "symbol-label";
-  label.textContent = t.label;
+  label.className = "symbol-label";
+  if (getBilingual()) {
+    const esEntry = typeof TRANSLATIONS_ES !== 'undefined' ? TRANSLATIONS_ES[sym.id] : null;
+    label.textContent = esEntry ? `${sym.label} / ${esEntry.label}` : sym.label;
+    label.classList.add('bilingual-label');
+  } else {
+    label.textContent = t.label;
+  }
 
   card.appendChild(imgArea);
   card.appendChild(label);
@@ -1777,6 +1785,16 @@ function finishInit() {
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.addEventListener('click', () => applyLang(btn.dataset.lang));
   });
+  // Wire up bilingual toggle
+  const bilingualToggle = document.getElementById('s-bilingual');
+  if (bilingualToggle) {
+    bilingualToggle.checked = getBilingual();
+    bilingualToggle.addEventListener('change', () => {
+      setBilingual(bilingualToggle.checked);
+      renderGrid(activeCategory);
+      renderCoreBar();
+    });
+  }
   // Voice picker — populate now and re-populate when browser finishes loading voices
   if (window.speechSynthesis) {
     speechSynthesis.addEventListener('voiceschanged', populateVoiceSelect);

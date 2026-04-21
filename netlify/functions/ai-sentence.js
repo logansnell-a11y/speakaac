@@ -131,9 +131,11 @@ exports.handler = async function (event) {
   const ip = (event.headers['x-forwarded-for'] || 'unknown').split(',')[0].trim();
 
   // ── Parse + validate request body ──────────────────────────────────
-  let words;
+  let words, lang;
   try {
-    words = JSON.parse(event.body || '{}').words;
+    const body = JSON.parse(event.body || '{}');
+    words = body.words;
+    lang = body.lang === 'es' ? 'es' : 'en';
   } catch {
     return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid JSON' }) };
   }
@@ -213,8 +215,12 @@ exports.handler = async function (event) {
     return { statusCode: 500, headers, body: JSON.stringify({ error: 'AI service temporarily unavailable' }) };
   }
 
+  const langInstruction = lang === 'es'
+    ? 'Respond in Spanish only. '
+    : '';
+
   const prompt =
-    `A nonverbal person using an AAC communication app tapped these symbols in order: ` +
+    `${langInstruction}A nonverbal person using an AAC communication app tapped these symbols in order: ` +
     `"${cleaned.join(', ')}". Write one clear, natural, first-person sentence that captures ` +
     `what they're most likely trying to express. Return ONLY the sentence with no explanation.`;
 

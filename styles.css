@@ -342,6 +342,15 @@ button, [role="button"] {
   flex-shrink: 0;
 }
 
+.symbol-label.bilingual-label {
+  font-size: 0.58rem;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+}
+.symbol-label.bilingual-label::after {
+  content: '';
+}
+
 /* ── Bottom bar — grounded, balanced ─────────────────────────── */
 #bottombar {
   position: fixed;
