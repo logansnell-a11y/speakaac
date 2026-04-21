@@ -314,6 +314,12 @@
         </section>
 
         <section class="setup-section">
+          <h3>Voice</h3>
+          <p class="setup-hint">Choose the speaking voice. Options shown match your current language.</p>
+          <select id="s-voice" class="setup-input" style="width:100%;"></select>
+        </section>
+
+        <section class="setup-section">
           <h3>Kiosk Mode</h3>
           <p class="setup-hint">Locks the app in fullscreen. The child cannot exit or access other apps. Exit requires entering your Provider PIN. Recommended for school and clinic tablets.</p>
           <label class="setup-toggle">
@@ -326,10 +332,18 @@
         <section class="setup-section">
           <h3>Provider PIN</h3>
           <p class="setup-hint">4-digit PIN to access this settings screen. Default is 0000.</p>
+          <div id="pin-default-warning" class="pin-warning hidden">⚠️ Default PIN is in use. Set a unique PIN to secure provider access.</div>
           <label class="setup-label">
             New PIN (leave blank to keep current)
             <input class="setup-input" type="tel" id="s-pin" placeholder="4 digits" maxlength="4" pattern="[0-9]{4}" />
           </label>
+        </section>
+
+        <section class="setup-section" id="setup-report-section">
+          <h3>Communication Report</h3>
+          <p class="setup-hint">Symbol taps from this device — last 7 days.</p>
+          <button id="copy-report-btn" class="setup-btn-sm" style="margin-bottom:8px">Copy summary</button>
+          <div id="progress-report-content"></div>
         </section>
 
         <button id="setup-save">Save Settings</button>
@@ -728,5 +742,17 @@
   <script src="onboarding.js"></script>
   <script src="dashboard.js"></script>
   <script src="app.js"></script>
+
+  <!-- ── SAFETY PROMPT ────────────────────────────────────────── -->
+  <div id="safety-prompt" class="safety-prompt hidden" role="alertdialog" aria-label="Need help?">
+    <div class="safety-prompt-inner">
+      <div class="safety-prompt-icon">🆘</div>
+      <p class="safety-prompt-msg">Do you need help <strong>right now</strong>?</p>
+      <div class="safety-prompt-btns">
+        <button id="safety-prompt-yes" class="safety-prompt-btn safety-prompt-yes">Yes, get help</button>
+        <button id="safety-prompt-no"  class="safety-prompt-btn safety-prompt-no">No, I'm okay</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

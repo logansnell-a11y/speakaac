@@ -863,6 +863,117 @@ button, [role="button"] {
   color: var(--text);
 }
 
+/* ── PIN Default Warning ─────────────────────────────────────────── */
+.pin-warning {
+  background: rgba(201,74,46,0.10);
+  border: 1.5px solid var(--red);
+  border-radius: 8px;
+  color: var(--red);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+}
+
+/* ── Communication Progress Report ───────────────────────────────── */
+.pr-stats {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.pr-stat {
+  flex: 1;
+  background: var(--surface2);
+  border: 1.5px solid var(--border-light);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 8px 8px;
+}
+.pr-num {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--gold);
+  line-height: 1;
+}
+.pr-lbl {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 3px;
+}
+.pr-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 100px;
+  margin-bottom: 16px;
+}
+.pr-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  height: 100%;
+}
+.pr-count {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  height: 12px;
+  line-height: 12px;
+}
+.pr-track {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  background: var(--surface2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.pr-bar {
+  width: 100%;
+  background: var(--gold);
+  border-radius: 4px 4px 0 0;
+  min-height: 0;
+  transition: height 0.3s ease;
+}
+.pr-day {
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+.pr-top-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 8px;
+}
+.pr-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 0.85rem;
+}
+.pr-top-row:last-child { border-bottom: none; }
+.pr-top-n {
+  font-weight: 700;
+  color: var(--gold);
+  font-size: 0.85rem;
+}
+
 /* ── AI Sentence Button ──────────────────────────────────────────── */
 #btn-ai {
   flex-shrink: 0;
@@ -3222,6 +3333,29 @@ body.theme-minimal {
   background: var(--gold-glow);
   border-color: var(--gold-bright);
 }
+
+/* Fitzgerald Key — clinical word-class color coding on core vocabulary bar */
+.core-word-btn[data-word-class="pronoun"] {
+  border-top-color: #c8880a;
+  background: rgba(200,136,10,0.13);
+}
+.core-word-btn[data-word-class="verb"] {
+  border-top-color: #2e7d32;
+  background: rgba(46,125,50,0.11);
+}
+.core-word-btn[data-word-class="descriptor"] {
+  border-top-color: #1565c0;
+  background: rgba(21,101,192,0.11);
+}
+.core-word-btn[data-word-class="negative"] {
+  border-top-color: var(--red);
+  background: var(--red-glow);
+}
+.core-word-btn[data-word-class="social"] {
+  border-top-color: #d97706;
+  background: rgba(217,119,6,0.11);
+}
+
 .core-word-emoji {
   font-size: 1.1rem;
   line-height: 1;
@@ -3716,3 +3850,47 @@ body.large-targets .core-word-emoji {
   color: var(--text-dim, var(--text-muted));
   margin: 0;
 }
+
+/* ── Safety Prompt ─────────────────────────────────────────────── */
+.safety-prompt {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 3000;
+}
+.safety-prompt.hidden { display: none; }
+.safety-prompt-inner {
+  background: var(--surface);
+  border: 3px solid var(--red);
+  border-radius: 20px;
+  padding: 32px 28px;
+  max-width: 340px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+}
+.safety-prompt-icon { font-size: 2.8rem; margin-bottom: 12px; }
+.safety-prompt-msg { font-size: 1.25rem; font-weight: 600; margin: 0 0 24px; line-height: 1.4; }
+.safety-prompt-btns { display: flex; gap: 12px; }
+.safety-prompt-btn {
+  flex: 1; padding: 14px 8px;
+  border: none; border-radius: 12px;
+  font-size: 1rem; font-weight: 700; cursor: pointer;
+}
+.safety-prompt-yes { background: var(--red); color: #fff; }
+.safety-prompt-no  { background: var(--surface-raised); color: var(--text); border: 1px solid var(--border); }
+
+/* ── Onboarding PIN step ───────────────────────────────────────── */
+.ob-pin-wrap { display:flex; flex-direction:column; align-items:center; gap:16px; padding-top:8px; }
+.ob-pin-dots { display:flex; gap:16px; }
+.ob-pin-dots span { width:20px; height:20px; border-radius:50%; background:var(--border); transition:background .15s; }
+.ob-pin-hint { font-size:0.9rem; color:var(--text-muted); }
+.ob-pin-pad { display:grid; grid-template-columns:repeat(3,72px); gap:10px; }
+.ob-pin-key {
+  width:72px; height:60px; border-radius:12px;
+  border:1px solid var(--border); background:var(--surface-raised);
+  font-size:1.4rem; font-weight:600; cursor:pointer;
+  transition: background .12s;
+}
+.ob-pin-key:active { background: var(--primary); color: #fff; }
+.ob-pin-key:empty, .ob-pin-key[data-key=""] { pointer-events:none; background:transparent; border:none; }

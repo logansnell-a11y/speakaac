@@ -63,7 +63,8 @@ const EMAILJS_PUBLIC_KEY  = 'XwG8nU8PmuFDONFZW';
 //   {{reason}} {{last_message}} {{timestamp}}
 
 // ── Language ─────────────────────────────────────────────────────────
-const LANG_KEY = 'aac_lang';
+const LANG_KEY  = 'aac_lang';
+const VOICE_KEY = 'aac_voice';
 function getLang() { return localStorage.getItem(LANG_KEY) || 'en'; }
 function setLang(l) { localStorage.setItem(LANG_KEY, l); }
 
@@ -92,6 +93,21 @@ function applyLang(lang) {
   document.querySelectorAll('.lang-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.lang === lang);
   });
+  // Repopulate voice list for new language
+  populateVoiceSelect();
+}
+
+function populateVoiceSelect() {
+  const sel = document.getElementById('s-voice');
+  if (!sel || !window.speechSynthesis) return;
+  const voices = window.speechSynthesis.getVoices();
+  const isEs = getLang() === 'es';
+  const filtered = voices.filter(v => isEs ? v.lang.startsWith('es') : v.lang.startsWith('en'));
+  if (!filtered.length) return;
+  const saved = localStorage.getItem(VOICE_KEY);
+  sel.innerHTML = filtered.map(v =>
+    `<option value="${v.name}"${v.name === saved ? ' selected' : ''}>${v.name} (${v.lang})</option>`
+  ).join('');
 }
 
 // ── Settings ────────────────────────────────────────────────────────
@@ -303,9 +319,11 @@ async function speakViaServer(text) {
     utt.pitch  = 1.08;
     const isEs = getLang() === 'es';
     utt.lang   = isEs ? 'es-US' : 'en-US';
-    const pick = window.speechSynthesis.getVoices().find(v =>
-      isEs ? v.lang.startsWith('es') : (v.name === "Samantha" || v.name === "Karen" || v.lang === "en-US")
-    );
+    const savedVoice = localStorage.getItem(VOICE_KEY);
+    const pick = window.speechSynthesis.getVoices().find(v => {
+      if (savedVoice) return v.name === savedVoice;
+      return isEs ? v.lang.startsWith('es') : (v.name === "Samantha" || v.name === "Karen" || v.lang === "en-US");
+    });
     if (pick) utt.voice = pick;
     window.speechSynthesis.speak(utt);
   }
@@ -490,6 +508,16 @@ function renderGrid(category) {
 const DISTRESS_SIGNALS = ["scared", "I am hurting", "I feel hurt", "overwhelmed", "angry", "lonely"];
 const HELP_SIGNALS     = ["I need help", "help"];
 
+// Single-tap safety escalation — these IDs surface an explicit "Need help now?" prompt
+const SAFETY_SYMBOL_IDS = new Set([
+  'cv_help',  // core bar Help
+  'help',     // Needs grid "Help Me" — speech: "I need help"
+  'hurt',     // Needs grid "Hurt" — speech: "I am hurting"
+  'hurt2',    // Feelings "Hurt Inside" — speech: "I feel hurt"
+  'scared',   // Feelings "Scared"
+  'q_hurt',   // Quick Phrases "I'm hurting"
+]);
+
 function checkHiddenTrigger() {
   if (sentence.length < 2) return;
   const flat = sentence.join(" ").toLowerCase();
@@ -521,6 +549,7 @@ function onSymbolTap(sym, card) {
   logEvent('symbol', { id: sym.id, label: t.label, category: activeCategory, speech: t.speech });
   updateDisplay();
   checkHiddenTrigger();
+  if (SAFETY_SYMBOL_IDS.has(sym.id)) showSafetyPrompt();
 }
 
 // ── Category tabs ──────────────────────────────────────────────────
@@ -756,6 +785,31 @@ const REASON_LABELS = {
 const ALERT_COOLDOWN_MS = 60_000; // one alert per minute max
 let   lastAlertTime     = 0;
 
+// ── Single-tap safety prompt ───────────────────────────────────────
+function showSafetyPrompt() {
+  const prompt = document.getElementById('safety-prompt');
+  if (!prompt || prompt._showing) return;
+  prompt._showing = true;
+  prompt.classList.remove('hidden');
+
+  const dismissTimer = setTimeout(dismissSafetyPrompt, 10000);
+
+  document.getElementById('safety-prompt-yes').onclick = () => {
+    clearTimeout(dismissTimer);
+    dismissSafetyPrompt();
+    sendPrivateAlert('hurting');
+  };
+  document.getElementById('safety-prompt-no').onclick = () => {
+    clearTimeout(dismissTimer);
+    dismissSafetyPrompt();
+  };
+}
+
+function dismissSafetyPrompt() {
+  const prompt = document.getElementById('safety-prompt');
+  if (prompt) { prompt.classList.add('hidden'); prompt._showing = false; }
+}
+
 function sendPrivateAlert(reason) {
   const now = Date.now();
   if (now - lastAlertTime < ALERT_COOLDOWN_MS) return; // silently block spam
@@ -941,8 +995,112 @@ function openSetupModal() {
   tierEl.textContent = `Current plan: ${tierNames[currentTier] || "Free"}`;
   tierEl.className = `key-status ${tierColors[currentTier] || "missing"}`;
 
+  // PIN default warning
+  const pinWarn = document.getElementById('pin-default-warning');
+  if (pinWarn) {
+    const isDefault = !settings.pin || settings.pin === '0000';
+    pinWarn.classList.toggle('hidden', !isDefault);
+  }
+
+  // Communication report
+  const reportEl = document.getElementById('progress-report-content');
+  if (reportEl) reportEl.innerHTML = buildProgressReport();
+
+  document.getElementById('copy-report-btn')?.addEventListener('click', () => {
+    const hist2 = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    const sym2  = hist2.filter(e => e.type === 'symbol');
+    const days2 = [];
+    for (let i = 6; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); days2.push(d.toLocaleDateString()); }
+    const todayCount2 = sym2.filter(e => e.dateStr === days2[6]).length;
+    const weekTotal2  = sym2.filter(e => days2.includes(e.dateStr)).length;
+    const freq2 = {};
+    sym2.filter(e => days2.includes(e.dateStr)).forEach(e => { const l = e.payload?.label || '?'; freq2[l] = (freq2[l] || 0) + 1; });
+    const top2 = Object.entries(freq2).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([l, n]) => `  ${l}: ${n}`).join('\n');
+    const text = `Speak AAC — Communication Report (${new Date().toLocaleDateString()})\nToday: ${todayCount2} taps\nThis week: ${weekTotal2} taps\nMost used:\n${top2 || '  (none yet)'}`;
+    navigator.clipboard.writeText(text).then(() => showToast('Report copied', 'success', 2000));
+  });
+
   renderCustomSetupSection();
   setupModal.classList.remove("hidden");
+}
+
+function buildProgressReport() {
+  const hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+  const symEvents = hist.filter(e => e.type === 'symbol');
+
+  // Build last-7-days date strings using same toLocaleDateString() format logEvent uses
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    days.push(d.toLocaleDateString());
+  }
+  const todayStr = days[6];
+
+  // Count taps per day
+  const dayCounts = Object.fromEntries(days.map(d => [d, 0]));
+  symEvents.forEach(e => { if (e.dateStr in dayCounts) dayCounts[e.dateStr]++; });
+
+  const todayCount = dayCounts[todayStr] || 0;
+  const weekTotal  = Object.values(dayCounts).reduce((a, b) => a + b, 0);
+  const maxCount   = Math.max(...Object.values(dayCounts), 1);
+
+  // Prior week (days 8–14 ago) for week-over-week trend
+  const priorDays = [];
+  for (let i = 13; i >= 7; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    priorDays.push(d.toLocaleDateString());
+  }
+  const priorTotal = symEvents.filter(e => priorDays.includes(e.dateStr)).length;
+
+  let trendHtml = '';
+  if (priorTotal > 0) {
+    const pct = Math.round(((weekTotal - priorTotal) / priorTotal) * 100);
+    const arrow = pct >= 0 ? '↑' : '↓';
+    const color = pct >= 0 ? '#2e7d32' : '#c94a2e';
+    trendHtml = `<span style="color:${color};font-size:0.78rem;margin-left:6px">${arrow} ${Math.abs(pct)}% vs last week</span>`;
+  } else if (weekTotal > 0) {
+    trendHtml = `<span style="color:#888;font-size:0.78rem;margin-left:6px">First week of data</span>`;
+  }
+
+  // Top symbols this week
+  const freq = {};
+  symEvents.filter(e => days.includes(e.dateStr)).forEach(e => {
+    const lbl = e.payload?.label || e.payload?.id || '?';
+    freq[lbl] = (freq[lbl] || 0) + 1;
+  });
+  const top5 = Object.entries(freq).sort((a, b) => b[1] - a[1]).slice(0, 5);
+
+  // Bar chart HTML
+  const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const barsHtml = days.map(ds => {
+    const count = dayCounts[ds];
+    const pct   = Math.max(Math.round((count / maxCount) * 100), count > 0 ? 4 : 0);
+    const dow   = new Date(ds).getDay();
+    const lbl   = ds === todayStr ? 'Today' : DAY_NAMES[dow];
+    return `<div class="pr-col">
+      <div class="pr-count">${count > 0 ? count : ''}</div>
+      <div class="pr-track"><div class="pr-bar" style="height:${pct}%"></div></div>
+      <div class="pr-day">${lbl}</div>
+    </div>`;
+  }).join('');
+
+  const topHtml = top5.length
+    ? top5.map(([lbl, n]) =>
+        `<div class="pr-top-row"><span>${lbl}</span><span class="pr-top-n">${n}</span></div>`
+      ).join('')
+    : `<p class="setup-hint" style="margin:0">No taps recorded yet — start using the app!</p>`;
+
+  return `
+    <div class="pr-stats">
+      <div class="pr-stat"><span class="pr-num">${todayCount}</span><span class="pr-lbl">Today</span></div>
+      <div class="pr-stat"><span class="pr-num">${weekTotal}</span><span class="pr-lbl">This week${trendHtml}</span></div>
+    </div>
+    <div class="pr-chart">${barsHtml}</div>
+    ${top5.length ? '<h4 class="pr-top-title">Most used this week</h4>' : ''}
+    ${topHtml}
+  `;
 }
 
 setupClose.addEventListener("click", () => {
@@ -1320,6 +1478,7 @@ function renderCoreBar() {
     const wt = symT(word);
     const btn = document.createElement('button');
     btn.className = 'core-word-btn';
+    if (word.wordClass) btn.dataset.wordClass = word.wordClass;
     btn.title = wt.speech;
 
     const pic = ARASAAC.makePicImg(word.arasaac, picCache);
@@ -1628,6 +1787,14 @@ function finishInit() {
   // Wire up language toggle buttons
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.addEventListener('click', () => applyLang(btn.dataset.lang));
+  });
+  // Voice picker — populate now and re-populate when browser finishes loading voices
+  if (window.speechSynthesis) {
+    speechSynthesis.addEventListener('voiceschanged', populateVoiceSelect);
+    populateVoiceSelect();
+  }
+  document.getElementById('s-voice')?.addEventListener('change', e => {
+    localStorage.setItem(VOICE_KEY, e.target.value);
   });
 }
 

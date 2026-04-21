@@ -10,20 +10,20 @@
 // These appear in the persistent strip above the symbol grid regardless
 // of which category is active. Clinical standard in AAC design.
 const CORE_VOCAB = [
-  { id:"cv_i",      label:"I",      emoji:"🫵", arasaac:"me",         speech:"I"             },
-  { id:"cv_you",    label:"You",    emoji:"👆", arasaac:"you",        speech:"you"           },
-  { id:"cv_want",   label:"Want",   emoji:"🙌", arasaac:"want",       speech:"want"          },
-  { id:"cv_more",   label:"More",   emoji:"➕", arasaac:"more",       speech:"more"          },
-  { id:"cv_go",     label:"Go",     emoji:"🚶", arasaac:"go",         speech:"go"            },
-  { id:"cv_no",     label:"No",     emoji:"👎", arasaac:"no",         speech:"no"            },
-  { id:"cv_yes",    label:"Yes",    emoji:"👍", arasaac:"yes",        speech:"yes"           },
-  { id:"cv_stop",   label:"Stop",   emoji:"🛑", arasaac:"stop",       speech:"stop"          },
-  { id:"cv_help",   label:"Help",   emoji:"🙋", arasaac:"help",       speech:"help"          },
-  { id:"cv_like",   label:"Like",   emoji:"❤️", arasaac:"like",       speech:"like"          },
-  { id:"cv_done",   label:"Done",   emoji:"✅", arasaac:"finished",   speech:"all done"      },
-  { id:"cv_please", label:"Please", emoji:"🙏", arasaac:"please",     speech:"please"        },
-  { id:"cv_not",    label:"Not",    emoji:"🚫", arasaac:"no",         speech:"not"           },
-  { id:"cv_feel",   label:"Feel",   emoji:"💛", arasaac:"feel",       speech:"feel"          },
+  { id:"cv_i",      wordClass:"pronoun",    label:"I",      emoji:"🫵", arasaac:"me",         speech:"I"             },
+  { id:"cv_you",    wordClass:"pronoun",    label:"You",    emoji:"👆", arasaac:"you",        speech:"you"           },
+  { id:"cv_want",   wordClass:"verb",       label:"Want",   emoji:"🙌", arasaac:"want",       speech:"want"          },
+  { id:"cv_more",   wordClass:"descriptor", label:"More",   emoji:"➕", arasaac:"more",       speech:"more"          },
+  { id:"cv_go",     wordClass:"verb",       label:"Go",     emoji:"🚶", arasaac:"go",         speech:"go"            },
+  { id:"cv_no",     wordClass:"negative",   label:"No",     emoji:"👎", arasaac:"no",         speech:"no"            },
+  { id:"cv_yes",    wordClass:"social",     label:"Yes",    emoji:"👍", arasaac:"yes",        speech:"yes"           },
+  { id:"cv_stop",   wordClass:"negative",   label:"Stop",   emoji:"🛑", arasaac:"stop",       speech:"stop"          },
+  { id:"cv_help",   wordClass:"verb",       label:"Help",   emoji:"🙋", arasaac:"help",       speech:"help"          },
+  { id:"cv_like",   wordClass:"verb",       label:"Like",   emoji:"❤️", arasaac:"like",       speech:"like"          },
+  { id:"cv_done",   wordClass:"descriptor", label:"Done",   emoji:"✅", arasaac:"finished",   speech:"all done"      },
+  { id:"cv_please", wordClass:"social",     label:"Please", emoji:"🙏", arasaac:"please",     speech:"please"        },
+  { id:"cv_not",    wordClass:"negative",   label:"Not",    emoji:"🚫", arasaac:"no",         speech:"not"           },
+  { id:"cv_feel",   wordClass:"verb",       label:"Feel",   emoji:"💛", arasaac:"feel",       speech:"feel"          },
 ];
 
 const SYMBOLS = {

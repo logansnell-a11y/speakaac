@@ -100,6 +100,11 @@ const OB_STEPS = [
     keys: { name: 'contactName', email: 'contactEmail' },
     optional: true,
   },
+  {
+    id: 'pin', type: 'pin',
+    question: 'Set a Provider PIN',
+    hint: 'A 4-digit PIN locks settings so only you can change them.',
+  },
   { id: 'done', type: 'done' },
 ];
 
@@ -194,6 +199,7 @@ function renderObStep() {
     case 'diagnosis': renderObDiagnosis(step); break;
     case 'multi':     renderObMulti(step);     break;
     case 'contact':   renderObContact(step);   break;
+    case 'pin':       renderObPin(step);       break;
     case 'done':      renderObDone();          break;
   }
 }
@@ -411,6 +417,55 @@ function renderObContact(step) {
   });
   document.getElementById('ob-cemail').addEventListener('input', e => {
     obAnswers[step.keys.email] = e.target.value;
+  });
+}
+
+// ── PIN step ──────────────────────────────────────────────────────
+function renderObPin(step) {
+  obNextBtn.classList.add('hidden'); // auto-advance on 4th digit; no manual Continue needed
+  obSkipBtn.style.visibility = 'hidden'; // PIN is required — no skip
+
+  obContent.innerHTML = `
+    <div class="ob-qwrap">
+      <div class="ob-question">${step.question}</div>
+      <div class="ob-hint">${step.hint}</div>
+      <div class="ob-pin-wrap">
+        <div class="ob-pin-dots" id="ob-pin-dots">
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <div class="ob-pin-hint" id="ob-pin-hint">Enter 4 digits</div>
+        <div class="ob-pin-pad">
+          ${[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(k =>
+            `<button class="ob-pin-key" data-key="${k}">${k}</button>`
+          ).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+
+  let pin = '';
+
+  function updateDots() {
+    document.querySelectorAll('#ob-pin-dots span').forEach((s, i) => {
+      s.style.background = i < pin.length ? 'var(--primary)' : 'var(--border)';
+    });
+  }
+  updateDots();
+
+  obContent.querySelectorAll('.ob-pin-key').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const k = btn.dataset.key;
+      if (k === '⌫') { pin = pin.slice(0, -1); }
+      else if (k !== '' && pin.length < 4) { pin += k; }
+      updateDots();
+      if (pin.length === 4) {
+        const s = typeof loadSettings === 'function' ? loadSettings() : {};
+        s.pin = pin;
+        if (typeof saveSettings === 'function') saveSettings(s);
+        document.getElementById('ob-pin-hint').textContent = '✅ PIN saved!';
+        setTimeout(() => obAdvance(), 700);
+      }
+    });
   });
 }
 
