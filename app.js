@@ -17,39 +17,6 @@ function esc(s) {
   return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ── Password gate ─────────────────────────────────────────────────
-const ACCESS_KEY  = 'aac_access_v1';
-const ACCESS_PASS = 'speak2026'; // ← change this to your access code
-
-(function initPasswordGate() {
-  const gate  = document.getElementById('password-gate');
-  const input = document.getElementById('pw-input');
-  const errEl = document.getElementById('pw-error');
-
-  if (localStorage.getItem(ACCESS_KEY)) {
-    gate.classList.add('hidden');
-    return;
-  }
-
-  window.__awaitingAccess = true;
-  setTimeout(() => input.focus(), 80);
-
-  function attempt() {
-    if (input.value.trim() === ACCESS_PASS) {
-      localStorage.setItem(ACCESS_KEY, '1');
-      gate.classList.add('hidden');
-      window.__awaitingAccess = false;
-      init();
-    } else {
-      errEl.classList.remove('hidden');
-      input.value = '';
-      setTimeout(() => errEl.classList.add('hidden'), 2000);
-    }
-  }
-
-  document.getElementById('pw-submit').addEventListener('click', attempt);
-  input.addEventListener('keydown', e => { if (e.key === 'Enter') attempt(); });
-})();
 
 // ── EmailJS config ─────────────────────────────────────────────────
 // Create a free account at emailjs.com, then fill these in:
@@ -1802,7 +1769,7 @@ function finishInit() {
   });
 }
 
-if (!window.__awaitingAccess) init();
+init();
 
 // ── Auth modal ─────────────────────────────────────────────────────
 let _authPostOnboarding = false;
