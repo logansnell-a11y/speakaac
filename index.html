@@ -1256,7 +1256,6 @@
         btn.addEventListener('click', function() {
           localStorage.setItem('aac_lang', btn.dataset.lang);
           document.querySelectorAll('.lp-btn').forEach(b => b.classList.toggle('lp-active', b === btn));
-          if (btn.dataset.lang === 'es') window.location.href = 'app.html';
         });
       });
     })();
