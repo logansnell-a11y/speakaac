@@ -659,6 +659,34 @@
       color: var(--text-dim);
     }
 
+    .price-trial {
+      font-size: 1.7rem;
+      font-weight: 900;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    .price-trial-detail {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      margin-top: 4px;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .price-btn-link {
+      display: block;
+      width: 100%;
+      text-align: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--gold);
+      padding: 10px 0 2px;
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+    .price-btn-link:hover { opacity: 0.8; text-decoration: underline; }
+
     .pricing-note strong { color: var(--gold); }
 
     /* ── Mission / about ──────────────────────────────────────── */
@@ -1308,7 +1336,7 @@
     <div class="container">
       <div class="section-label">Pricing</div>
       <h2 class="section-title">Affordable. Honest. Safety always free.</h2>
-      <p class="section-sub">Core communication features are free to start. The safety channel is free on every plan, forever.</p>
+      <p class="section-sub">Core communication features are free to start. Clinics and schools get a free 30-day trial. The safety channel is free on every plan, forever.</p>
 
       <div class="pricing-grid">
         <div class="price-card">
@@ -1345,17 +1373,19 @@
         <div class="price-card">
           <div class="price-badge" style="background:var(--gold);color:#000;">For Clinics &amp; Schools</div>
           <div class="price-name">Clinic</div>
-          <div class="price-amount">$49.99</div>
-          <div class="price-period">per month · clinics, schools &amp; districts</div>
+          <div class="price-trial">Free 30-Day Trial</div>
+          <div class="price-trial-detail">then $49.99/mo · or $499/yr<br>Invoice &amp; PO accepted</div>
           <ul class="price-features">
             <li class="yes">Everything in Family</li>
             <li class="yes">Full provider dashboard</li>
-            <li class="yes">Up to 10 patient / student profiles</li>
+            <li class="yes">Unlimited student profiles</li>
             <li class="yes">Teacher read-only accounts</li>
             <li class="yes">Exportable communication reports</li>
+            <li class="yes">Priority email support</li>
             <li class="yes">BAA available on request</li>
           </ul>
-          <a class="price-btn price-btn-ghost" href="https://buy.stripe.com/28EfZa9LmeaI1iJb4Wdwc03" target="_blank" rel="noopener">Get Clinic</a>
+          <a class="price-btn price-btn-primary" href="mailto:support@speakaac.org?subject=Clinic%20Free%20Trial%20Request&body=Name%3A%0AClinic%20or%20school%20name%3A%0ARole%20(SLP%2C%20Special%20Ed%20Director%2C%20Principal%2C%20etc.)%3A%0AEmail%3A%0APhone%20(optional)%3A%0ANumber%20of%20AAC%20students%20you%20work%20with%3A">Start Free Trial →</a>
+          <a class="price-btn-link" href="mailto:support@speakaac.org?subject=Annual%20Clinic%20License%20%E2%80%94%20Invoice%20Request&body=Clinic%20or%20school%20name%3A%0AContact%20name%3A%0AEmail%3A%0APhone%3A%0ANumber%20of%20locations%3A">Request annual invoice →</a>
         </div>
       </div>
 
@@ -1410,7 +1440,7 @@
             How is Speak different from Proloquo2Go or TouchChat?
             <span class="faq-chevron">+</span>
           </button>
-          <div class="faq-a">Proloquo2Go costs $299.99. TouchChat HD is $149.99. Grid for iPad is $399.99. Speak's Lifetime plan is $79.99 — one payment, yours forever, no subscription required. Or start completely free. Beyond price: Speak is the only AAC app with a private safety channel built in. It's also the only one that configures itself for your child's specific diagnosis, age, and motor ability in under two minutes — no SLP consultation required to get started.</div>
+          <div class="faq-a">Proloquo2Go costs $299.99. TouchChat HD is $149.99. Grid for iPad is $399.99. Speak starts completely free — no credit card required. The Family plan is $9.99/month. Clinics and schools get a free 30-day trial, then $499/year with invoice and PO available. Beyond price: Speak is the only AAC app with a private safety channel built in. It's also the only one that configures itself for your child's specific diagnosis, age, and motor ability in under two minutes — no SLP consultation required to get started.</div>
         </div>
 
         <div class="faq-item">
@@ -1418,7 +1448,7 @@
             Can my child's teacher see their communication log?
             <span class="faq-chevron">+</span>
           </button>
-          <div class="faq-a">Yes, on the Institution plan. Enter a teacher's email in Provider Settings → Teacher / School Access. They get read-only access to a communication log and usage stats through a separate Teacher Dashboard — they can never change any settings. Teachers sign in with their own account and only see children explicitly assigned to them.</div>
+          <div class="faq-a">Yes, on the Clinic plan. Enter a teacher's email in Provider Settings → Teacher / School Access. They get read-only access to a communication log and usage stats through a separate Teacher Dashboard — they can never change any settings. Teachers sign in with their own account and only see children explicitly assigned to them.</div>
         </div>
 
         <div class="faq-item">
