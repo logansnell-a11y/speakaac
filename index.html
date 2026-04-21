@@ -1124,38 +1124,6 @@
       width: 36px;
       height: 36px;
       flex-shrink: 0;
-      animation: bf-arrive 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-    }
-
-    @keyframes bf-arrive {
-      0%   { opacity: 0; transform: scale(0.2) rotate(-180deg) translateX(-20px); }
-      60%  { opacity: 1; transform: scale(1.15) rotate(8deg) translateX(3px); }
-      80%  { transform: scale(0.95) rotate(-3deg); }
-      100% { transform: scale(1) rotate(0deg); }
-    }
-
-    /* Wing flap on hover */
-    .nav-logo:hover .bf-rfw,
-    .nav-logo:hover .bf-lhw {
-      animation: flap-open 0.55s ease-in-out infinite alternate;
-    }
-    .nav-logo:hover .bf-lfw,
-    .nav-logo:hover .bf-rhw {
-      animation: flap-open 0.55s ease-in-out infinite alternate-reverse;
-    }
-    @keyframes flap-open {
-      0%   { transform: scaleX(1); }
-      100% { transform: scaleX(0.18); }
-    }
-
-    /* Idle gentle pulse */
-    .nav-butterfly .bf-inner {
-      animation: bf-idle 4s ease-in-out 0.7s infinite;
-      transform-origin: 256px 256px;
-    }
-    @keyframes bf-idle {
-      0%, 100% { transform: rotate(-45deg) scale(1); }
-      50%       { transform: rotate(-45deg) scale(1.04); }
     }
   </style>
 </head>
