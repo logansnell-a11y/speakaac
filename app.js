@@ -119,6 +119,23 @@ function logEvent(type, payload) {
   sessionLog.unshift(event);
   if (historyOpen) renderHistoryDrawer();
   updateHistoryCount();
+
+  // GA4 custom events
+  if (typeof gtag === 'function') {
+    if (type === 'symbol') {
+      gtag('event', 'symbol_tap', { symbol_label: payload.label, symbol_category: payload.category });
+    } else if (type === 'ai_sentence') {
+      gtag('event', 'ai_sentence_built');
+    } else if (type === 'sentence_spoken') {
+      gtag('event', 'sentence_spoken');
+    } else if (type === 'help_general') {
+      gtag('event', 'safety_channel_triggered', { method: payload.method });
+    } else if (type === 'keyboard') {
+      gtag('event', 'keyboard_used');
+    } else {
+      gtag('event', type);
+    }
+  }
 }
 
 // ── State ──────────────────────────────────────────────────────────
@@ -527,6 +544,7 @@ catBtns.forEach(btn => {
     activeCategory = btn.dataset.cat;
     renderGrid(activeCategory);
     grid.scrollTop = 0;
+    if (typeof gtag === 'function') gtag('event', 'category_switch', { category: activeCategory });
   });
 });
 

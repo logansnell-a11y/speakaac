@@ -627,9 +627,19 @@ function generateObConfig(answers) {
 
 // ── Complete onboarding ───────────────────────────────────────────
 function completeOnboarding() {
-  const cfg      = generateObConfig(obAnswers);
   const settings = loadSettings();
 
+  // PIN is mandatory — bounce to PIN step if not yet set
+  if (!settings.pin) {
+    const pinIdx = OB_STEPS.findIndex(s => s.id === 'pin');
+    if (pinIdx !== -1) {
+      obStep = pinIdx;
+      renderObStep();
+      return;
+    }
+  }
+
+  const cfg = generateObConfig(obAnswers);
   if (obAnswers.userName)     settings.userName     = obAnswers.userName.trim();
   if (obAnswers.contactName)  settings.contactName  = obAnswers.contactName.trim();
   if (obAnswers.contactEmail) settings.contactEmail = obAnswers.contactEmail.trim();
