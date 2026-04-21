@@ -808,6 +808,35 @@ button, [role="button"] {
   pointer-events: none;
 }
 
+/* ── EN/ES pill in topbar ────────────────────────────────────────── */
+#lang-pill-topbar {
+  flex-shrink: 0;
+  display: flex;
+  background: var(--surface2);
+  border: 1.5px solid var(--border-light);
+  border-radius: 20px;
+  overflow: hidden;
+  gap: 0;
+}
+#lang-pill-topbar .lang-btn {
+  flex: none;
+  padding: 6px 13px;
+  border-radius: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+#lang-pill-topbar .lang-btn.active {
+  background: var(--gold);
+  color: #fff;
+  border-radius: 18px;
+}
+
 /* ── Setup toggle ────────────────────────────────────────────────── */
 .setup-toggle {
   display: flex;
