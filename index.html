@@ -137,6 +137,31 @@
 
     .nav-cta:hover { background: var(--gold-bright); }
 
+    .lang-pill-nav {
+      display: flex;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .lp-btn {
+      padding: 5px 12px;
+      border: none;
+      background: transparent;
+      color: var(--text-dim);
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .lp-btn.lp-active {
+      background: var(--gold);
+      color: #fff;
+      border-radius: 18px;
+    }
+
     /* ── Hero ─────────────────────────────────────────────────── */
     .hero {
       min-height: 88vh;
@@ -1105,6 +1130,10 @@
       <a class="nav-link" href="mission.html">Mission</a>
       <a class="nav-link" href="guide.html">Guide</a>
       <a class="nav-link" href="clinic_guide.html">For Clinics</a>
+      <div class="lang-pill-nav" id="lang-pill-nav">
+        <button class="lp-btn lp-active" data-lang="en">EN</button>
+        <button class="lp-btn" data-lang="es">ES</button>
+      </div>
       <a class="nav-cta" href="./app.html">Open App →</a>
       <button id="nav-burger" aria-label="Open menu" aria-expanded="false">
         <span></span><span></span><span></span>
@@ -1138,6 +1167,20 @@
           drawer.classList.remove('open');
           burger.classList.remove('open');
           burger.setAttribute('aria-expanded', 'false');
+        });
+      });
+    })();
+
+    // EN/ES pill — sets language preference, ES goes straight to app
+    (function() {
+      const saved = localStorage.getItem('aac_lang') || 'en';
+      document.querySelectorAll('.lp-btn').forEach(function(btn) {
+        if (btn.dataset.lang === saved) btn.classList.add('lp-active');
+        else btn.classList.remove('lp-active');
+        btn.addEventListener('click', function() {
+          localStorage.setItem('aac_lang', btn.dataset.lang);
+          document.querySelectorAll('.lp-btn').forEach(b => b.classList.toggle('lp-active', b === btn));
+          if (btn.dataset.lang === 'es') window.location.href = 'app.html';
         });
       });
     })();
