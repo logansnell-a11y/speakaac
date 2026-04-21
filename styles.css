@@ -832,6 +832,37 @@ button, [role="button"] {
   letter-spacing: 0;
 }
 
+/* ── Language toggle ─────────────────────────────────────────────── */
+.lang-toggle-wrap {
+  display: flex;
+  gap: 8px;
+}
+
+.lang-btn {
+  flex: 1;
+  padding: 10px 0;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--border);
+  background: var(--surface2);
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  letter-spacing: 0.04em;
+}
+
+.lang-btn.active {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #fff;
+}
+
+.lang-btn:not(.active):hover {
+  border-color: var(--gold);
+  color: var(--text);
+}
+
 /* ── AI Sentence Button ──────────────────────────────────────────── */
 #btn-ai {
   flex-shrink: 0;

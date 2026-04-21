@@ -62,6 +62,38 @@ const EMAILJS_PUBLIC_KEY  = 'XwG8nU8PmuFDONFZW';
 // Template variables used: {{to_email}} {{to_name}} {{user_name}}
 //   {{reason}} {{last_message}} {{timestamp}}
 
+// ── Language ─────────────────────────────────────────────────────────
+const LANG_KEY = 'aac_lang';
+function getLang() { return localStorage.getItem(LANG_KEY) || 'en'; }
+function setLang(l) { localStorage.setItem(LANG_KEY, l); }
+
+// Returns translated {label, speech} for a symbol, falling back to English
+function symT(sym) {
+  if (getLang() === 'es' && typeof TRANSLATIONS_ES !== 'undefined' && TRANSLATIONS_ES[sym.id]) {
+    return TRANSLATIONS_ES[sym.id];
+  }
+  return { label: sym.label, speech: sym.speech };
+}
+
+function applyLang(lang) {
+  setLang(lang);
+  // Update category nav labels
+  document.querySelectorAll('.cat-btn[data-en]').forEach(btn => {
+    const lbl = btn.querySelector('.cat-label');
+    if (lbl) lbl.textContent = lang === 'es' ? btn.dataset.es : btn.dataset.en;
+  });
+  // Update search placeholder
+  const si = document.getElementById('search-input');
+  if (si) si.placeholder = lang === 'es' ? 'Buscar símbolos...' : 'Search symbols...';
+  // Re-render grid and core bar
+  renderGrid(activeCategory);
+  renderCoreBar();
+  // Sync toggle button states
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === lang);
+  });
+}
+
 // ── Settings ────────────────────────────────────────────────────────
 const SETTINGS_KEY = 'aac_settings';
 
@@ -269,8 +301,10 @@ async function speakViaServer(text) {
     const utt  = new SpeechSynthesisUtterance(text);
     utt.rate   = 0.82;
     utt.pitch  = 1.08;
+    const isEs = getLang() === 'es';
+    utt.lang   = isEs ? 'es-US' : 'en-US';
     const pick = window.speechSynthesis.getVoices().find(v =>
-      v.name === "Samantha" || v.name === "Karen" || v.lang === "en-US"
+      isEs ? v.lang.startsWith('es') : (v.name === "Samantha" || v.name === "Karen" || v.lang === "en-US")
     );
     if (pick) utt.voice = pick;
     window.speechSynthesis.speak(utt);
@@ -375,11 +409,13 @@ function makeCard(sym, cat) {
   const imgArea = document.createElement("div");
   imgArea.className = "symbol-emoji";
 
+  const t = symT(sym);
+
   if (sym.dataUrl) {
     // Custom uploaded photo
     const img = document.createElement("img");
     img.src = sym.dataUrl;
-    img.alt = sym.label;
+    img.alt = t.label;
     imgArea.appendChild(img);
   } else {
     const pic = ARASAAC.makePicImg(sym.arasaac, picCache);
@@ -392,7 +428,7 @@ function makeCard(sym, cat) {
 
   const label = document.createElement("div");
   label.className   = "symbol-label";
-  label.textContent = sym.label;
+  label.textContent = t.label;
 
   card.appendChild(imgArea);
   card.appendChild(label);
@@ -477,11 +513,12 @@ function fireHiddenChannel() {
 }
 
 function onSymbolTap(sym, card) {
+  const t = symT(sym);
   card.classList.add("flash");
   setTimeout(() => card.classList.remove("flash"), 280);
-  speak(sym.speech);
-  sentence.push(sym.speech);
-  logEvent('symbol', { id: sym.id, label: sym.label, category: activeCategory, speech: sym.speech });
+  speak(t.speech);
+  sentence.push(t.speech);
+  logEvent('symbol', { id: sym.id, label: t.label, category: activeCategory, speech: t.speech });
   updateDisplay();
   checkHiddenTrigger();
 }
@@ -1280,9 +1317,10 @@ function renderCoreBar() {
   bar.innerHTML = '';
 
   CORE_VOCAB.forEach(word => {
+    const wt = symT(word);
     const btn = document.createElement('button');
     btn.className = 'core-word-btn';
-    btn.title = word.speech;
+    btn.title = wt.speech;
 
     const pic = ARASAAC.makePicImg(word.arasaac, picCache);
     if (pic) {
@@ -1299,15 +1337,16 @@ function renderCoreBar() {
 
     const lbl = document.createElement('span');
     lbl.className = 'core-word-label';
-    lbl.textContent = word.label;
+    lbl.textContent = wt.label;
     btn.appendChild(lbl);
 
     btn.addEventListener('click', () => {
+      const wt2 = symT(word);
       btn.classList.add('flash');
       setTimeout(() => btn.classList.remove('flash'), 280);
-      speak(word.speech);
-      sentence.push(word.speech);
-      logEvent('symbol', { id: word.id, label: word.label, category: 'core', speech: word.speech });
+      speak(wt2.speech);
+      sentence.push(wt2.speech);
+      logEvent('symbol', { id: word.id, label: wt2.label, category: 'core', speech: wt2.speech });
       updateDisplay();
       checkHiddenTrigger();
     });
@@ -1580,12 +1619,16 @@ function finishInit() {
   hideAppLoading();
   document.getElementById('onboarding-overlay').classList.add('hidden');
   applyProfileConfig();
-  renderCoreBar();
-  renderGrid(activeCategory);
+  // Apply saved language (updates cat labels, grid, core bar)
+  applyLang(getLang());
   updateDisplay();
   applyKioskMode();
   if (_returnVisit) showSessionLock();
   resetInactivityTimer();
+  // Wire up language toggle buttons
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => applyLang(btn.dataset.lang));
+  });
 }
 
 if (!window.__awaitingAccess) init();
