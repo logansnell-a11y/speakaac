@@ -5,6 +5,91 @@ function esc(s) {
   return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+// ── Language helpers (onboarding.js loads alongside app.js) ────────
+function obGetLang() { return localStorage.getItem('aac_lang') || 'en'; }
+
+// ── Spanish strings for onboarding ─────────────────────────────────
+const OB_STRINGS_ES = {
+  welcome: {
+    title: 'Toda persona merece una voz — y una segura.',
+    body:  'Te haremos algunas preguntas rápidas para configurar Speak para quien lo usará. Toma aproximadamente un minuto.',
+    start: 'Comenzar →',
+    note:  'Puedes omitir cualquier pregunta y ajustar todo después en Configuración.',
+    feat1: 'Personalizado según diagnóstico, edad y necesidades',
+    feat2: 'Canal de seguridad privado — siempre gratis, siempre activo',
+    feat3: 'Oraciones con IA, audio real y panel de proveedor',
+  },
+  name: {
+    question: '¿Cómo se llama?', hint: 'El nombre de pila está bien',
+    placeholder: 'ej. Alex', optional: 'Opcional — toca Continuar para omitir',
+  },
+  age: {
+    question: '¿Cuántos años tiene [name]?',
+    choices: { '2-4':'2 – 4','5-8':'5 – 8','9-12':'9 – 12','13-17':'13 – 17','18+':'18 o más' },
+  },
+  diagnosis: {
+    question: '¿Conoces el diagnóstico de [name]?',
+    hint: 'Elige la opción más cercana — esto ayuda a configurar el vocabulario y diseño correctos.',
+  },
+  reading: {
+    question: '¿Puede [name] leer?',
+    choices: { yes:'Sí, lee bien', some:'Algunas palabras', no:'Todavía no' },
+  },
+  motor: {
+    question: '¿Qué tan bien puede [name] usar una pantalla táctil?',
+    choices: { full:'Sin problema', limited:'Funciona, pero necesita botones más grandes', very_limited:'Tiene dificultad real para tocar' },
+  },
+  sensory: {
+    question: '¿Tiene alguna sensibilidad sensorial?',
+    hint: 'Selecciona todas las que apliquen',
+    choices: { sound:'Sensible a sonidos', light:'Sensible a pantallas brillantes', none:'Ninguna' },
+    optional: 'Selecciona todas — toca Continuar cuando termines',
+  },
+  background: {
+    question: '¿Qué fondo se siente más cómodo para [name]?',
+    hint: 'Elige mínimo si [name] se siente abrumado por patrones visuales. Puedes cambiarlo después.',
+    choices: { default:'Cálido y acogedor', sky:'Azul cielo', meadow:'Verde pradera', lavender:'Lavanda suave', minimal:'Limpio y mínimo' },
+  },
+  primaryNeed: {
+    question: '¿Qué necesita expresar [name] más?',
+    choices: { needs:'Necesidades físicas', feelings:'Sentimientos', social:'Hablar con personas', all:'Todas estas' },
+  },
+  interests: {
+    question: '¿Tiene [name] algún interés especial?',
+    hint: 'Opcional — agregaremos una categoría personalizada',
+    placeholder: 'ej. dinosaurios, Minecraft, trenes, música...',
+    optional: 'Opcional — toca Continuar para omitir',
+  },
+  safety: {
+    question: 'Agrega un contacto de seguridad de confianza',
+    hint: 'Esta persona recibe una alerta privada si [name] se siente inseguro — sin pasar por el cuidador principal.',
+    nameLabel: 'Nombre del contacto', emailLabel: 'Correo del contacto',
+    namePH: 'ej. Abuela Susan', emailPH: 'confiable@ejemplo.com',
+    optional: 'Opcional — toca Continuar para omitir',
+  },
+  pin: {
+    question: 'Establece un PIN de proveedor',
+    hint: 'Un PIN de 4 dígitos bloquea la configuración para que solo tú puedas cambiarla.',
+    enter: 'Ingresa 4 dígitos', saved: '✅ PIN guardado',
+  },
+  done: {
+    ready: 'está listo para ser escuchado.', allset: 'Todo listo para ser escuchado.',
+    launch: 'Comenzar a usar Speak →',
+    note: 'Ajusta cualquier configuración después manteniendo presionado 🔊 por 3 segundos.',
+  },
+};
+
+function obStr(stepId, key, fallback) {
+  if (obGetLang() !== 'es') return fallback;
+  return (OB_STRINGS_ES[stepId] && OB_STRINGS_ES[stepId][key]) || fallback;
+}
+function obChoiceStr(stepId, value, fallback) {
+  if (obGetLang() !== 'es') return fallback;
+  const ch = OB_STRINGS_ES[stepId] && OB_STRINGS_ES[stepId].choices;
+  return (ch && ch[value]) || fallback;
+}
+function obContinue() { return obGetLang() === 'es' ? 'Continuar →' : 'Continue →'; }
+
 const OB_STEPS = [
   { id: 'welcome',     type: 'welcome' },
   {
@@ -206,46 +291,66 @@ function renderObStep() {
 
 // ── Welcome ────────────────────────────────────────────────────────
 function renderObWelcome() {
-  obNextBtn.textContent = "Let's get started →";
+  const es = obGetLang() === 'es';
+  obNextBtn.textContent = es ? 'Comenzar →' : "Let's get started →";
   obNextBtn.disabled    = false;
   obContent.innerHTML = `
     <div class="ob-welcome">
       <img class="ob-welcome-icon" src="icons/icon.png" alt="Speak" />
-      <h1 class="ob-welcome-title">Every person deserves a voice — and a safe one.</h1>
-      <p class="ob-welcome-body">We'll ask a few quick questions to set up Speak specifically for the person who will use it. Takes about a minute.</p>
+      <h1 class="ob-welcome-title">${es
+        ? 'Toda persona merece una voz — y una segura.'
+        : 'Every person deserves a voice — and a safe one.'}</h1>
+      <p class="ob-welcome-body">${es
+        ? 'Te haremos algunas preguntas rápidas para configurar Speak para quien lo usará. Toma aproximadamente un minuto.'
+        : "We'll ask a few quick questions to set up Speak specifically for the person who will use it. Takes about a minute."}</p>
       <div class="ob-welcome-features">
         <div class="ob-welcome-feat">
           <span class="ob-wf-icon">🎯</span>
-          <span class="ob-wf-text">Personalized for their diagnosis, age &amp; needs</span>
+          <span class="ob-wf-text">${es ? 'Personalizado según diagnóstico, edad y necesidades' : 'Personalized for their diagnosis, age &amp; needs'}</span>
         </div>
         <div class="ob-welcome-feat">
           <span class="ob-wf-icon">🛡️</span>
-          <span class="ob-wf-text">Private safety channel — always free, always on</span>
+          <span class="ob-wf-text">${es ? 'Canal de seguridad privado — siempre gratis, siempre activo' : 'Private safety channel — always free, always on'}</span>
         </div>
         <div class="ob-welcome-feat">
           <span class="ob-wf-icon">✨</span>
-          <span class="ob-wf-text">AI sentences, real audio &amp; provider dashboard</span>
+          <span class="ob-wf-text">${es ? 'Oraciones con IA, audio real y panel de proveedor' : 'AI sentences, real audio &amp; provider dashboard'}</span>
         </div>
       </div>
-      <p class="ob-welcome-note">You can skip any question and adjust everything later in Provider Settings.</p>
+      <div class="ob-lang-toggle">
+        <span class="ob-lang-label">${es ? 'Idioma / Language' : 'Language / Idioma'}</span>
+        <div class="ob-lang-btns">
+          <button class="ob-lang-btn ${!es ? 'ob-lang-active' : ''}" data-lang="en">EN — English</button>
+          <button class="ob-lang-btn ${es ? 'ob-lang-active' : ''}" data-lang="es">ES — Español</button>
+        </div>
+      </div>
+      <p class="ob-welcome-note">${es
+        ? 'Puedes omitir cualquier pregunta y ajustar todo después en Configuración.'
+        : 'You can skip any question and adjust everything later in Provider Settings.'}</p>
     </div>
   `;
+  obContent.querySelectorAll('.ob-lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      localStorage.setItem('aac_lang', btn.dataset.lang);
+      renderObWelcome();
+    });
+  });
 }
 
 // ── Text input ────────────────────────────────────────────────────
 function renderObText(step) {
-  obNextBtn.textContent = 'Continue →';
+  obNextBtn.textContent = obContinue();
   const val = obAnswers[step.key] || '';
   obNextBtn.disabled = !step.optional && !val.trim();
 
   obContent.innerHTML = `
     <div class="ob-qwrap">
-      <div class="ob-question">${injectName(step.question)}</div>
-      ${step.hint ? `<div class="ob-hint">${step.hint}</div>` : ''}
+      <div class="ob-question">${injectName(obStr(step.id, 'question', step.question))}</div>
+      ${step.hint ? `<div class="ob-hint">${obStr(step.id, 'hint', step.hint)}</div>` : ''}
       <input class="ob-text-input" id="ob-text-field" type="text"
-        placeholder="${esc(step.placeholder || '')}" value="${esc(val)}"
+        placeholder="${esc(obStr(step.id, 'placeholder', step.placeholder || ''))}" value="${esc(val)}"
         autocomplete="off" spellcheck="false" />
-      ${step.optional ? '<div class="ob-optional">Optional — tap Continue to skip</div>' : ''}
+      ${step.optional ? `<div class="ob-optional">${obStr(step.id, 'optional', 'Optional — tap Continue to skip')}</div>` : ''}
     </div>
   `;
 
@@ -263,21 +368,21 @@ function renderObText(step) {
 
 // ── Single-select choice ──────────────────────────────────────────
 function renderObChoice(step) {
-  obNextBtn.textContent = 'Continue →';
+  obNextBtn.textContent = obContinue();
   const current         = obAnswers[step.key];
   obNextBtn.disabled    = !current;
 
   const html = step.choices.map(c => `
     <button class="ob-choice ${current === c.value ? 'ob-selected' : ''}" data-val="${c.value}">
       ${c.icon ? `<span class="ob-choice-icon">${c.icon}</span>` : ''}
-      <span class="ob-choice-label">${c.label}</span>
+      <span class="ob-choice-label">${obChoiceStr(step.id, c.value, c.label)}</span>
       ${c.sub ? `<span class="ob-choice-sub">${c.sub}</span>` : ''}
     </button>
   `).join('');
 
   obContent.innerHTML = `
     <div class="ob-qwrap">
-      <div class="ob-question">${injectName(step.question)}</div>
+      <div class="ob-question">${injectName(obStr(step.id, 'question', step.question))}</div>
       <div class="ob-choices">${html}</div>
     </div>
   `;
@@ -302,7 +407,7 @@ function renderObChoice(step) {
 
 // ── Diagnosis list ────────────────────────────────────────────────
 function renderObDiagnosis(step) {
-  obNextBtn.textContent = 'Continue →';
+  obNextBtn.textContent = obContinue();
   const current         = obAnswers.diagnosis;
   obNextBtn.disabled    = !current;
 
@@ -319,8 +424,8 @@ function renderObDiagnosis(step) {
 
   obContent.innerHTML = `
     <div class="ob-qwrap">
-      <div class="ob-question">${injectName(step.question)}</div>
-      ${step.hint ? `<div class="ob-hint">${step.hint}</div>` : ''}
+      <div class="ob-question">${injectName(obStr(step.id, 'question', step.question))}</div>
+      ${step.hint ? `<div class="ob-hint">${obStr(step.id, 'hint', step.hint)}</div>` : ''}
       <div class="ob-diag-list">${groupsHTML}</div>
     </div>
   `;
@@ -338,7 +443,7 @@ function renderObDiagnosis(step) {
 
 // ── Multi-select ──────────────────────────────────────────────────
 function renderObMulti(step) {
-  obNextBtn.textContent = 'Continue →';
+  obNextBtn.textContent = obContinue();
   obNextBtn.disabled    = false;
   const current         = obAnswers[step.key] || [];
 
@@ -346,16 +451,16 @@ function renderObMulti(step) {
     <button class="ob-choice ob-choice-multi ${current.includes(c.value) ? 'ob-selected' : ''}"
       data-val="${c.value}" ${c.exclusive ? 'data-exclusive="true"' : ''}>
       ${c.icon ? `<span class="ob-choice-icon">${c.icon}</span>` : ''}
-      <span class="ob-choice-label">${c.label}</span>
+      <span class="ob-choice-label">${obChoiceStr(step.id, c.value, c.label)}</span>
     </button>
   `).join('');
 
   obContent.innerHTML = `
     <div class="ob-qwrap">
-      <div class="ob-question">${injectName(step.question)}</div>
-      ${step.hint ? `<div class="ob-hint">${step.hint}</div>` : ''}
+      <div class="ob-question">${injectName(obStr(step.id, 'question', step.question))}</div>
+      ${step.hint ? `<div class="ob-hint">${obStr(step.id, 'hint', step.hint)}</div>` : ''}
       <div class="ob-choices">${html}</div>
-      <div class="ob-optional">Select all that apply — tap Continue when done</div>
+      <div class="ob-optional">${obStr(step.id, 'optional', 'Select all that apply — tap Continue when done')}</div>
     </div>
   `;
 
@@ -394,21 +499,21 @@ function renderObContact(step) {
 
   obContent.innerHTML = `
     <div class="ob-qwrap">
-      <div class="ob-question">${injectName(step.question)}</div>
-      <div class="ob-hint">${step.hint}</div>
+      <div class="ob-question">${injectName(obStr(step.id, 'question', step.question))}</div>
+      <div class="ob-hint">${obStr(step.id, 'hint', step.hint)}</div>
       <div class="ob-contact-fields">
         <label class="ob-field-label">
-          Contact Name
+          ${obStr(step.id, 'nameLabel', 'Contact Name')}
           <input class="ob-text-input" id="ob-cname" type="text"
-            placeholder="e.g. Grandma Susan" value="${esc(nameVal)}" autocomplete="name" />
+            placeholder="${esc(obStr(step.id, 'namePH', 'e.g. Grandma Susan'))}" value="${esc(nameVal)}" autocomplete="name" />
         </label>
         <label class="ob-field-label">
-          Contact Email
+          ${obStr(step.id, 'emailLabel', 'Contact Email')}
           <input class="ob-text-input" id="ob-cemail" type="email"
-            placeholder="trusted@example.com" value="${esc(emailVal)}" autocomplete="email" />
+            placeholder="${esc(obStr(step.id, 'emailPH', 'trusted@example.com'))}" value="${esc(emailVal)}" autocomplete="email" />
         </label>
       </div>
-      <div class="ob-optional">Optional — tap Continue to skip</div>
+      <div class="ob-optional">${obStr(step.id, 'optional', 'Optional — tap Continue to skip')}</div>
     </div>
   `;
 
@@ -427,13 +532,13 @@ function renderObPin(step) {
 
   obContent.innerHTML = `
     <div class="ob-qwrap">
-      <div class="ob-question">${step.question}</div>
-      <div class="ob-hint">${step.hint}</div>
+      <div class="ob-question">${obStr(step.id, 'question', step.question)}</div>
+      <div class="ob-hint">${obStr(step.id, 'hint', step.hint)}</div>
       <div class="ob-pin-wrap">
         <div class="ob-pin-dots" id="ob-pin-dots">
           <span></span><span></span><span></span><span></span>
         </div>
-        <div class="ob-pin-hint" id="ob-pin-hint">Enter 4 digits</div>
+        <div class="ob-pin-hint" id="ob-pin-hint">${obStr('pin', 'enter', 'Enter 4 digits')}</div>
         <div class="ob-pin-pad">
           ${[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(k =>
             `<button class="ob-pin-key" data-key="${k}">${k}</button>`
@@ -462,7 +567,7 @@ function renderObPin(step) {
         const s = typeof loadSettings === 'function' ? loadSettings() : {};
         s.pin = pin;
         if (typeof saveSettings === 'function') saveSettings(s);
-        document.getElementById('ob-pin-hint').textContent = '✅ PIN saved!';
+        document.getElementById('ob-pin-hint').textContent = obStr('pin', 'saved', '✅ PIN saved!');
         setTimeout(() => obAdvance(), 700);
       }
     });
@@ -495,13 +600,18 @@ function renderObDone() {
 
   const bulletHTML = bullets.map(b => `<div class="ob-done-bullet">✓ ${b}</div>`).join('');
 
+  const es = obGetLang() === 'es';
+  const doneTitle = name
+    ? `${esc(name)} ${es ? 'está listo para ser escuchado.' : 'is ready to be heard.'}`
+    : (es ? 'Todo listo para ser escuchado.' : 'All set to be heard.');
+
   obContent.innerHTML = `
     <div class="ob-done-wrap">
       <div class="ob-done-icon">💛</div>
-      <h2 class="ob-done-title">${name ? `${esc(name)} is ready` : 'All set'} to be heard.</h2>
+      <h2 class="ob-done-title">${doneTitle}</h2>
       <div class="ob-done-config">${bulletHTML}</div>
-      <button id="ob-launch" class="ob-launch-btn">Start using Speak →</button>
-      <div class="ob-done-note">Adjust any setting later by holding 🔊 for 3 seconds.</div>
+      <button id="ob-launch" class="ob-launch-btn">${es ? 'Comenzar a usar Speak →' : 'Start using Speak →'}</button>
+      <div class="ob-done-note">${es ? 'Ajusta cualquier configuración después manteniendo presionado 🔊 por 3 segundos.' : 'Adjust any setting later by holding 🔊 for 3 seconds.'}</div>
     </div>
   `;
 

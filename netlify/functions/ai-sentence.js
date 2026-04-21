@@ -215,14 +215,13 @@ exports.handler = async function (event) {
     return { statusCode: 500, headers, body: JSON.stringify({ error: 'AI service temporarily unavailable' }) };
   }
 
-  const langInstruction = lang === 'es'
-    ? 'Respond in Spanish only. '
-    : '';
-
-  const prompt =
-    `${langInstruction}A nonverbal person using an AAC communication app tapped these symbols in order: ` +
-    `"${cleaned.join(', ')}". Write one clear, natural, first-person sentence that captures ` +
-    `what they're most likely trying to express. Return ONLY the sentence with no explanation.`;
+  const prompt = lang === 'es'
+    ? `A nonverbal person using an AAC app tapped these symbols: "${cleaned.join(', ')}". ` +
+      `Return ONLY a JSON object with two keys: "es" (a natural first-person sentence in Spanish expressing what they mean) ` +
+      `and "en" (the English translation of that sentence). No explanation, no markdown, just the JSON object.`
+    : `A nonverbal person using an AAC communication app tapped these symbols in order: ` +
+      `"${cleaned.join(', ')}". Write one clear, natural, first-person sentence that captures ` +
+      `what they're most likely trying to express. Return ONLY the sentence with no explanation.`;
 
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -246,11 +245,29 @@ exports.handler = async function (event) {
     }
 
     const data = await res.json();
-    let sentence = (data.content?.[0]?.text || '').trim().replace(/^["']|["']$/g, '');
+    const raw = (data.content?.[0]?.text || '').trim();
+    let sentence, translation;
+
+    if (lang === 'es') {
+      try {
+        const parsed = JSON.parse(raw.replace(/^```json\s*|\s*```$/g, ''));
+        sentence    = (parsed.es || '').trim().replace(/^["']|["']$/g, '');
+        translation = (parsed.en || '').trim().replace(/^["']|["']$/g, '');
+      } catch {
+        // Claude didn't return JSON — use raw as-is, no translation
+        sentence    = raw.replace(/^["']|["']$/g, '');
+        translation = '';
+      }
+    } else {
+      sentence = raw.replace(/^["']|["']$/g, '');
+    }
 
     // Output safety check
     if (!sentence || containsBlocked(sentence)) {
-      sentence = 'I would like ' + cleaned.join(', ') + '.';
+      sentence = lang === 'es'
+        ? cleaned.join(', ') + '.'
+        : 'I would like ' + cleaned.join(', ') + '.';
+      translation = '';
     }
 
     // Log usage (fire and forget — don't block the response)
@@ -261,7 +278,7 @@ exports.handler = async function (event) {
     return {
       statusCode: 200,
       headers: { ...headers, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sentence }),
+      body: JSON.stringify({ sentence, ...(translation ? { translation } : {}) }),
     };
 
   } catch (e) {

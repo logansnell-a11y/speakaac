@@ -219,6 +219,8 @@ function updateDisplay() {
     sentenceText.textContent = "Tap a symbol to speak...";
     sentenceText.classList.add("placeholder");
     btnAI.classList.add("hidden");
+    const _tn = document.getElementById('ai-translation-note');
+    if (_tn) _tn.classList.remove('visible');
   } else {
     sentenceText.textContent = sentence.join(" ");
     sentenceText.classList.remove("placeholder");
@@ -390,6 +392,19 @@ async function buildAISentence() {
     speak(aiText);
     logEvent('ai_sentence', { input: prevSentence, output: aiText });
     showToast('✦ AI sentence built', 'info', 2500);
+
+    // Show English translation for SLPs when app is in Spanish
+    const noteEl = document.getElementById('ai-translation-note');
+    if (noteEl) {
+      if (data.translation) {
+        noteEl.textContent = 'EN: ' + data.translation;
+        noteEl.classList.add('visible');
+        clearTimeout(noteEl._hideTimer);
+        noteEl._hideTimer = setTimeout(() => noteEl.classList.remove('visible'), 9000);
+      } else {
+        noteEl.classList.remove('visible');
+      }
+    }
   } catch (e) {
     console.error("AI sentence error:", e);
     sentence = prevSentence;
