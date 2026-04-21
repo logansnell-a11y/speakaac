@@ -13,7 +13,16 @@
     --green: #27ae60; --blue: #4a90d9; --red: #e05555;
     --radius: 10px; --radius-lg: 16px;
   }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); padding: 40px 20px; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); padding: 0; }
+  .page { padding: 40px 20px; }
+  nav { display: flex; align-items: center; gap: 10px; padding: 16px 28px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg); z-index: 100; }
+  .nav-logo { display: flex; align-items: center; gap: 9px; text-decoration: none; }
+  .nav-logo img { width: 28px; height: 28px; border-radius: 7px; }
+  .nav-logo-text { font-weight: 900; font-size: 1rem; color: var(--gold-bright); letter-spacing: .1em; text-transform: uppercase; }
+  .nav-right { margin-left: auto; display: flex; gap: 16px; align-items: center; }
+  .nav-link { font-size: 0.85rem; color: var(--text-muted); text-decoration: none; }
+  .nav-link:hover { color: var(--text); }
+  .btn-nav { background: var(--gold); color: #0f0f10; font-weight: 700; font-size: 0.85rem; padding: 8px 18px; border-radius: 8px; text-decoration: none; }
   .page { max-width: 860px; margin: 0 auto; }
 
   h1 { font-size: 2rem; font-weight: 800; color: var(--gold-bright); letter-spacing: .04em; }
@@ -65,6 +74,21 @@
 </style>
 </head>
 <body>
+<nav>
+  <a class="nav-logo" href="index.html">
+    <img src="icons/icon.png" alt="Speak" style="filter:hue-rotate(200deg) saturate(1.4) brightness(0.9);" />
+    <span class="nav-logo-text">Speak</span>
+  </a>
+  <div class="nav-right">
+    <a class="nav-link" href="index.html#features">Features</a>
+    <a class="nav-link" href="index.html#pricing">Pricing</a>
+    <a class="nav-link" href="index.html#safety">Safety</a>
+    <a class="nav-link" href="mission.html">Mission</a>
+    <a class="nav-link" href="guide.html">Guide</a>
+    <a class="nav-link" href="clinic_guide.html">For Clinics</a>
+    <a class="btn-nav" href="app.html">Open App →</a>
+  </div>
+</nav>
 <div class="page">
 
   <h1>SPEAK AAC</h1>
