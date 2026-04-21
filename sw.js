@@ -1,5 +1,5 @@
 // Speak Service Worker — offline support + asset caching
-const CACHE = 'speak-v13';
+const CACHE = 'speak-v14';
 
 const PRECACHE = [
   '/app.html',
