@@ -1,5 +1,5 @@
 // Speak Service Worker — offline support + asset caching
-const CACHE = 'speak-v27';
+const CACHE = 'speak-v28';
 
 const PRECACHE = [
   '/app.html',
@@ -11,6 +11,7 @@ const PRECACHE = [
   '/symbols.js',
   '/mulberry.js',
   '/sync.js',
+  '/page-lang.js',
   '/manifest.json',
   '/icons/icon.png',
   // icon.svg not included — file doesn't exist; icon.png covers all sizes

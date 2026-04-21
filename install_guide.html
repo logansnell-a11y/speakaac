@@ -225,7 +225,7 @@
   </div>
 
   <!-- iPad / iPhone -->
-  <div class="device-section">
+  <div class="device-section" id="ds-ipad">
     <div class="device-header">
       <div class="device-icon">📱</div>
       <div>
@@ -269,7 +269,7 @@
   </div>
 
   <!-- Android -->
-  <div class="device-section">
+  <div class="device-section" id="ds-android">
     <div class="device-header">
       <div class="device-icon">📲</div>
       <div>
@@ -310,7 +310,7 @@
   </div>
 
   <!-- Mac / PC -->
-  <div class="device-section">
+  <div class="device-section" id="ds-desktop">
     <div class="device-header">
       <div class="device-icon">💻</div>
       <div>
@@ -407,6 +407,25 @@
   <a class="footer-link" href="privacy.html">Privacy</a>
   <a class="footer-link" href="terms.html">Terms</a>
 </footer>
+
+  <script>
+  window.SPEAK_ES_PAGE = {
+    title: 'Instalar Speak — Guía de configuración',
+    eyebrow: 'Guía de configuración',
+    h1: 'Instala Speak en cualquier <em>dispositivo.</em>',
+    lead: 'Speak funciona en cualquier navegador — pero instalarlo te da una experiencia más rápida y confiable sin barra de direcciones, con soporte sin conexión y un icono de app real en la pantalla de inicio. Esta es la configuración recomendada para iPads de aula y tabletas del hogar.',
+    sections: {
+      '.why-grid': '<div class="why-card"><div class="why-icon">📵</div><div class="why-title">Sin barra de direcciones</div><div class="why-desc">Se abre como una app nativa — pantalla completa, sin interfaz del navegador en el camino.</div></div><div class="why-card"><div class="why-icon">📶</div><div class="why-title">Funciona sin conexión</div><div class="why-desc">Se almacena en caché automáticamente después de la primera carga. La comunicación no se detiene cuando se va el Wi-Fi.</div></div><div class="why-card"><div class="why-icon">🔒</div><div class="why-title">Modo quiosco</div><div class="why-desc">Bloquea la app a solo Speak — ideal para tabletas compartidas en el aula.</div></div><div class="why-card"><div class="why-icon">🏫</div><div class="why-title">Multidispositivo</div><div class="why-desc">Instala en cada iPad del aula. El perfil de cada niño se sincroniza a través de su cuenta.</div></div>',
+      '#ds-ipad': '<div class="device-header"><div class="device-icon">📱</div><div><div class="device-name">iPad o iPhone</div><div class="device-sub">Se requiere el navegador Safari</div></div><div class="device-badge badge-recommended">Recomendado para aulas</div></div><div class="steps"><div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Abre Safari y ve a la app</div><div class="step-desc">Escribe la dirección en la barra de direcciones de Safari.</div><div class="step-tag">speakaac.org/app.html</div><div class="step-img-hint">Debe ser Safari — Chrome en iOS no puede instalar apps web.</div></div></div><div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Toca el botón Compartir</div><div class="step-desc">El botón Compartir es el cuadro con una flecha apuntando hacia arriba — en la parte inferior de la pantalla en iPhone, o en la parte superior derecha en iPad.</div></div></div><div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Toca "Agregar a pantalla de inicio"</div><div class="step-desc">Desplázate hacia abajo en la hoja de compartir hasta que lo veas. Tócalo y luego toca Agregar en la esquina superior derecha.</div></div></div><div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Abre desde la pantalla de inicio</div><div class="step-desc">Encuentra el icono de Speak en tu pantalla de inicio y tócalo. Se abrirá en pantalla completa — sin navegador, sin barra de direcciones — exactamente como una app nativa.</div></div></div></div>',
+      '#ds-android': '<div class="device-header"><div class="device-icon">📲</div><div><div class="device-name">Tableta o teléfono Android</div><div class="device-sub">Navegador Chrome</div></div></div><div class="steps"><div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Abre Chrome y ve a la app</div><div class="step-tag">speakaac.org/app.html</div></div></div><div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Toca el menú de tres puntos</div><div class="step-desc">El menú ⋮ está en la esquina superior derecha de Chrome.</div></div></div><div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Toca "Agregar a pantalla de inicio" o "Instalar app"</div><div class="step-desc">El texto varía ligeramente según la versión de Android. Cualquiera de las opciones instala Speak en tu pantalla de inicio.</div></div></div><div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Abre desde la pantalla de inicio</div><div class="step-desc">Toca el icono de Speak. Se abre en pantalla completa, sin interfaz del navegador.</div></div></div></div>',
+      '#ds-desktop': '<div class="device-header"><div class="device-icon">💻</div><div><div class="device-name">Mac o PC</div><div class="device-sub">Navegador Chrome o Edge</div></div><div class="device-badge badge-desktop">Para proveedores y clínicas</div></div><div class="steps"><div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Abre Chrome o Edge y ve a la app</div><div class="step-tag">speakaac.org/app.html</div></div></div><div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Busca el icono de instalación en la barra de direcciones</div><div class="step-desc">Verás un pequeño icono de pantalla de computadora (⊕) en el lado derecho de la barra de direcciones de Chrome, o un "+" en Edge. Haz clic en él.</div><div class="step-img-hint">Si no lo ves, ve al menú de tres puntos → "Guardar y compartir" → "Instalar página como app".</div></div></div><div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Haz clic en "Instalar"</div><div class="step-desc">Aparecerá un mensaje confirmando el nombre e icono de la app. Haz clic en Instalar para añadirlo a tu escritorio y barra de tareas.</div></div></div><div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Abre desde tu escritorio o barra de tareas</div><div class="step-desc">Speak se abre en su propia ventana — sin pestañas del navegador, sin botón de retroceso. Se siente como una app de escritorio nativa.</div></div></div></div>',
+      '.kiosk-card': '<h3>🔒 Para escuelas: activar el Modo Quiosco</h3><p>Después de instalar en un iPad del aula, abre Speak e inicia sesión en el perfil del niño. Luego ve a <strong>Configuración del Proveedor → Modo Quiosco</strong> y actívalo. La app se bloqueará en pantalla completa y deshabilitará el botón de inicio para salir — el niño solo puede usar Speak hasta que un miembro del personal ingrese el PIN para salir.</p><p>El perfil de cada niño está vinculado a su cuenta. Instalar Speak en múltiples iPads e iniciar sesión con la misma cuenta sincroniza su vocabulario, configuración e historial de eventos automáticamente. Los maestros pueden monitorear todos los eventos a través del <strong>Panel del Maestro</strong> sin necesitar el inicio de sesión del niño.</p>',
+      '.faq': '<div class="faq-item"><div class="faq-q">¿Es esta la misma app que está en la App Store?</div><div class="faq-a">Speak es actualmente solo web. Instalarlo desde el navegador te da la experiencia completa de la app — soporte sin conexión, icono en pantalla de inicio, modo de pantalla completa — sin necesitar una descarga de la App Store. Está planeada una app nativa para iOS/Android.</div></div><div class="faq-item"><div class="faq-q">¿Funcionará si se va el internet?</div><div class="faq-a">Sí. Después de la primera carga, Speak almacena en caché todo lo que necesita. La cuadrícula de símbolos, el audio y todas las funciones principales de comunicación funcionan sin conexión. La alerta del canal de seguridad requiere una conexión a internet para enviarse, pero la app mostrará un mensaje claro si eso sucede.</div></div><div class="faq-item"><div class="faq-q">¿Qué pasa si lo instalo en múltiples iPads para un mismo niño?</div><div class="faq-a">Inicia sesión con la misma cuenta en cada dispositivo. La configuración, el vocabulario y el registro de eventos se sincronizan automáticamente en todos ellos.</div></div><div class="faq-item"><div class="faq-q">¿Puedo instalarlo en un iPad administrado por la escuela (MDM)?</div><div class="faq-a">Sí. Puedes agregar speakaac.org a la lista de sitios permitidos del MDM y usar Safari para instalarlo como un clip web. Si tu distrito necesita una guía de configuración formal, envía un correo a <strong>support@speakaac.org</strong> y lo trabajaremos con tu equipo de TI.</div></div><div class="faq-item"><div class="faq-q">¿Cuesta algo instalarlo?</div><div class="faq-a">La instalación es siempre gratuita. La app usa un modelo basado en planes — consulta la <a href="index.html#pricing" style="color:var(--gold);">página de precios</a> para más detalles. Las escuelas y clínicas con poco financiamiento pueden solicitar acceso gratuito a través de nuestro <a href="mission.html" style="color:var(--gold);">programa de acceso escolar</a>.</div></div>',
+      '.cta-block': '<h2>¿Listo para configurarlo?</h2><p>Abre la app en el navegador de tu dispositivo y sigue los pasos anteriores.<br>¿Preguntas? Escribe a <strong style="color:var(--text);">support@speakaac.org</strong></p><div class="cta-buttons"><a class="btn-gold" href="app.html">Abrir la App →</a><a class="btn-ghost" href="mission.html">Sobre el Programa de Acceso</a></div>',
+    }
+  };
+  </script>
+  <script src="page-lang.js"></script>
 
   <!-- Google Analytics — loaded only after cookie consent -->
   <script>
