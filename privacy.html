@@ -32,12 +32,25 @@
     }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
 
-    nav { display: flex; align-items: center; gap: 10px; padding: 16px 28px; border-bottom: 1px solid var(--border); }
+    nav { display: flex; align-items: center; gap: 10px; padding: 16px 28px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg); z-index: 100; }
     .nav-logo { display: flex; align-items: center; gap: 9px; text-decoration: none; }
     .nav-logo img { width: 28px; height: 28px; border-radius: 7px; }
     .nav-logo-text { font-weight: 900; font-size: 1rem; color: var(--gold-bright); letter-spacing: .1em; text-transform: uppercase; }
-    .nav-right { margin-left: auto; }
+    .nav-right { margin-left: auto; display: flex; gap: 16px; align-items: center; }
+    .nav-link { font-size: 0.85rem; color: var(--text-muted); text-decoration: none; }
+    .nav-link:hover { color: var(--text); }
     .btn-nav { background: var(--gold); color: #0f0f10; font-weight: 700; font-size: 0.85rem; padding: 8px 18px; border-radius: 8px; text-decoration: none; }
+    #nav-burger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 6px; border-radius: 6px; }
+    #nav-burger span { display: block; width: 22px; height: 2px; background: var(--text-muted); border-radius: 2px; transition: transform 0.2s, opacity 0.2s; }
+    #nav-burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    #nav-burger.open span:nth-child(2) { opacity: 0; }
+    #nav-burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    #nav-mobile { display: none; position: fixed; top: 53px; left: 0; right: 0; background: color-mix(in srgb, var(--bg) 96%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 16px 20px 20px; flex-direction: column; gap: 4px; z-index: 99; }
+    #nav-mobile.open { display: flex; }
+    #nav-mobile a { font-size: 0.95rem; font-weight: 600; color: var(--text-muted); padding: 10px 6px; border-radius: 8px; text-decoration: none; }
+    #nav-mobile a:hover { color: var(--text); background: var(--surface); }
+    #nav-mobile .nav-cta-mobile { margin-top: 8px; background: var(--gold); color: #000; font-weight: 800; text-align: center; padding: 12px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.06em; }
+    @media (max-width: 600px) { #nav-burger { display: flex; } .nav-link { display: none; } }
 
     .page { max-width: 720px; margin: 0 auto; padding: 64px 24px 100px; }
     .eyebrow { font-size: 0.78rem; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: .12em; margin-bottom: 16px; }
@@ -79,9 +92,27 @@
     <span class="nav-logo-text">Speak</span>
   </a>
   <div class="nav-right">
-    <a class="btn-nav" href="app.html">Open App</a>
+    <a class="nav-link" href="index.html#features">Features</a>
+    <a class="nav-link" href="index.html#pricing">Pricing</a>
+    <a class="nav-link" href="index.html#safety">Safety</a>
+    <a class="nav-link" href="mission.html">Mission</a>
+    <a class="nav-link" href="guide.html">Guide</a>
+    <a class="nav-link" href="clinic_guide.html">For Clinics</a>
+    <a class="btn-nav" href="app.html">Open App →</a>
+    <button id="nav-burger" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
   </div>
 </nav>
+<div id="nav-mobile">
+  <a href="index.html">Home</a>
+  <a href="index.html#features">Features</a>
+  <a href="index.html#pricing">Pricing</a>
+  <a href="index.html#safety">Safety</a>
+  <a href="mission.html">Mission</a>
+  <a href="guide.html">Guide</a>
+  <a href="clinic_guide.html">For Clinics</a>
+  <a href="app.html" class="nav-cta-mobile">Open App →</a>
+</div>
+<script>(function(){var b=document.getElementById('nav-burger'),d=document.getElementById('nav-mobile');b.addEventListener('click',function(){var o=d.classList.toggle('open');b.classList.toggle('open',o);b.setAttribute('aria-expanded',o);});d.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){d.classList.remove('open');b.classList.remove('open');b.setAttribute('aria-expanded','false');});});})();</script>
 
 <div class="page">
 
