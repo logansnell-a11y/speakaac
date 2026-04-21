@@ -18,6 +18,7 @@
   <meta name="twitter:description" content="Free AAC app for nonverbal kids. Symbols, AI sentences, and a private safety channel so they can silently ask for help." />
   <meta name="twitter:image"       content="https://speakaac.org/icons/icon.png" />
   <meta name="color-scheme" content="light dark" />
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg" />
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon.png" />
   <link rel="icon" type="image/png" sizes="32x32" href="icons/icon.png" />
   <link rel="apple-touch-icon" href="icons/icon.png" />
@@ -1117,12 +1118,119 @@
       #nav-burger { display: flex; }
     }
   </style>
+  <style>
+    /* ── Butterfly nav logo ── */
+    .nav-butterfly {
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0;
+      animation: bf-arrive 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    @keyframes bf-arrive {
+      0%   { opacity: 0; transform: scale(0.2) rotate(-180deg) translateX(-20px); }
+      60%  { opacity: 1; transform: scale(1.15) rotate(8deg) translateX(3px); }
+      80%  { transform: scale(0.95) rotate(-3deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+
+    /* Wing flap on hover */
+    .nav-logo:hover .bf-rfw,
+    .nav-logo:hover .bf-lhw {
+      animation: flap-open 0.55s ease-in-out infinite alternate;
+    }
+    .nav-logo:hover .bf-lfw,
+    .nav-logo:hover .bf-rhw {
+      animation: flap-open 0.55s ease-in-out infinite alternate-reverse;
+    }
+    @keyframes flap-open {
+      0%   { transform: scaleX(1); }
+      100% { transform: scaleX(0.18); }
+    }
+
+    /* Idle gentle pulse */
+    .nav-butterfly .bf-inner {
+      animation: bf-idle 4s ease-in-out 0.7s infinite;
+      transform-origin: 256px 256px;
+    }
+    @keyframes bf-idle {
+      0%, 100% { transform: rotate(-45deg) scale(1); }
+      50%       { transform: rotate(-45deg) scale(1.04); }
+    }
+  </style>
 </head>
 <body>
 
   <!-- ── Nav ──────────────────────────────────────────────────────── -->
   <nav>
-    <a class="nav-logo" href="index.html"><img src="icons/icon.png" alt="" />Speak</a>
+    <a class="nav-logo" href="index.html">
+      <svg class="nav-butterfly" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <radialGradient id="nrfw" cx="12%" cy="78%" r="58%" gradientUnits="objectBoundingBox">
+            <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.55"/>
+            <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="nlfw" cx="88%" cy="78%" r="58%" gradientUnits="objectBoundingBox">
+            <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.55"/>
+            <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="nrhw" cx="10%" cy="12%" r="72%" gradientUnits="objectBoundingBox">
+            <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.85"/>
+            <stop offset="40%" stop-color="#0284c7" stop-opacity="0.45"/>
+            <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="nlhw" cx="90%" cy="12%" r="72%" gradientUnits="objectBoundingBox">
+            <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.85"/>
+            <stop offset="40%" stop-color="#0284c7" stop-opacity="0.45"/>
+            <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0"/>
+          </radialGradient>
+          <filter id="nbg" x="-18%" y="-18%" width="136%" height="136%">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="6" result="blur"/>
+            <feFlood flood-color="#0ea5e9" flood-opacity="0.4" result="c"/>
+            <feComposite in="c" in2="blur" operator="in" result="glow"/>
+            <feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <g class="bf-inner" transform="rotate(-45,256,256)" filter="url(#nbg)">
+          <!-- right forewing -->
+          <g class="bf-rfw" style="transform-origin:263px 232px">
+            <path d="M263,194 C298,170 352,148 385,149 C408,156 412,185 402,224 C393,252 356,270 263,272Z" fill="#060e1c"/>
+            <path d="M263,194 C298,170 352,148 385,149 C408,156 412,185 402,224 C393,252 356,270 263,272Z" fill="url(#nrfw)"/>
+            <circle cx="387" cy="156" r="6.5" fill="white" opacity=".96"/>
+            <circle cx="404" cy="178" r="5.5" fill="white" opacity=".88"/>
+            <circle cx="410" cy="205" r="5" fill="white" opacity=".82"/>
+          </g>
+          <!-- left forewing -->
+          <g class="bf-lfw" style="transform-origin:249px 232px">
+            <path d="M249,194 C214,170 160,148 127,149 C104,156 100,185 110,224 C119,252 156,270 249,272Z" fill="#060e1c"/>
+            <path d="M249,194 C214,170 160,148 127,149 C104,156 100,185 110,224 C119,252 156,270 249,272Z" fill="url(#nlfw)"/>
+            <circle cx="125" cy="156" r="6.5" fill="white" opacity=".96"/>
+            <circle cx="108" cy="178" r="5.5" fill="white" opacity=".88"/>
+            <circle cx="102" cy="205" r="5" fill="white" opacity=".82"/>
+          </g>
+          <!-- right hindwing -->
+          <g class="bf-rhw" style="transform-origin:263px 298px">
+            <path d="M263,267 C312,260 374,270 396,303 C413,328 410,366 380,381 C352,395 305,370 263,328Z" fill="#060e1c"/>
+            <path d="M263,267 C312,260 374,270 396,303 C413,328 410,366 380,381 C352,395 305,370 263,328Z" fill="url(#nrhw)"/>
+          </g>
+          <!-- left hindwing -->
+          <g class="bf-lhw" style="transform-origin:249px 298px">
+            <path d="M249,267 C200,260 138,270 116,303 C99,328 102,366 132,381 C160,395 207,370 249,328Z" fill="#060e1c"/>
+            <path d="M249,267 C200,260 138,270 116,303 C99,328 102,366 132,381 C160,395 207,370 249,328Z" fill="url(#nlhw)"/>
+          </g>
+          <!-- body -->
+          <ellipse cx="256" cy="261" rx="7.5" ry="72" fill="#0f1e35"/>
+          <ellipse cx="256" cy="261" rx="4" ry="68" fill="#2a5a8a" opacity=".4"/>
+          <circle cx="256" cy="187" r="10" fill="#0f1e35"/>
+          <circle cx="256" cy="187" r="6.5" fill="#1e3a5f"/>
+          <path d="M251,180 C244,166 234,155 227,147" stroke="#1e3a5f" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+          <path d="M261,180 C268,166 278,155 285,147" stroke="#1e3a5f" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+          <circle cx="225" cy="145" r="4.5" fill="#1e3a5f"/>
+          <circle cx="287" cy="145" r="4.5" fill="#1e3a5f"/>
+        </g>
+      </svg>
+      Speak
+    </a>
     <div class="nav-right">
       <a class="nav-link" href="#features">Features</a>
       <a class="nav-link" href="#pricing">Pricing</a>

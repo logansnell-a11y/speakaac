@@ -1,10 +1,139 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- Rounded square background -->
-  <rect width="512" height="512" rx="110" fill="#b87418"/>
-  <!-- Speech bubble -->
-  <path d="M256 112 C159 112 84 174 84 250 C84 295 110 335 153 360 L142 418 L207 381 C222 384 239 386 256 386 C353 386 428 324 428 250 C428 176 353 112 256 112 Z" fill="white"/>
-  <!-- Three dots -->
-  <circle cx="192" cy="252" r="24" fill="#b87418"/>
-  <circle cx="256" cy="252" r="24" fill="#b87418"/>
-  <circle cx="320" cy="252" r="24" fill="#b87418"/>
+  <defs>
+    <!-- Right forewing teal shimmer: near body (inner/lower) -->
+    <radialGradient id="rfwShimmer" cx="12%" cy="78%" r="58%" gradientUnits="objectBoundingBox">
+      <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.55"/>
+      <stop offset="55%" stop-color="#0ea5e9" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Left forewing teal shimmer: mirror -->
+    <radialGradient id="lfwShimmer" cx="88%" cy="78%" r="58%" gradientUnits="objectBoundingBox">
+      <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.55"/>
+      <stop offset="55%" stop-color="#0ea5e9" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Right hindwing blue iridescence: inner/upper -->
+    <radialGradient id="rhwBlue" cx="10%" cy="12%" r="72%" gradientUnits="objectBoundingBox">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.85"/>
+      <stop offset="38%" stop-color="#0284c7" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Left hindwing blue iridescence: mirror -->
+    <radialGradient id="lhwBlue" cx="90%" cy="12%" r="72%" gradientUnits="objectBoundingBox">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.85"/>
+      <stop offset="38%" stop-color="#0284c7" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Body gradient -->
+    <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0f2040"/>
+      <stop offset="50%" stop-color="#1e3a5f"/>
+      <stop offset="100%" stop-color="#0f2040"/>
+    </linearGradient>
+    <!-- Subtle blue outer glow -->
+    <filter id="blueGlow" x="-15%" y="-15%" width="130%" height="130%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="7" result="blur"/>
+      <feFlood flood-color="#0ea5e9" flood-opacity="0.4" result="color"/>
+      <feComposite in="color" in2="blur" operator="in" result="glow"/>
+      <feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Rotate -45° (backslash \ orientation, head upper-left) -->
+  <g transform="rotate(-45, 256, 256)" filter="url(#blueGlow)">
+
+    <!-- ── RIGHT FOREWING ── -->
+    <path d="M 263,194
+             C 298,170 352,148 385,149
+             C 408,156 412,185 402,224
+             C 393,252 356,270 263,272 Z"
+          fill="#060e1c"/>
+    <path d="M 263,194
+             C 298,170 352,148 385,149
+             C 408,156 412,185 402,224
+             C 393,252 356,270 263,272 Z"
+          fill="url(#rfwShimmer)"/>
+
+    <!-- ── LEFT FOREWING ── -->
+    <path d="M 249,194
+             C 214,170 160,148 127,149
+             C 104,156 100,185 110,224
+             C 119,252 156,270 249,272 Z"
+          fill="#060e1c"/>
+    <path d="M 249,194
+             C 214,170 160,148 127,149
+             C 104,156 100,185 110,224
+             C 119,252 156,270 249,272 Z"
+          fill="url(#lfwShimmer)"/>
+
+    <!-- ── RIGHT HINDWING ── -->
+    <path d="M 263,267
+             C 312,260 374,270 396,303
+             C 413,328 410,366 380,381
+             C 352,395 305,370 263,328 Z"
+          fill="#060e1c"/>
+    <path d="M 263,267
+             C 312,260 374,270 396,303
+             C 413,328 410,366 380,381
+             C 352,395 305,370 263,328 Z"
+          fill="url(#rhwBlue)"/>
+
+    <!-- ── LEFT HINDWING ── -->
+    <path d="M 249,267
+             C 200,260 138,270 116,303
+             C 99,328 102,366 132,381
+             C 160,395 207,370 249,328 Z"
+          fill="#060e1c"/>
+    <path d="M 249,267
+             C 200,260 138,270 116,303
+             C 99,328 102,366 132,381
+             C 160,395 207,370 249,328 Z"
+          fill="url(#lhwBlue)"/>
+
+    <!-- Wing edge highlights (subtle blue rim) -->
+    <path d="M 263,194 C 298,170 352,148 385,149 C 408,156 412,185 402,224 C 393,252 356,270 263,272 Z"
+          fill="none" stroke="#38bdf8" stroke-width="1.2" opacity="0.3"/>
+    <path d="M 249,194 C 214,170 160,148 127,149 C 104,156 100,185 110,224 C 119,252 156,270 249,272 Z"
+          fill="none" stroke="#38bdf8" stroke-width="1.2" opacity="0.3"/>
+    <path d="M 263,267 C 312,260 374,270 396,303 C 413,328 410,366 380,381 C 352,395 305,370 263,328 Z"
+          fill="none" stroke="#38bdf8" stroke-width="1.8" opacity="0.45"/>
+    <path d="M 249,267 C 200,260 138,270 116,303 C 99,328 102,366 132,381 C 160,395 207,370 249,328 Z"
+          fill="none" stroke="#38bdf8" stroke-width="1.8" opacity="0.45"/>
+
+    <!-- White spots — right forewing outer margin -->
+    <circle cx="387" cy="156" r="6.5" fill="white" opacity="0.96"/>
+    <circle cx="404" cy="178" r="5.5" fill="white" opacity="0.88"/>
+    <circle cx="410" cy="205" r="5" fill="white" opacity="0.82"/>
+    <circle cx="406" cy="230" r="4" fill="white" opacity="0.72"/>
+
+    <!-- White spots — left forewing outer margin -->
+    <circle cx="125" cy="156" r="6.5" fill="white" opacity="0.96"/>
+    <circle cx="108" cy="178" r="5.5" fill="white" opacity="0.88"/>
+    <circle cx="102" cy="205" r="5" fill="white" opacity="0.82"/>
+    <circle cx="106" cy="230" r="4" fill="white" opacity="0.72"/>
+
+    <!-- Subtle cyan tint near hindwing outer edges -->
+    <circle cx="394" cy="312" r="4" fill="#38bdf8" opacity="0.35"/>
+    <circle cx="405" cy="340" r="3.5" fill="#38bdf8" opacity="0.3"/>
+    <circle cx="118" cy="312" r="4" fill="#38bdf8" opacity="0.35"/>
+    <circle cx="107" cy="340" r="3.5" fill="#38bdf8" opacity="0.3"/>
+
+    <!-- ── BODY ── -->
+    <ellipse cx="256" cy="261" rx="7.5" ry="72" fill="url(#bodyGrad)"/>
+    <ellipse cx="256" cy="261" rx="4" ry="68" fill="#2a5a8a" opacity="0.4"/>
+
+    <!-- Head -->
+    <circle cx="256" cy="187" r="10" fill="#0f1e35"/>
+    <circle cx="256" cy="187" r="6.5" fill="#1e3a5f"/>
+    <circle cx="253" cy="184" r="2" fill="#38bdf8" opacity="0.6"/>
+
+    <!-- Antennae -->
+    <path d="M 251,180 C 244,166 234,155 227,147"
+          stroke="#1e3a5f" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+    <path d="M 261,180 C 268,166 278,155 285,147"
+          stroke="#1e3a5f" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+    <circle cx="225" cy="145" r="4.5" fill="#1e3a5f"/>
+    <circle cx="287" cy="145" r="4.5" fill="#1e3a5f"/>
+
+  </g>
 </svg>
