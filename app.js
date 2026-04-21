@@ -1055,12 +1055,12 @@ function buildProgressReport() {
   const priorTotal = symEvents.filter(e => priorDays.includes(e.dateStr)).length;
 
   let trendHtml = '';
-  if (priorTotal > 0) {
+  if (priorTotal > 0 && weekTotal > 0) {
     const pct = Math.round(((weekTotal - priorTotal) / priorTotal) * 100);
     const arrow = pct >= 0 ? '↑' : '↓';
     const color = pct >= 0 ? '#2e7d32' : '#c94a2e';
     trendHtml = `<span style="color:${color};font-size:0.78rem;margin-left:6px">${arrow} ${Math.abs(pct)}% vs last week</span>`;
-  } else if (weekTotal > 0) {
+  } else if (weekTotal > 0 && priorTotal === 0) {
     trendHtml = `<span style="color:#888;font-size:0.78rem;margin-left:6px">First week of data</span>`;
   }
 
@@ -1429,7 +1429,11 @@ document.getElementById('sl-del').addEventListener('click', () => {
 });
 
 document.getElementById('sl-forgot')?.addEventListener('click', () => {
-  slErrorEl.textContent = 'Default PIN is 0000 · Tap 🔊 3s in app to change it';
+  const pin = loadSettings().pin;
+  const isDefault = !pin || pin === '0000';
+  slErrorEl.textContent = isDefault
+    ? 'No PIN set yet — open settings to secure this device'
+    : 'Contact your provider if you\'ve forgotten your PIN';
   slErrorEl.classList.remove('hidden');
   setTimeout(() => {
     slErrorEl.textContent = 'Incorrect PIN — try again';

@@ -3355,6 +3355,29 @@ body.theme-minimal {
   border-top-color: #d97706;
   background: rgba(217,119,6,0.11);
 }
+/* Dark mode — higher opacity so colors are clinically legible */
+@media (prefers-color-scheme: dark) {
+  .core-word-btn[data-word-class="pronoun"] {
+    border-top-color: #e6a020;
+    background: rgba(230,160,32,0.26);
+  }
+  .core-word-btn[data-word-class="verb"] {
+    border-top-color: #4caf65;
+    background: rgba(76,175,101,0.24);
+  }
+  .core-word-btn[data-word-class="descriptor"] {
+    border-top-color: #5ba3e8;
+    background: rgba(91,163,232,0.24);
+  }
+  .core-word-btn[data-word-class="negative"] {
+    border-top-color: #e0604a;
+    background: rgba(224,96,74,0.26);
+  }
+  .core-word-btn[data-word-class="social"] {
+    border-top-color: #f0a030;
+    background: rgba(240,160,48,0.24);
+  }
+}
 
 .core-word-emoji {
   font-size: 1.1rem;
