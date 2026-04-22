@@ -1126,6 +1126,9 @@
       flex-shrink: 0;
     }
   </style>
+  <!-- FOUC prevention: hide translatable content until ES is applied -->
+  <script>if(localStorage.getItem('aac_lang')==='es')document.documentElement.classList.add('lang-pending');</script>
+  <style>.lang-pending .hero,.lang-pending section,.lang-pending footer,.lang-pending #sticky-cta,.lang-pending #cookie-bar{visibility:hidden}</style>
 </head>
 <body>
 
@@ -1584,7 +1587,12 @@
           applyLang(lang);
         });
       });
-      if (saved !== 'en') applyLang(saved);
+      if (saved !== 'en') {
+        document.addEventListener('DOMContentLoaded', function() {
+          applyLang(saved);
+          document.documentElement.classList.remove('lang-pending');
+        });
+      }
     })();
   </script>
 
