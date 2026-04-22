@@ -844,30 +844,37 @@ function sendPrivateAlert(reason) {
     `— Speak AAC App (Private Safety Channel)`
   );
 
-  // Fire silently — EmailJS sends directly from browser, no mail app opens
+  // Fire silently — server-side first (no rate limits), EmailJS as fallback
   if (contactEmail) {
-    const ejsReady = EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && EMAILJS_PUBLIC_KEY;
+    const alertPayload = {
+      to_email:     contactEmail,
+      to_name:      contactName,
+      user_name:    userName,
+      reason:       reasonLabel,
+      last_message: currentMsg,
+      timestamp:    timestamp,
+    };
 
-    if (ejsReady) {
-      // Real silent send via EmailJS
-      emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
-        {
-          to_email:     contactEmail,
-          to_name:      contactName,
-          user_name:    userName,
-          reason:       reasonLabel,
-          last_message: currentMsg,
-          timestamp:    timestamp,
-        },
-        EMAILJS_PUBLIC_KEY
-      ).catch(err => {
-        // Fail silently — do not expose errors on the child's screen
-        console.error("EmailJS error:", err);
-      });
-    } else {
-      // Fallback: mailto (visible — replace with EmailJS credentials to fix)
+    // Primary: Netlify function (server-side Resend — no client-side API key exposure)
+    fetch('/.netlify/functions/send-safety-alert', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(alertPayload),
+    }).then(res => {
+      if (!res.ok) throw new Error(`Function returned ${res.status}`);
+      console.log('Safety alert sent via server function');
+    }).catch(() => {
+      // Fallback: EmailJS (client-side, 200/month free tier)
+      const ejsReady = EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && EMAILJS_PUBLIC_KEY;
+      if (ejsReady) {
+        emailjs.send(
+          EMAILJS_SERVICE_ID,
+          EMAILJS_TEMPLATE_ID,
+          alertPayload,
+          EMAILJS_PUBLIC_KEY
+        ).catch(err => console.error('EmailJS fallback error:', err));
+      } else {
+        // Last resort: mailto (visible — only fires if both server and EmailJS fail)
       const link = document.createElement("a");
       link.href = `mailto:${contactEmail}?subject=${subject}&body=${encodeURIComponent(
         `Hi ${contactName},\n\n${userName} used the private safety channel.\n\nWhat they said: "${reasonLabel}"\nTime: ${timestamp}\nLast message: "${currentMsg}"\n\n⚠️ This was sent privately — the caretaker did not see this.\n\nPlease check on ${userName} immediately.\n\n— Speak AAC (Private Safety Channel)`
@@ -878,7 +885,8 @@ function sendPrivateAlert(reason) {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    }
+      }
+    });
   }
 
   // Only show 911/hotline links for serious abuse indicators — not for talk/unsure/scared
@@ -924,7 +932,14 @@ function updatePinDots() {
 
 function submitPin() {
   const settings = loadSettings();
-  const correctPin = settings.pin || "0000";
+  const correctPin = settings.pin;
+  if (!correctPin) {
+    pinModal.classList.add("hidden");
+    pinEntry = "";
+    showToast("No PIN set — complete setup first", "warn", 3000);
+    startOnboarding();
+    return;
+  }
   if (pinEntry === correctPin) {
     pinModal.classList.add("hidden");
     pinEntry = "";
@@ -1006,8 +1021,7 @@ function openSetupModal() {
   // PIN default warning
   const pinWarn = document.getElementById('pin-default-warning');
   if (pinWarn) {
-    const isDefault = !settings.pin || settings.pin === '0000';
-    pinWarn.classList.toggle('hidden', !isDefault);
+    pinWarn.classList.toggle('hidden', !!settings.pin);
   }
 
   // Communication report
@@ -1398,7 +1412,15 @@ function updateSlDots() {
 }
 
 function submitSessionPin() {
-  const correct = loadSettings().pin || '0000';
+  const correct = loadSettings().pin;
+  if (!correct) {
+    slErrorEl.textContent = 'No PIN set — please complete setup';
+    slErrorEl.classList.remove('hidden');
+    _slEntry = '';
+    updateSlDots();
+    setTimeout(() => { slErrorEl.textContent = 'Incorrect PIN — try again'; slErrorEl.classList.add('hidden'); }, 4000);
+    return;
+  }
   if (_slEntry === correct) {
     sessionLockEl.classList.add('hidden');
     _slEntry = '';
@@ -1438,9 +1460,8 @@ document.getElementById('sl-del').addEventListener('click', () => {
 
 document.getElementById('sl-forgot')?.addEventListener('click', () => {
   const pin = loadSettings().pin;
-  const isDefault = !pin || pin === '0000';
-  slErrorEl.textContent = isDefault
-    ? 'No PIN set yet — open settings to secure this device'
+  slErrorEl.textContent = !pin
+    ? 'No PIN set yet — complete setup to secure this device'
     : 'Contact your provider if you\'ve forgotten your PIN';
   slErrorEl.classList.remove('hidden');
   setTimeout(() => {

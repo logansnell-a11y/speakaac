@@ -92,29 +92,29 @@
 <div class="page">
 
   <h1>SPEAK AAC</h1>
-  <div class="subtitle">Project log · Started Feb 26, 2026 · Last updated Mar 20, 2026</div>
+  <div class="subtitle">Project log · Started Feb 26, 2026 · Last updated Apr 21, 2026</div>
 
   <!-- ── Stats ── -->
   <div class="stats">
     <div class="stat-card">
       <div class="stat-label">Lines of Code</div>
-      <div class="stat-value">16,300</div>
-      <div class="stat-sub">across 27 source files</div>
+      <div class="stat-value">19,147</div>
+      <div class="stat-sub">across 30 source files</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Est. Hours Worked</div>
-      <div class="stat-value">~52</div>
-      <div class="stat-sub">across ~26 sessions</div>
+      <div class="stat-value">~80</div>
+      <div class="stat-sub">across ~40 sessions</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Total Spent</div>
-      <div class="stat-value">~$61</div>
-      <div class="stat-sub">Claude Pro + Netlify + Domain</div>
+      <div class="stat-value">~$103</div>
+      <div class="stat-sub">Claude Pro + Netlify + Domain + LLC</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Days Active</div>
-      <div class="stat-value">23</div>
-      <div class="stat-sub">Feb 26 → Mar 20, 2026</div>
+      <div class="stat-value">54</div>
+      <div class="stat-sub">Feb 26 → Apr 21, 2026</div>
     </div>
   </div>
 
@@ -369,41 +369,114 @@
       </div>
     </div>
 
+
+    <div class="day">
+      <div class="day-left"><div class="day-date">Mar 21–26</div><div class="day-line"></div></div>
+      <div class="day-content">
+        <div class="day-title">Security Sweep + Google Presence + LLC Filed</div>
+        <div class="day-duration">~5 hrs</div>
+        <ul class="day-items">
+          <li><strong>2FA enabled on all accounts</strong> — Zoho, Supabase, GitHub, Netlify, Stripe</li>
+          <li><strong>Stripe Radar rules</strong> — 5/6 fraud rules enabled; fraud notifications on</li>
+          <li><strong>CORS restriction</strong> on Netlify AI function — requests locked to speakaac.org only</li>
+          <li><strong>Tier self-upgrade bypass patched</strong> — plan enforcement moved server-side</li>
+          <li><strong>Supabase RLS audit</strong> — profiles + events tables both confirmed locked down</li>
+          <li><strong>Google Search Console verified</strong> + sitemap.xml submitted</li>
+          <li><strong>API key audit</strong> — clean history; old exposed key deleted, new key rotated</li>
+          <li><strong>LLC filed</strong> — Speak AAC LLC registered; Chase business account application submitted (7–14 day processing)</li>
+          <li><strong>press.html</strong> — media kit page with mission stats, founder story, contact info</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="day">
+      <div class="day-left"><div class="day-date">Mar 28</div><div class="day-line"></div></div>
+      <div class="day-content">
+        <div class="day-title">ARASAAC → Mulberry Symbol Migration</div>
+        <div class="day-duration">~3 hrs</div>
+        <ul class="day-items">
+          <li><strong>Symbol library replaced</strong> — arasaac.js deleted; mulberry.js added (Mulberry Symbols, CC BY-SA 4.0, Garry Pye)</li>
+          <li>Symbols served via jsDelivr CDN — no hosting cost, cacheable for offline use</li>
+          <li><strong>All 9 HTML files updated</strong> — CSP headers updated to allow jsdelivr.net</li>
+          <li><strong>ARASAAC formally notified</strong> of migration — support@speakaac.org</li>
+          <li>Service worker bumped to v7 — forces full symbol cache refresh</li>
+          <li>pitch.html added — investor/grant pitch deck page</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="day">
+      <div class="day-left"><div class="day-date">Apr 1–8</div><div class="day-line"></div></div>
+      <div class="day-content">
+        <div class="day-title">Stripe Webhook + KansasVoices Concept + Clinic Research</div>
+        <div class="day-duration">~4 hrs</div>
+        <ul class="day-items">
+          <li><strong>stripe-webhook.js built</strong> — Netlify function handles checkout.session.completed; writes tier to Supabase profiles on payment (env vars + Stripe registration still pending)</li>
+          <li><strong>KansasVoices.org concept</strong> — statewide AAC advocacy site mapped out; 66k+ Kansas IDEA students identified as target audience</li>
+          <li><strong>Clinic outreach strategy</strong> — SLP procurement timeline (April/May budget cycle), HCPCS E2510 code identified, Proloquo2Go gap analysis complete</li>
+          <li><strong>HIPAA BAA template</strong> (baa_template.md) — ready to fill in and PDF for clinic deals</li>
+          <li><strong>NIDILRR grant research</strong> — Phase I SBIR application path mapped; $300k–$750k potential</li>
+          <li>All scholarships submitted ✓ — First Heritage Bank, Pro-Life, United Bank &amp; Trust</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="day">
+      <div class="day-left"><div class="day-date">Apr 21</div><div class="day-line"></div></div>
+      <div class="day-content">
+        <div class="day-title">Spanish Localization + Agent Auth Fix + Offline Planning</div>
+        <div class="day-duration">~5 hrs</div>
+        <ul class="day-items">
+          <li><strong>Full Spanish translation system</strong> — EN/ES pill on landing page translates all content live; page-lang.js shared module handles nav/footer/cookie bar on every sub-page</li>
+          <li><strong>mission.html, guide.html, clinic_guide.html, install_guide.html</strong> — all fully translated to Spanish via inline SPEAK_ES_PAGE objects</li>
+          <li><strong>FOUC fix</strong> — DOMContentLoaded timing bug fixed; returning from sub-page to index now correctly preserves ES preference without flash of English</li>
+          <li><strong>Core vocab bar overlap fixed</strong> — search bar + core bar no longer collide at top of app</li>
+          <li><strong>Agent system re-authenticated</strong> — Claude Code Pro login restored; 3 pending overnight research tasks unblocked</li>
+          <li><strong>Market gap research queued</strong> — 10-niche analysis task in inbox.md; fires tonight at 10 PM</li>
+          <li><strong>computer_use.py built</strong> — autonomous task agent with human-in-the-loop checkpoints; screenshot → Claude plans → user approves each step → executes</li>
+          <li>Service worker bumped to v29</li>
+        </ul>
+      </div>
+    </div>
+
   </div>
 
   <!-- ── Code breakdown ── -->
   <h2>Codebase Breakdown</h2>
   <div class="file-list">
-    <div class="file-row"><div class="file-name">styles.css</div><div class="file-bar-wrap"><div class="file-bar" style="width:100%"></div></div><div class="file-count">3,684</div></div>
-    <div class="file-row"><div class="file-name">app.js</div><div class="file-bar-wrap"><div class="file-bar" style="width:51%"></div></div><div class="file-count">1,886</div></div>
-    <div class="file-row"><div class="file-name">index.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:51%"></div></div><div class="file-count">1,863</div></div>
-    <div class="file-row"><div class="file-name">teacher.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:26%"></div></div><div class="file-count">952</div></div>
-    <div class="file-row"><div class="file-name">app.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:20%"></div></div><div class="file-count">723</div></div>
-    <div class="file-row"><div class="file-name">mission.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:17%"></div></div><div class="file-count">625</div></div>
-    <div class="file-row"><div class="file-name">onboarding_demo.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:16%"></div></div><div class="file-count">601</div></div>
-    <div class="file-row"><div class="file-name">onboarding.js</div><div class="file-bar-wrap"><div class="file-bar" style="width:16%"></div></div><div class="file-count">597</div></div>
-    <div class="file-row"><div class="file-name">research.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:14%"></div></div><div class="file-count">529 <span class="new-badge">new</span></div></div>
-    <div class="file-row"><div class="file-name">clinic_guide.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:14%"></div></div><div class="file-count">520 <span class="new-badge">new</span></div></div>
-    <div class="file-row"><div class="file-name">press.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:14%"></div></div><div class="file-count">514</div></div>
-    <div class="file-row"><div class="file-name">milestones.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:13%"></div></div><div class="file-count">496</div></div>
-    <div class="file-row"><div class="file-name">install_guide.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:12%"></div></div><div class="file-count">429</div></div>
-    <div class="file-row"><div class="file-name">guide.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:12%"></div></div><div class="file-count">429 <span class="new-badge">new</span></div></div>
-    <div class="file-row"><div class="file-name">payment-success.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:11%"></div></div><div class="file-count">414</div></div>
-    <div class="file-row"><div class="file-name">teacher_demo.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:10%"></div></div><div class="file-count">377</div></div>
-    <div class="file-row"><div class="file-name">dashboard.js</div><div class="file-bar-wrap"><div class="file-bar" style="width:8%"></div></div><div class="file-count">300</div></div>
-    <div class="file-row"><div class="file-name">ai-sentence.js</div><div class="file-bar-wrap"><div class="file-bar" style="width:6%"></div></div><div class="file-count">233</div></div>
-    <div class="file-row"><div class="file-name">terms.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:6%"></div></div><div class="file-count">201 <span class="new-badge">new</span></div></div>
-    <div class="file-row"><div class="file-name">privacy.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:6%"></div></div><div class="file-count">207</div></div>
-    <div class="file-row"><div class="file-name">reset-password.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:5%"></div></div><div class="file-count">187</div></div>
-    <div class="file-row"><div class="file-name">symbols.js</div><div class="file-bar-wrap"><div class="file-bar" style="width:5%"></div></div><div class="file-count">168</div></div>
-    <div class="file-row"><div class="file-name">sync.js</div><div class="file-bar-wrap"><div class="file-bar" style="width:3%"></div></div><div class="file-count">107</div></div>
-    <div class="file-row"><div class="file-name">mulberry.js</div><div class="file-bar-wrap"><div class="file-bar" style="width:2%"></div></div><div class="file-count">143</div></div>
-    <div class="file-row"><div class="file-name">404.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:2%"></div></div><div class="file-count">92 <span class="new-badge">new</span></div></div>
-    <div class="file-row"><div class="file-name">sw.js</div><div class="file-bar-wrap"><div class="file-bar" style="width:2%"></div></div><div class="file-count">66</div></div>
+    <div class="file-row"><div class="file-name">styles.css</div><div class="file-bar-wrap"><div class="file-bar" style="width:100%"></div></div><div class="file-count">4,010</div></div>
+    <div class="file-row"><div class="file-name">app.js</div><div class="file-bar-wrap"><div class="file-bar" style="width:54%"></div></div><div class="file-count">2,153</div></div>
+    <div class="file-row"><div class="file-name">index.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:58%"></div></div><div class="file-count">2,319</div></div>
+    <div class="file-row"><div class="file-name">teacher.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:24%"></div></div><div class="file-count">954</div></div>
+    <div class="file-row"><div class="file-name">onboarding.js</div><div class="file-bar-wrap"><div class="file-bar" style="width:19%"></div></div><div class="file-count">772</div></div>
+    <div class="file-row"><div class="file-name">app.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:19%"></div></div><div class="file-count">760</div></div>
+    <div class="file-row"><div class="file-name">mission.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:16%"></div></div><div class="file-count">655</div></div>
+    <div class="file-row"><div class="file-name">onboarding_demo.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:15%"></div></div><div class="file-count">603</div></div>
+    <div class="file-row"><div class="file-name">clinic_guide.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:14%"></div></div><div class="file-count">551</div></div>
+    <div class="file-row"><div class="file-name">research.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:13%"></div></div><div class="file-count">537</div></div>
+    <div class="file-row"><div class="file-name">press.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:13%"></div></div><div class="file-count">521</div></div>
+    <div class="file-row"><div class="file-name">milestones.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:13%"></div></div><div class="file-count">502</div></div>
+    <div class="file-row"><div class="file-name">guide.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:11%"></div></div><div class="file-count">461</div></div>
+    <div class="file-row"><div class="file-name">install_guide.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:11%"></div></div><div class="file-count">455</div></div>
+    <div class="file-row"><div class="file-name">payment-success.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:10%"></div></div><div class="file-count">416</div></div>
+    <div class="file-row"><div class="file-name">teacher_demo.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:9%"></div></div><div class="file-count">379</div></div>
+    <div class="file-row"><div class="file-name">pitch.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:9%"></div></div><div class="file-count">370 <span class="new-badge">new</span></div></div>
+    <div class="file-row"><div class="file-name">symbols.js</div><div class="file-bar-wrap"><div class="file-bar" style="width:8%"></div></div><div class="file-count">315</div></div>
+    <div class="file-row"><div class="file-name">dashboard.js</div><div class="file-bar-wrap"><div class="file-bar" style="width:7%"></div></div><div class="file-count">300</div></div>
+    <div class="file-row"><div class="file-name">ai-sentence.js</div><div class="file-bar-wrap"><div class="file-bar" style="width:7%"></div></div><div class="file-count">292</div></div>
+    <div class="file-row"><div class="file-name">privacy.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:6%"></div></div><div class="file-count">240</div></div>
+    <div class="file-row"><div class="file-name">terms.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:6%"></div></div><div class="file-count">221</div></div>
+    <div class="file-row"><div class="file-name">stripe-webhook.js</div><div class="file-bar-wrap"><div class="file-bar" style="width:4%"></div></div><div class="file-count">174 <span class="new-badge">new</span></div></div>
+    <div class="file-row"><div class="file-name">reset-password.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:5%"></div></div><div class="file-count">189</div></div>
+    <div class="file-row"><div class="file-name">mulberry.js</div><div class="file-bar-wrap"><div class="file-bar" style="width:4%"></div></div><div class="file-count">142 <span class="new-badge">new</span></div></div>
+    <div class="file-row"><div class="file-name">sync.js</div><div class="file-bar-wrap"><div class="file-bar" style="width:3%"></div></div><div class="file-count">109</div></div>
+    <div class="file-row"><div class="file-name">page-lang.js</div><div class="file-bar-wrap"><div class="file-bar" style="width:2%"></div></div><div class="file-count">88 <span class="new-badge">new</span></div></div>
+    <div class="file-row"><div class="file-name">404.html</div><div class="file-bar-wrap"><div class="file-bar" style="width:2%"></div></div><div class="file-count">94</div></div>
+    <div class="file-row"><div class="file-name">sw.js</div><div class="file-bar-wrap"><div class="file-bar" style="width:2%"></div></div><div class="file-count">67</div></div>
     <div class="file-row" style="margin-top:10px; padding-top:10px; border-top:1px solid var(--border)">
       <div class="file-name" style="font-weight:700;color:var(--gold)">TOTAL</div>
       <div class="file-bar-wrap"></div>
-      <div class="file-count" style="color:var(--gold);font-weight:700">~16,300</div>
+      <div class="file-count" style="color:var(--gold);font-weight:700">19,147</div>
     </div>
   </div>
 
@@ -480,17 +553,29 @@
         <td class="cost-free">Free</td>
         <td>% of donations</td>
       </tr>
+      <tr>
+        <td>LLC Filing</td>
+        <td>Speak AAC LLC — Kansas SOS</td>
+        <td class="cost-paid">~$160.00</td>
+        <td>~$50/yr renewal</td>
+      </tr>
+      <tr>
+        <td>Claude Pro (×2 mo)</td>
+        <td>All development sessions (Claude Code)</td>
+        <td class="cost-paid">$40.00</td>
+        <td>$20/mo</td>
+      </tr>
       <tr class="total-row">
         <td>TOTAL</td>
         <td></td>
-        <td>~$41.00</td>
+        <td>~$233.00</td>
         <td>~$29/mo ongoing</td>
       </tr>
     </tbody>
   </table>
 
   <div style="margin-top:48px; font-size:0.78rem; color:var(--text-dim); text-align:center;">
-    Last updated March 20, 2026 · speakaac.org · github.com/logansnell-a11y/speakaac · AI sentence builder confirmed working ✓
+    Last updated April 21, 2026 · speakaac.org · github.com/logansnell-a11y/speakaac · AI sentence builder confirmed working ✓ · EN/ES bilingual ✓ · LLC filed ✓
   </div>
 
 </div>
