@@ -78,7 +78,7 @@
 /* ── Mobile — shrink all layout vars so UI fits on phone ──────── */
 @media (max-width: 480px) {
   :root {
-    --topbar-h:    72px;
+    --topbar-h:    60px;
     --corebar-h:   52px;
     --sidebar-w:   68px;
     --bottombar-h: 58px;
@@ -90,6 +90,18 @@
   }
   .core-word-emoji { font-size: 0.9rem; }
   .core-word-label { font-size: 0.55rem; }
+
+  /* Tighter topbar */
+  #topbar { padding: 8px 10px; gap: 8px; }
+  #sentence-display { min-height: 40px; padding: 8px 12px; }
+  #sentence-text { font-size: 1rem; }
+
+  /* Hide EN/ES pill on phone — language set once in settings */
+  #lang-pill-topbar { display: none; }
+
+  /* Bottom bar — icons only, drop text labels */
+  .bar-btn { font-size: 0; gap: 0; padding: 0; }
+  .bar-btn .bar-icon { font-size: 1.4rem; }
 
   /* Plans modal — horizontal swipe instead of long vertical scroll */
   #plans-grid {

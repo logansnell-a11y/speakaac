@@ -142,6 +142,7 @@ function logEvent(type, payload) {
 
 // ── State ──────────────────────────────────────────────────────────
 let sentence       = [];
+let typedMode      = false;
 let activeCategory = "needs";
 let clearTimer     = null;
 let clearStarted   = false;
@@ -224,8 +225,8 @@ function updateDisplay() {
   } else {
     sentenceText.textContent = sentence.join(" ");
     sentenceText.classList.remove("placeholder");
-    // Show AI button when 2+ symbols tapped
-    if (sentence.length >= 2) {
+    // Show AI button when 2+ symbols tapped (not when user typed their own sentence)
+    if (sentence.length >= 2 && !typedMode) {
       btnAI.classList.remove("hidden");
       if (tierUnlocks("ai")) {
         btnAI.textContent = "✨";
@@ -552,6 +553,7 @@ function onSymbolTap(sym, card) {
   card.classList.add("flash");
   setTimeout(() => card.classList.remove("flash"), 280);
   speak(t.speech);
+  typedMode = false;
   sentence.push(t.speech);
   logEvent('symbol', { id: sym.id, label: t.label, category: activeCategory, speech: t.speech });
   updateDisplay();
@@ -574,6 +576,7 @@ catBtns.forEach(btn => {
 // ── App logo — home button: clear sentence + reset to Needs ───────
 document.getElementById('app-logo').addEventListener('click', () => {
   sentence = [];
+  typedMode = false;
   updateDisplay();
   // Always reset to Needs category and scroll to top
   activeCategory = 'needs';
@@ -710,6 +713,7 @@ kbAdd.addEventListener("click", () => {
   const t = keyboardInput.value.trim();
   if (t) {
     sentence.push(t);
+    typedMode = true;
     logEvent('keyboard', { text: t });
     updateDisplay();
     keyboardInput.value = "";
