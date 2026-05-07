@@ -235,36 +235,37 @@
     </div>
     <div class="three-col anim">
       <div class="price-card">
-        <div class="price-tier">Family</div>
+        <div class="price-tier">Free</div>
         <div class="price-amount">$0 <span>/ forever</span></div>
-        <div class="price-desc">Full symbol grid, all 17 profiles, safety channel, AI sentence builder.</div>
+        <div class="price-desc">Core communication features, always free. Safety channel included on every plan.</div>
         <ul class="price-items">
-          <li>Any device, no install</li>
-          <li>Offline support</li>
+          <li>All symbols &amp; categories</li>
           <li>Private safety channel</li>
-          <li>AI sentence builder</li>
+          <li>Works on any device</li>
+          <li>5 AI sentences/day</li>
+        </ul>
+      </div>
+      <div class="price-card">
+        <div class="price-tier">Family</div>
+        <div class="price-amount">$9.99 <span>/ mo</span></div>
+        <div class="price-desc">Everything in Free, plus unlimited AI and multi-profile support.</div>
+        <ul class="price-items">
+          <li>Unlimited AI sentences</li>
+          <li>30-day communication history</li>
+          <li>Multiple child profiles</li>
+          <li>Works on your existing device</li>
         </ul>
       </div>
       <div class="price-card feature">
         <div class="price-tier">Clinic / SLP</div>
-        <div class="price-amount">$499 <span>/ yr</span></div>
-        <div class="price-desc">30-day free trial. HIPAA BAA included. Invoice &amp; PO accepted.</div>
+        <div class="price-amount">$49.99 <span>/ mo</span></div>
+        <div class="price-desc">Free 30-day trial. HIPAA BAA available. Invoice &amp; PO accepted.</div>
         <ul class="price-items">
-          <li>Provider dashboard</li>
-          <li>Multi-client management</li>
+          <li>Full provider dashboard</li>
+          <li>Unlimited student profiles</li>
+          <li>Teacher read-only accounts</li>
+          <li>Exportable communication reports</li>
           <li>HIPAA BAA on request</li>
-          <li>Communication history logs</li>
-        </ul>
-      </div>
-      <div class="price-card">
-        <div class="price-tier">Institution / School</div>
-        <div class="price-amount">$499 <span>/ yr</span></div>
-        <div class="price-desc">FERPA agreement available. Bulk onboarding for student caseloads.</div>
-        <ul class="price-items">
-          <li>All Clinic features</li>
-          <li>FERPA data agreement</li>
-          <li>Kiosk mode for tablets</li>
-          <li>Priority support</li>
         </ul>
       </div>
     </div>
@@ -300,8 +301,44 @@
     </div>
   </div>
 
-  <!-- 6 · Final / CTA -->
-  <div class="slide slide-final" data-index="6">
+  <!-- 6 · Roadmap + Grants -->
+  <div class="slide" data-index="6">
+    <div class="slide-header">
+      <div class="slide-label anim">Road to Market</div>
+      <div class="slide-h2 anim">Building the right way.<br><em>Federal grants. Clinical validation. Scale.</em></div>
+      <div class="slide-sub anim">Speak is pre-market and actively seeking pilot clinic partners to complete federal compliance and unlock research funding.</div>
+    </div>
+    <div class="two-col anim">
+      <div class="card hi">
+        <h3>Pre-Market Checklist</h3>
+        <ul>
+          <li><strong>LLC + EIN</strong> — registered, Kansas ✓</li>
+          <li><strong>SAM.gov federal registration</strong> — active (UEI: U9SXLKZ2FW46) ✓</li>
+          <li><strong>HIPAA BAA framework</strong> — drafted &amp; ready to execute ✓</li>
+          <li><strong>Privacy Policy + Terms</strong> — HIPAA-updated, live at speakaac.org ✓</li>
+          <li><strong>Vendor compliance BAAs</strong> — Supabase, Netlify, Anthropic → in progress</li>
+          <li><strong>Clinic pilot validation</strong> — real usage data, SLP feedback → <em>seeking now</em></li>
+          <li><strong>SBIR grant application</strong> — Sept 5, 2026 deadline → requires pilot data</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Federal Grant Pathway</h3>
+        <ul>
+          <li><strong>NIDILRR SBIR Phase I — $150,000</strong><br>National Institute on Disability, Independent Living &amp; Rehabilitation Research. Funds assistive technology R&D. Deadline: Sept 5, 2026.</li>
+          <li><strong>NIDILRR SBIR Phase II — up to $1,000,000</strong><br>Full product development + clinical trials after Phase I.</li>
+          <li><strong>NIH SBIR / NICHD</strong><br>Autism &amp; developmental communication research funding track.</li>
+          <li><strong>DOE OSERS</strong><br>Assistive technology for students with disabilities in schools.</li>
+        </ul>
+        <div style="margin-top:16px;background:var(--blue-glow);border:1px solid var(--blue);border-radius:10px;padding:14px 16px;">
+          <div style="font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--blue-bright);margin-bottom:6px;">Why pilot partners matter</div>
+          <div style="font-size:0.82rem;color:var(--text-muted);line-height:1.5;">A letter of support from a licensed clinic or school district significantly strengthens an SBIR application. Pilot data from real patients is what converts a Phase I into a Phase II. <strong style="color:var(--text);">Early clinic partners are co-building something that will serve their entire field.</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7 · Final / CTA -->
+  <div class="slide slide-final" data-index="7">
     <h1 class="final-h1 anim">Try it free.<br><em>No commitment. Any device.</em></h1>
     <p class="final-p anim">Start a 30-day free clinic trial at speakaac.org. No credit card required to explore. Invoice and PO accepted for institutional billing.</p>
     <a class="url-pill anim" href="app.html">speakaac.org</a>
@@ -313,7 +350,7 @@
 <div class="nav">
   <button onclick="go(-1)">←</button>
   <div class="dot-row" id="dots"></div>
-  <span class="nav-count" id="count">1 / 7</span>
+  <span class="nav-count" id="count">1 / 8</span>
   <button onclick="go(1)">→</button>
 </div>
 <p class="hint">Arrow keys or spacebar · F for fullscreen</p>

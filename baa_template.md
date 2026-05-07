@@ -13,8 +13,7 @@ This Business Associate Agreement ("Agreement") is entered into as of [DATE] by 
 
 **Covered Entity:** [CLINIC/PRACTICE NAME], located at [ADDRESS] ("Covered Entity")
 
-**Business Associate:** Logan Snell, operating as Speak AAC, located at Axtell, Kansas
-("Business Associate")
+**Business Associate:** Logan Snell LLC d/b/a Speak AAC (Kansas LLC, Business ID 10073250 / EIN 42-2062086), located at Axtell, Kansas 66403 ("Business Associate")
 
 This Agreement supplements and is made part of the service agreement between the parties
 for use of the Speak AAC application (speakaac.org) ("Service Agreement").
@@ -55,7 +54,10 @@ HIPAA compliance under their Business Associate Agreement with us.)
 
 **d. Breach Notification.** Report to Covered Entity any use or disclosure of PHI not
 provided for by this Agreement, including breaches of unsecured PHI as required by 45 CFR
-164.410, without unreasonable delay and in no case later than 60 days after discovery.
+164.410, without unreasonable delay and in no case later than 5 business days after
+discovery. Notification shall include: (i) a description of what occurred; (ii) the types
+of PHI involved; (iii) the number of individuals affected if known; (iv) steps being taken
+to investigate and mitigate harm.
 
 **e. Access.** Make available PHI in a designated record set to Covered Entity as necessary
 to satisfy Covered Entity's obligations under 45 CFR 164.524.

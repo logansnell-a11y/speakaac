@@ -82,7 +82,7 @@
     footer { border-top: 1px solid var(--border); padding: 24px 28px; display: flex; gap: 16px; align-items: center; justify-content: center; flex-wrap: wrap; }
     .footer-link { font-size: 0.8rem; color: var(--text-dim); text-decoration: none; }
     .footer-link:hover { color: var(--text-muted); }
-      img[src="icons/icon.png"] { filter: hue-rotate(200deg) saturate(1.4) brightness(0.9); }
+      img[src="icons/icon.png"] { filter: none; }
     </style>
 </head>
 <body>
@@ -176,30 +176,43 @@
   <h2>6. Payments</h2>
   <p>Payments are processed by <strong>Stripe</strong>. We never see or store your full card number. Stripe is PCI DSS Level 1 certified. Your billing information is governed by Stripe's privacy policy at stripe.com/privacy.</p>
 
-  <h2>7. Third-party services we use</h2>
+  <h2>7. HIPAA — Clinic and Institution users</h2>
+  <p>If you are a licensed healthcare provider, speech-language pathologist, school district, rehabilitation center, or care facility using Speak under a Clinic or Institution subscription, additional protections apply under the Health Insurance Portability and Accountability Act (HIPAA).</p>
+  <ul>
+    <li><strong>Business Associate Agreement (BAA):</strong> Before any patient data enters the Speak system under a clinical account, you and Speak AAC LLC must execute a signed Business Associate Agreement. To request a BAA, email <strong>support@speakaac.org</strong> with the subject line "BAA Request." We will return a signed copy within 3 business days.</li>
+    <li><strong>Minimum necessary standard:</strong> We access, use, or transmit only the minimum protected health information (PHI) necessary to deliver the service. Patient identifiers are stripped before any data is passed to AI services (§ 164.502(b)).</li>
+    <li><strong>Patient rights under HIPAA:</strong> Patients and their guardians have the right to access their PHI (§ 164.524), request amendments (§ 164.526), receive an accounting of disclosures (§ 164.528), and request restrictions on certain uses (§ 164.522). Submit requests to <strong>support@speakaac.org</strong>. We will respond within 30 days.</li>
+    <li><strong>Breach notification:</strong> In the event of a breach of unsecured PHI, we will notify the Covered Entity within 5 business days of discovery, consistent with 45 CFR § 164.410 and the terms of your BAA.</li>
+    <li><strong>Subprocessors with BAAs:</strong> Our infrastructure vendors who may process ePHI under clinical accounts — Supabase (database), Netlify (hosting), and Anthropic (AI sentence generation) — each maintain signed BAAs with Speak AAC LLC.</li>
+    <li><strong>Complaint to HHS:</strong> If you believe your HIPAA rights have been violated, you may file a complaint with the HHS Office for Civil Rights at hhs.gov/ocr/complaints without retaliation from Speak.</li>
+  </ul>
+
+  <h2>8. Third-party services we use</h2>
   <ul>
     <li><strong>Supabase</strong> — database and authentication (supabase.com)</li>
+    <li><strong>Anthropic</strong> — AI sentence generation via Claude API (anthropic.com) — patient identifiers are never included in prompts</li>
     <li><strong>EmailJS</strong> — safety alert delivery (emailjs.com)</li>
     <li><strong>Stripe</strong> — payment processing (stripe.com)</li>
     <li><strong>Mulberry Symbols</strong> — AAC symbol pictograms by Garry Pye, used under Creative Commons BY-SA 4.0 (mulberrysymbols.org)</li>
     <li><strong>Netlify</strong> — web hosting (netlify.com)</li>
   </ul>
-  <p>We have no analytics tools, no advertising networks, and no social media trackers embedded in Speak.</p>
+  <p>We have no advertising networks or social media trackers embedded in Speak. Analytics (Google Analytics) are loaded only with your explicit consent and do not run on any page that handles clinical data.</p>
 
-  <h2>8. Data retention and deletion</h2>
+  <h2>9. Data retention and deletion</h2>
   <p>Your account and all associated data can be deleted at any time by emailing <strong>support@speakaac.org</strong> with the subject line "Delete my account." We will permanently delete all stored data within 5 business days and confirm by email.</p>
   <p>Local-only data (no account) can be deleted at any time by clearing your browser's site data for speakaac.org.</p>
+  <p>For clinical accounts: upon termination of the service agreement, all PHI will be returned or securely destroyed within 30 days, with written confirmation provided.</p>
 
-  <h2>9. Your rights</h2>
-  <p>Depending on where you live, you may have rights under COPPA (US), GDPR (EU/UK), or CCPA (California) to access, correct, or delete your data. To exercise any of these rights, email <strong>support@speakaac.org</strong>. We will respond within 30 days.</p>
+  <h2>10. Your rights</h2>
+  <p>Depending on where you live, you may have rights under COPPA (US), GDPR (EU/UK), CCPA (California), or HIPAA (clinical accounts) to access, correct, or delete your data. To exercise any of these rights, email <strong>support@speakaac.org</strong>. We will respond within 30 days.</p>
 
-  <h2>10. Changes to this policy</h2>
+  <h2>11. Changes to this policy</h2>
   <p>If we make material changes to this policy, we will update the effective date at the top and notify account holders by email at least 14 days before the change takes effect.</p>
 
   <div class="contact-block">
     <h3>Questions or data requests</h3>
     <p>Email <a href="mailto:support@speakaac.org">support@speakaac.org</a> — Speak AAC LLC, Kansas.</p>
-    <p style="margin-top:8px;">For COPPA-related inquiries or to report a concern about a child's data, use the subject line "COPPA Request" and we will respond within 5 business days.</p>
+    <p style="margin-top:8px;">For COPPA inquiries use subject "COPPA Request" · For HIPAA/BAA inquiries use subject "BAA Request" · We respond within 5 business days.</p>
   </div>
 
 </div>
@@ -210,6 +223,7 @@
   <a class="footer-link" href="install_guide.html">Install Guide</a>
   <a class="footer-link" href="mailto:support@speakaac.org">support@speakaac.org</a>
   <a class="footer-link" href="terms.html">Terms</a>
+  <p style="flex-basis:100%;margin:12px 0 0;font-size:0.72rem;color:var(--text-dim,#8a8a9a);text-align:center;">© 2026 Logan J. Snell · Speak AAC&#x2122; LLC · Kansas</p>
 </footer>
 
   <!-- Google Analytics — loaded only after cookie consent -->

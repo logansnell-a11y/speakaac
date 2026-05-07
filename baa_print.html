@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Business Associate Agreement — Speak AAC</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    @media print {
+      @page { margin: 0.6in 0.7in; }
+      body { background: #fff !important; font-size: 10.5px !important; }
+      .no-print { display: none !important; }
+      .page { box-shadow: none !important; max-width: 100% !important; margin: 0 !important; border-radius: 0 !important; }
+      .doc-header { padding: 16px 32px !important; }
+      .notice { padding: 8px 32px !important; }
+      .doc-body { padding: 20px 32px 28px !important; }
+      .doc-footer { padding: 10px 32px !important; }
+      h2 { margin: 16px 0 8px !important; }
+      .clause { margin-bottom: 8px !important; }
+      .parties { padding: 12px 16px !important; margin-bottom: 16px !important; }
+      .sig-section { margin-top: 24px !important; padding-top: 16px !important; page-break-inside: avoid; }
+      .sig-grid { gap: 24px !important; }
+      .sig-line { height: 24px !important; margin-bottom: 2px !important; }
+      .sig-field-label { margin-bottom: 10px !important; }
+      .doc-title { margin-bottom: 4px !important; }
+      .doc-subtitle { margin-bottom: 18px !important; }
+      p { margin-bottom: 8px !important; }
+    }
+    body { font-family: "Georgia", "Times New Roman", serif; background: #f0f2f6; color: #111; line-height: 1.65; font-size: 13px; }
+    .page { max-width: 760px; margin: 32px auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 32px rgba(0,0,0,0.10); overflow: hidden; }
+
+    /* HEADER */
+    .doc-header { background: #1a2a4a; padding: 28px 48px; display: flex; align-items: center; justify-content: space-between; }
+    .doc-header-left { display: flex; align-items: center; gap: 12px; }
+    .doc-header-logo { width: 36px; height: 36px; border-radius: 8px; }
+    .doc-brand { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 1.1rem; font-weight: 900; color: #fff; letter-spacing: .08em; text-transform: uppercase; }
+    .doc-header-right { text-align: right; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .doc-header-title { font-size: 0.72rem; font-weight: 700; color: #7899cc; text-transform: uppercase; letter-spacing: .1em; }
+    .doc-header-sub { font-size: 0.7rem; color: #4a6080; margin-top: 2px; }
+
+    /* NOTICE */
+    .notice { background: #fffbeb; border-left: 4px solid #d97706; padding: 12px 48px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 0.75rem; color: #92400e; line-height: 1.5; }
+
+    /* BODY */
+    .doc-body { padding: 40px 48px 48px; }
+
+    .doc-title { font-size: 1.1rem; font-weight: 700; text-align: center; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+    .doc-subtitle { font-size: 0.8rem; text-align: center; color: #555; margin-bottom: 32px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+
+    .parties { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px 24px; margin-bottom: 28px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .parties p { font-size: 0.85rem; color: #374151; margin-bottom: 10px; line-height: 1.6; }
+    .parties p:last-child { margin-bottom: 0; }
+    .parties strong { color: #111; }
+    .party-field { display: inline-block; border-bottom: 1px solid #374151; min-width: 220px; margin-left: 4px; color: #2563c4; font-style: italic; }
+
+    h2 { font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #1a2a4a; margin: 28px 0 12px; padding-bottom: 6px; border-bottom: 1.5px solid #e5e7eb; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    h2 .num { color: #2563c4; }
+
+    p { margin-bottom: 12px; color: #222; font-size: 13px; }
+    p:last-child { margin-bottom: 0; }
+
+    .clause { margin-bottom: 14px; }
+    .clause-label { font-weight: 700; }
+
+    /* SIGNATURE BLOCK */
+    .sig-section { margin-top: 40px; padding-top: 28px; border-top: 2px solid #1a2a4a; }
+    .sig-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+    .sig-block { }
+    .sig-party { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; color: #2563c4; margin-bottom: 20px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .sig-line { border-bottom: 1px solid #374151; margin-bottom: 4px; height: 32px; }
+    .sig-field-label { font-size: 0.7rem; color: #888; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin-bottom: 16px; }
+    .sig-prefilled { font-size: 0.82rem; color: #374151; padding-top: 6px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+
+    /* FOOTER */
+    .doc-footer { background: #f8fafc; border-top: 1px solid #e5e7eb; padding: 14px 48px; display: flex; align-items: center; justify-content: space-between; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .doc-footer-text { font-size: 0.68rem; color: #9ca3af; }
+    .print-btn { font-size: 0.72rem; color: #2563c4; background: none; border: 1px solid #dbeafe; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-family: inherit; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="doc-header">
+    <div class="doc-header-left">
+      <img class="doc-header-logo" src="icons/icon.png" alt="Speak" />
+      <span class="doc-brand">Speak AAC</span>
+    </div>
+    <div class="doc-header-right">
+      <div class="doc-header-title">HIPAA Business Associate Agreement</div>
+      <div class="doc-header-sub">45 CFR Parts 160 and 164 · speakaac.org</div>
+    </div>
+  </div>
+
+  <div class="notice">
+    <strong>Note:</strong> This agreement is based on HHS model BAA guidance (45 CFR § 164.504(e)). Both parties should retain a signed copy. Questions: support@speakaac.org — subject "BAA Request."
+  </div>
+
+  <div class="doc-body">
+
+    <div class="doc-title">Business Associate Agreement</div>
+    <div class="doc-subtitle">Entered into pursuant to the Health Insurance Portability and Accountability Act of 1996 (HIPAA) and the HITECH Act</div>
+
+    <div class="parties">
+      <p>This Business Associate Agreement ("Agreement") is entered into as of <span class="party-field">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> by and between:</p>
+      <p><strong>Covered Entity:</strong> <span class="party-field">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>, located at <span class="party-field">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> ("Covered Entity")</p>
+      <p><strong>Business Associate:</strong> Logan Snell LLC d/b/a Speak AAC, a Kansas limited liability company (Business ID 10073250 / EIN 42-2062086), located at Axtell, Kansas 66403 ("Business Associate")</p>
+      <p>This Agreement supplements and is made part of the service agreement between the parties for use of the Speak AAC application (speakaac.org) ("Service Agreement").</p>
+    </div>
+
+    <h2><span class="num">1.</span> Definitions</h2>
+    <p>Terms used but not otherwise defined in this Agreement shall have the same meaning as in the HIPAA Rules (45 CFR Parts 160 and 164).</p>
+    <div class="clause"><span class="clause-label">"Protected Health Information" (PHI)</span> means individually identifiable health information transmitted or maintained in any form or medium that relates to a past, present, or future physical or mental health condition of an individual, or the provision of or payment for health care to an individual.</div>
+    <div class="clause"><span class="clause-label">"HIPAA Rules"</span> means the Privacy, Security, Breach Notification, and Enforcement Rules at 45 CFR Parts 160 and 164.</div>
+
+    <h2><span class="num">2.</span> Obligations of Business Associate</h2>
+    <p>Business Associate agrees to:</p>
+    <div class="clause"><span class="clause-label">a. Use and Disclosure Limitations.</span> Not use or disclose PHI other than as permitted or required by this Agreement or as required by law.</div>
+    <div class="clause"><span class="clause-label">b. Safeguards.</span> Use appropriate administrative, physical, and technical safeguards, and comply with the HIPAA Security Rule with respect to electronic PHI, to prevent use or disclosure of PHI other than as provided for by this Agreement.</div>
+    <div class="clause"><span class="clause-label">c. Subcontractors.</span> Ensure that any subcontractors that create, receive, maintain, or transmit PHI on behalf of Business Associate agree to the same restrictions, conditions, and requirements that apply to Business Associate under this Agreement. Business Associate uses Supabase (SOC 2 Type II certified) for data storage under a Business Associate Agreement.</div>
+    <div class="clause"><span class="clause-label">d. Breach Notification.</span> Report to Covered Entity any use or disclosure of PHI not provided for by this Agreement, including breaches of unsecured PHI as required by 45 CFR § 164.410, without unreasonable delay and in no case later than 5 business days after discovery. Notification shall include: (i) a description of what occurred; (ii) the types of PHI involved; (iii) the number of individuals affected if known; (iv) steps being taken to investigate and mitigate harm.</div>
+    <div class="clause"><span class="clause-label">e. Access.</span> Make available PHI in a designated record set to Covered Entity as necessary to satisfy Covered Entity's obligations under 45 CFR § 164.524.</div>
+    <div class="clause"><span class="clause-label">f. Amendment.</span> Make any amendment(s) to PHI in a designated record set as directed or agreed to by Covered Entity pursuant to 45 CFR § 164.526.</div>
+    <div class="clause"><span class="clause-label">g. Accounting.</span> Maintain and make available the information required to provide an accounting of disclosures as necessary to satisfy Covered Entity's obligations under 45 CFR § 164.528.</div>
+    <div class="clause"><span class="clause-label">h. Minimum Necessary.</span> To the extent Business Associate is to carry out Covered Entity's obligations under the Privacy Rule, comply with the requirements of the Privacy Rule that apply to Covered Entity in the performance of such obligations.</div>
+    <div class="clause"><span class="clause-label">i. HHS Access.</span> Make its internal practices, books, and records available to the Secretary of Health and Human Services for purposes of determining compliance with the HIPAA Rules.</div>
+
+    <h2><span class="num">3.</span> Permitted Uses and Disclosures by Business Associate</h2>
+    <div class="clause"><span class="clause-label">a. Service Performance.</span> Business Associate may use or disclose PHI only as necessary to perform services for Covered Entity — specifically, storing and displaying communication event logs for patients configured within the Speak AAC application under the Covered Entity's account.</div>
+    <div class="clause"><span class="clause-label">b. Operations.</span> Business Associate may use PHI for its proper management and administration or to carry out its legal responsibilities, provided disclosures are required by law or the recipient provides reasonable assurances of confidentiality.</div>
+    <div class="clause"><span class="clause-label">c. No Sale.</span> Business Associate shall not sell PHI or use PHI for marketing purposes.</div>
+    <div class="clause"><span class="clause-label">d. De-identification.</span> Business Associate may create de-identified information per 45 CFR § 164.514(b) and may use or disclose such information for any lawful purpose.</div>
+
+    <h2><span class="num">4.</span> Obligations of Covered Entity</h2>
+    <p>Covered Entity agrees to: (a) notify Business Associate of any limitations in its notice of privacy practices that may affect permitted uses or disclosures; (b) notify Business Associate of any changes in or revocation of individual permission to use or disclose PHI; (c) notify Business Associate of any agreed restrictions on PHI use or disclosure; and (d) not request Business Associate to use or disclose PHI in a manner impermissible under the HIPAA Rules.</p>
+
+    <h2><span class="num">5.</span> Term and Termination</h2>
+    <div class="clause"><span class="clause-label">a. Term.</span> This Agreement is effective as of the date above and continues until all PHI is returned, destroyed, or protections are extended per this section.</div>
+    <div class="clause"><span class="clause-label">b. Termination for Cause.</span> Covered Entity may terminate this Agreement if Business Associate violates a material term and fails to cure within 30 days of written notice.</div>
+    <div class="clause"><span class="clause-label">c. Upon Termination.</span> Business Associate shall return or destroy all PHI within 30 days of termination and provide written confirmation. If return or destruction is infeasible, Business Associate shall notify Covered Entity and extend protections to the information indefinitely.</div>
+
+    <h2><span class="num">6.</span> Miscellaneous</h2>
+    <p><span class="clause-label">a. Regulatory References.</span> References to HIPAA Rules mean the sections as in effect or as amended. <span class="clause-label">b. Amendment.</span> Parties agree to amend this Agreement as necessary to maintain HIPAA compliance. <span class="clause-label">c. Interpretation.</span> Ambiguities shall be resolved to permit Covered Entity to comply with HIPAA. <span class="clause-label">d. Entire Agreement.</span> This Agreement supersedes all prior discussions regarding its subject matter. <span class="clause-label">e. Governing Law.</span> This Agreement is governed by the laws of the State of Kansas and applicable federal law including the HIPAA Rules.</p>
+
+    <div class="sig-section">
+      <div class="sig-grid">
+
+        <div class="sig-block">
+          <div class="sig-party">Covered Entity</div>
+          <div class="sig-line"></div>
+          <div class="sig-field-label">Signature</div>
+          <div class="sig-line"></div>
+          <div class="sig-field-label">Printed Name</div>
+          <div class="sig-line"></div>
+          <div class="sig-field-label">Title</div>
+          <div class="sig-line"></div>
+          <div class="sig-field-label">Organization</div>
+          <div class="sig-line"></div>
+          <div class="sig-field-label">Date</div>
+          <div class="sig-line"></div>
+          <div class="sig-field-label">Email</div>
+        </div>
+
+        <div class="sig-block">
+          <div class="sig-party">Business Associate — Speak AAC</div>
+          <div class="sig-line"></div>
+          <div class="sig-field-label">Signature</div>
+          <div class="sig-prefilled">Logan Snell</div>
+          <div class="sig-field-label">Printed Name</div>
+          <div class="sig-prefilled">Developer and Operator, Speak AAC</div>
+          <div class="sig-field-label">Title</div>
+          <div class="sig-prefilled">Logan Snell LLC d/b/a Speak AAC</div>
+          <div class="sig-field-label">Organization</div>
+          <div class="sig-line"></div>
+          <div class="sig-field-label">Date</div>
+          <div class="sig-prefilled">support@speakaac.org</div>
+          <div class="sig-field-label">Email</div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <div class="doc-footer">
+    <div class="doc-footer-text">Logan Snell LLC d/b/a Speak AAC™ · Kansas LLC #10073250 · EIN 42-2062086 · support@speakaac.org · speakaac.org</div>
+  </div>
+
+</div>
+</body>
+</html>

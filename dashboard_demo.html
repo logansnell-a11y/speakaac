@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Provider Dashboard — Speak AAC</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f3f5f8;
+      --surface: #ffffff;
+      --surface2: #f0f2f5;
+      --surface3: #e8eaee;
+      --border: #dde1e8;
+      --blue: #1a4fa0;
+      --blue-bright: #2563c4;
+      --blue-glow: rgba(37,99,196,0.08);
+      --green: #16a34a;
+      --red: #dc2626;
+      --amber: #d97706;
+      --text: #0f1724;
+      --text-muted: #4a5568;
+      --text-dim: #9aa3b0;
+      --radius: 10px;
+      --radius-lg: 16px;
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* TOPBAR */
+    .topbar {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 28px; border-bottom: 1px solid var(--border);
+      background: #fff; position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .logo { display: flex; align-items: center; gap: 9px; text-decoration: none; }
+    .logo img { width: 26px; height: 26px; border-radius: 7px; }
+    .logo-text { font-weight: 900; font-size: 0.95rem; color: var(--blue-bright); letter-spacing: .12em; text-transform: uppercase; }
+    .topbar-title { font-size: 0.85rem; color: var(--text-muted); border-left: 1px solid var(--border); padding-left: 14px; margin-left: 2px; }
+    .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+    .clinic-badge { font-size: 0.75rem; font-weight: 700; background: var(--blue-glow); color: var(--blue-bright); border: 1px solid var(--blue); padding: 4px 10px; border-radius: 20px; letter-spacing: .06em; text-transform: uppercase; }
+    .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 800; color: #fff; }
+
+    /* ALERT BANNER */
+    .alert-banner {
+      background: #fef2f2; border-bottom: 1px solid #fecaca;
+      padding: 10px 28px; display: flex; align-items: center; gap: 10px;
+      animation: pulse-bg 2s ease-in-out infinite;
+    }
+    @keyframes pulse-bg { 0%,100% { background: #fef2f2; } 50% { background: #fee2e2; } }
+    .alert-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); animation: pulse 1.5s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } }
+    .alert-banner-text { font-size: 0.83rem; font-weight: 600; color: #b91c1c; }
+    .alert-banner-time { font-size: 0.78rem; color: var(--text-dim); margin-left: auto; }
+    .alert-view-btn { font-size: 0.78rem; font-weight: 700; color: var(--red); background: none; border: 1px solid rgba(239,68,68,0.4); border-radius: 6px; padding: 4px 12px; cursor: pointer; }
+
+    /* LAYOUT */
+    .layout { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 53px); }
+
+    /* SIDEBAR */
+    .sidebar { background: #1a2a4a; border-right: 1px solid #162240; padding: 24px 0; }
+    .sidebar-section { margin-bottom: 8px; }
+    .sidebar-label { font-size: 0.68rem; font-weight: 700; color: #6b82a8; text-transform: uppercase; letter-spacing: .1em; padding: 0 20px; margin-bottom: 6px; }
+    .sidebar-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 20px; font-size: 0.85rem; color: #94a8c4;
+      cursor: pointer; transition: all 0.15s; border-radius: 0;
+    }
+    .sidebar-link:hover { background: rgba(255,255,255,0.06); color: #fff; }
+    .sidebar-link.active { background: rgba(255,255,255,0.1); color: #fff; border-right: 2px solid #4a90e2; }
+    .sidebar-icon { font-size: 1rem; width: 20px; text-align: center; }
+    .sidebar-badge { margin-left: auto; font-size: 0.68rem; font-weight: 800; background: var(--red); color: #fff; padding: 2px 7px; border-radius: 10px; }
+
+    /* MAIN */
+    .main { padding: 28px 32px; overflow-y: auto; }
+    .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+    .page-title { font-size: 1.3rem; font-weight: 900; }
+    .page-sub { font-size: 0.82rem; color: var(--text-muted); margin-top: 3px; }
+    .btn-primary { background: var(--blue); color: #fff; font-weight: 700; font-size: 0.82rem; padding: 9px 18px; border-radius: 8px; border: none; cursor: pointer; }
+
+    /* STATS ROW */
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 28px; }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 20px; }
+    .stat-label { font-size: 0.72rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 8px; }
+    .stat-value { font-size: 1.6rem; font-weight: 900; }
+    .stat-sub { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+    .stat-green { color: var(--green); }
+    .stat-red { color: var(--red); }
+    .stat-blue { color: var(--blue-bright); }
+
+    /* SECTION GRID */
+    .section-grid { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
+
+    /* PATIENT ROSTER */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+    .card-header { padding: 18px 22px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .card-title { font-size: 0.9rem; font-weight: 800; }
+    .card-action { font-size: 0.78rem; color: var(--blue-bright); cursor: pointer; }
+
+    .patient-row {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 22px; border-bottom: 1px solid var(--border);
+      transition: background 0.15s; cursor: pointer;
+    }
+    .patient-row:last-child { border-bottom: none; }
+    .patient-row:hover { background: var(--surface2); }
+    .patient-row.alert-row { background: rgba(239,68,68,0.06); }
+    .patient-row.alert-row:hover { background: rgba(239,68,68,0.1); }
+
+    .patient-avatar { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 800; flex-shrink: 0; }
+    .pa-blue { background: #dbeafe; color: #1d4ed8; }
+    .pa-green { background: #dcfce7; color: #15803d; }
+    .pa-amber { background: #fef3c7; color: #b45309; }
+    .pa-purple { background: #f3e8ff; color: #7c3aed; }
+
+    .patient-info { flex: 1; min-width: 0; }
+    .patient-name { font-size: 0.88rem; font-weight: 700; }
+    .patient-meta { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+
+    .patient-status { text-align: right; }
+    .status-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 0.72rem; font-weight: 700; padding: 3px 9px; border-radius: 20px; }
+    .status-alert { background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+    .status-active { background: rgba(34,197,94,0.1); color: var(--green); border: 1px solid rgba(34,197,94,0.25); }
+    .status-idle { background: var(--surface3); color: var(--text-dim); border: 1px solid var(--border); }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .patient-time { font-size: 0.72rem; color: var(--text-dim); margin-top: 4px; }
+
+    /* ALERT PANEL */
+    .alert-card { background: var(--surface); border: 1px solid #fecaca; border-radius: var(--radius-lg); overflow: hidden; }
+    .alert-card-header { padding: 18px 22px; border-bottom: 1px solid #fecaca; background: #fef2f2; display: flex; align-items: center; justify-content: space-between; }
+    .alert-card-title { font-size: 0.9rem; font-weight: 800; color: #b91c1c; display: flex; align-items: center; gap: 8px; }
+
+    .alert-item { padding: 14px 22px; border-bottom: 1px solid var(--border); }
+    .alert-item:last-child { border-bottom: none; }
+    .alert-item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .alert-patient { font-size: 0.85rem; font-weight: 700; }
+    .alert-time { font-size: 0.72rem; color: var(--text-dim); }
+    .alert-message { font-size: 0.78rem; color: var(--text-muted); background: var(--surface2); border-radius: 6px; padding: 6px 10px; margin-bottom: 8px; font-style: italic; }
+    .alert-last-symbol { font-size: 0.72rem; color: var(--text-dim); }
+    .alert-actions { display: flex; gap: 8px; margin-top: 8px; }
+    .btn-sm { font-size: 0.72rem; font-weight: 700; padding: 5px 12px; border-radius: 6px; border: none; cursor: pointer; }
+    .btn-resolve { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+    .btn-call { background: rgba(239,68,68,0.12); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+
+    /* ACTIVITY LOG */
+    .activity-section { margin-top: 20px; }
+    .log-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px 22px; border-bottom: 1px solid var(--border); }
+    .log-row:last-child { border-bottom: none; }
+    .log-icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; flex-shrink: 0; margin-top: 1px; }
+    .log-icon-blue { background: #dbeafe; }
+    .log-icon-green { background: #dcfce7; }
+    .log-icon-red { background: #fee2e2; }
+    .log-icon-amber { background: #fef3c7; }
+    .log-body { flex: 1; }
+    .log-text { font-size: 0.82rem; color: var(--text-muted); line-height: 1.4; }
+    .log-text strong { color: var(--text); font-weight: 600; }
+    .log-time { font-size: 0.72rem; color: var(--text-dim); margin-top: 2px; }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .stats { grid-template-columns: repeat(2,1fr); }
+      .section-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="logo" href="index.html">
+    <img src="icons/icon.png" alt="Speak" />
+    <span class="logo-text">Speak</span>
+  </a>
+  <span class="topbar-title">Provider Dashboard</span>
+  <div class="topbar-right">
+    <span class="clinic-badge">Clinic Plan</span>
+    <div class="avatar">LC</div>
+  </div>
+</div>
+
+<div class="alert-banner">
+  <div class="alert-dot"></div>
+  <span class="alert-banner-text">⚠ Safety alert — Tyler K. triggered the private safety channel</span>
+  <span class="alert-banner-time">2 minutes ago</span>
+  <button class="alert-view-btn">View →</button>
+</div>
+
+<div class="layout">
+
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Overview</div>
+      <div class="sidebar-link active"><span class="sidebar-icon">👥</span> Patient Roster <span class="sidebar-badge">1</span></div>
+      <div class="sidebar-link"><span class="sidebar-icon">🔔</span> Alerts <span class="sidebar-badge">1</span></div>
+      <div class="sidebar-link"><span class="sidebar-icon">📊</span> Reports</div>
+      <div class="sidebar-link"><span class="sidebar-icon">📅</span> Sessions</div>
+    </div>
+    <div class="sidebar-section" style="margin-top:16px;">
+      <div class="sidebar-label">Patients</div>
+      <div class="sidebar-link"><span class="sidebar-icon">🔴</span> Tyler K.</div>
+      <div class="sidebar-link"><span class="sidebar-icon">🟢</span> James R.</div>
+      <div class="sidebar-link"><span class="sidebar-icon">🟡</span> Sarah M.</div>
+      <div class="sidebar-link"><span class="sidebar-icon">⚪</span> Aiden L.</div>
+    </div>
+    <div class="sidebar-section" style="margin-top:16px;">
+      <div class="sidebar-label">Clinic</div>
+      <div class="sidebar-link"><span class="sidebar-icon">👤</span> Team Members</div>
+      <div class="sidebar-link"><span class="sidebar-icon">⚙️</span> Settings</div>
+    </div>
+  </nav>
+
+  <main class="main">
+
+    <div class="page-header">
+      <div>
+        <div class="page-title">Patient Roster</div>
+        <div class="page-sub">LifeCare Clinic · 4 active patients · Thursday, May 7</div>
+      </div>
+      <button class="btn-primary">+ Add Patient</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-label">Sessions Today</div>
+        <div class="stat-value stat-blue">12</div>
+        <div class="stat-sub">across 3 patients</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Symbols Used</div>
+        <div class="stat-value">284</div>
+        <div class="stat-sub">today</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">AI Sentences</div>
+        <div class="stat-value stat-green">47</div>
+        <div class="stat-sub">built today</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Safety Alerts</div>
+        <div class="stat-value stat-red">1</div>
+        <div class="stat-sub">active right now</div>
+      </div>
+    </div>
+
+    <div class="section-grid">
+
+      <div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Active Patients</span>
+            <span class="card-action">Export report →</span>
+          </div>
+
+          <div class="patient-row alert-row">
+            <div class="patient-avatar pa-blue">TK</div>
+            <div class="patient-info">
+              <div class="patient-name">Tyler K.</div>
+              <div class="patient-meta">Age 9 · ASD · Child mode · Last session: 2:12 PM</div>
+            </div>
+            <div class="patient-status">
+              <div class="status-pill status-alert"><span class="status-dot"></span> Alert Active</div>
+              <div class="patient-time">2 min ago</div>
+            </div>
+          </div>
+
+          <div class="patient-row">
+            <div class="patient-avatar pa-green">JR</div>
+            <div class="patient-info">
+              <div class="patient-name">James R.</div>
+              <div class="patient-meta">Age 7 · Speech delay · Child mode · Last session: 1:45 PM</div>
+            </div>
+            <div class="patient-status">
+              <div class="status-pill status-active"><span class="status-dot"></span> In Session</div>
+              <div class="patient-time">Active now</div>
+            </div>
+          </div>
+
+          <div class="patient-row">
+            <div class="patient-avatar pa-amber">SM</div>
+            <div class="patient-info">
+              <div class="patient-name">Sarah M.</div>
+              <div class="patient-meta">Age 11 · Selective mutism · Child mode · Last session: 11:30 AM</div>
+            </div>
+            <div class="patient-status">
+              <div class="status-pill status-idle"><span class="status-dot"></span> Idle</div>
+              <div class="patient-time">2h 30m ago</div>
+            </div>
+          </div>
+
+          <div class="patient-row">
+            <div class="patient-avatar pa-purple">AL</div>
+            <div class="patient-info">
+              <div class="patient-name">Aiden L.</div>
+              <div class="patient-meta">Age 6 · ASD · Child mode · Last session: Yesterday</div>
+            </div>
+            <div class="patient-status">
+              <div class="status-pill status-idle"><span class="status-dot"></span> Idle</div>
+              <div class="patient-time">Yesterday</div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="card activity-section">
+          <div class="card-header">
+            <span class="card-title">Today's Activity Log</span>
+            <span class="card-action">Full history →</span>
+          </div>
+
+          <div class="log-row">
+            <div class="log-icon log-icon-red">🚨</div>
+            <div class="log-body">
+              <div class="log-text"><strong>Tyler K.</strong> triggered the private safety channel — reason: <em>"I don't feel safe"</em></div>
+              <div class="log-time">2:14 PM · Alert sent to designated contact</div>
+            </div>
+          </div>
+
+          <div class="log-row">
+            <div class="log-icon log-icon-blue">✨</div>
+            <div class="log-body">
+              <div class="log-text"><strong>James R.</strong> used AI sentence builder — built "I want to go outside and play"</div>
+              <div class="log-time">1:52 PM</div>
+            </div>
+          </div>
+
+          <div class="log-row">
+            <div class="log-icon log-icon-green">💬</div>
+            <div class="log-body">
+              <div class="log-text"><strong>Tyler K.</strong> completed a 14-symbol communication session — top category: <em>Feelings</em></div>
+              <div class="log-time">1:44 PM</div>
+            </div>
+          </div>
+
+          <div class="log-row">
+            <div class="log-icon log-icon-amber">📋</div>
+            <div class="log-body">
+              <div class="log-text"><strong>Sarah M.</strong> session ended — 22 symbols used, 3 AI sentences, 18 minutes</div>
+              <div class="log-time">11:48 AM</div>
+            </div>
+          </div>
+
+          <div class="log-row">
+            <div class="log-icon log-icon-blue">✨</div>
+            <div class="log-body">
+              <div class="log-text"><strong>Sarah M.</strong> used AI sentence builder 3 times — most used: <em>"I need a break please"</em></div>
+              <div class="log-time">11:35 AM</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div>
+        <div class="alert-card">
+          <div class="alert-card-header">
+            <div class="alert-card-title"><div class="alert-dot"></div> Active Alert</div>
+            <span style="font-size:0.72rem;color:var(--text-dim);">2:14 PM</span>
+          </div>
+
+          <div class="alert-item">
+            <div class="alert-item-header">
+              <span class="alert-patient">Tyler K., age 9</span>
+              <span class="alert-time">2 min ago</span>
+            </div>
+            <div class="alert-message">"I don't feel safe"</div>
+            <div class="alert-last-symbol">Last symbols: <strong>Feelings → Scared → Help</strong></div>
+            <div class="alert-actions">
+              <button class="btn-sm btn-call">📞 Call contact</button>
+              <button class="btn-sm btn-resolve">✓ Resolve</button>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="card" style="margin-top:16px;">
+          <div class="card-header">
+            <span class="card-title">Alert History</span>
+          </div>
+          <div class="alert-item">
+            <div class="alert-item-header">
+              <span class="alert-patient">James R.</span>
+              <span class="alert-time">Yesterday 3:10 PM</span>
+            </div>
+            <div class="alert-message">"Something is wrong"</div>
+            <div class="alert-last-symbol" style="color:var(--green);">✓ Resolved by provider</div>
+          </div>
+          <div class="alert-item">
+            <div class="alert-item-header">
+              <span class="alert-patient">Tyler K.</span>
+              <span class="alert-time">May 5 · 10:22 AM</span>
+            </div>
+            <div class="alert-message">"I don't feel safe"</div>
+            <div class="alert-last-symbol" style="color:var(--green);">✓ Resolved — parent contacted</div>
+          </div>
+          <div class="alert-item" style="border-bottom:none;">
+            <div class="alert-item-header">
+              <span class="alert-patient">Sarah M.</span>
+              <span class="alert-time">May 2 · 2:55 PM</span>
+            </div>
+            <div class="alert-message">"I need help"</div>
+            <div class="alert-last-symbol" style="color:var(--green);">✓ Resolved — therapist responded</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px;">
+          <div class="card-header">
+            <span class="card-title">This Week</span>
+          </div>
+          <div style="padding:18px 22px;">
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:0.82rem;color:var(--text-muted);">Total sessions</span>
+                <span style="font-size:0.88rem;font-weight:700;">38</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:0.82rem;color:var(--text-muted);">Symbols communicated</span>
+                <span style="font-size:0.88rem;font-weight:700;">1,204</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:0.82rem;color:var(--text-muted);">AI sentences built</span>
+                <span style="font-size:0.88rem;font-weight:700;color:var(--green);">183</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:0.82rem;color:var(--text-muted);">Safety alerts</span>
+                <span style="font-size:0.88rem;font-weight:700;color:var(--red);">3</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:0.82rem;color:var(--text-muted);">Most active patient</span>
+                <span style="font-size:0.88rem;font-weight:700;color:var(--blue-bright);">Tyler K.</span>
+              </div>
+            </div>
+            <button style="width:100%;margin-top:18px;background:var(--surface2);border:1px solid var(--border);color:var(--text-muted);font-size:0.8rem;font-weight:700;padding:9px;border-radius:8px;cursor:pointer;">Download Weekly Report (PDF)</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>

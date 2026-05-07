@@ -1971,7 +1971,7 @@ body.reduced-animations #pc-shield          { animation: none; }
   text-align: center;
 }
 
-#pw-logo { width: 72px; height: 72px; border-radius: 18px; display: block; filter: hue-rotate(200deg) saturate(1.4) brightness(0.9); }
+#pw-logo { width: 72px; height: 72px; border-radius: 18px; display: block; filter: none; }
 
 #pw-title {
   font-size: 1.8rem;
@@ -3014,7 +3014,7 @@ body.theme-minimal {
   gap: 12px;
 }
 
-#auth-logo { width: 56px; height: 56px; border-radius: 14px; display: block; filter: hue-rotate(200deg) saturate(1.4) brightness(0.9); }
+#auth-logo { width: 56px; height: 56px; border-radius: 14px; display: block; filter: none; }
 
 #auth-inner h2 {
   font-size: 1.35rem;
@@ -3221,7 +3221,7 @@ body.theme-minimal {
   width: 32px;
   height: 32px;
   display: block;
-  filter: hue-rotate(200deg) saturate(1.4) brightness(0.9);
+  filter: none;
 }
 
 #app-logo:active {
@@ -3284,7 +3284,7 @@ body.theme-minimal {
   height: 64px;
   border-radius: 16px;
   margin-bottom: 10px;
-  filter: hue-rotate(200deg) saturate(1.4) brightness(0.9);
+  filter: none;
 }
 
 #sl-greeting {
@@ -3847,7 +3847,7 @@ body.large-targets .core-word-emoji {
   height: 72px;
   border-radius: 18px;
   animation: loading-pulse 2s ease-in-out infinite;
-  filter: hue-rotate(200deg) saturate(1.4) brightness(0.9);
+  filter: none;
 }
 #loading-spinner {
   width: 30px;
