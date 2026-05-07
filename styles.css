@@ -92,9 +92,9 @@
   .core-word-label { font-size: 0.55rem; }
 
   /* Tighter topbar */
-  #topbar { padding: 8px 10px; gap: 8px; }
-  #sentence-display { min-height: 40px; padding: 8px 12px; }
-  #sentence-text { font-size: 1rem; }
+  #topbar { padding: 6px 8px; gap: 6px; }
+  #sentence-display { min-height: 36px; padding: 6px 10px; min-width: 0; flex: 1; overflow: hidden; }
+  #sentence-text { font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; word-break: normal; }
 
   /* Hide EN/ES pill on phone — language set once in settings */
   #lang-pill-topbar { display: none; }
