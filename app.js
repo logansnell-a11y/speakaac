@@ -101,6 +101,9 @@ function saveSettings(s) {
 const HISTORY_KEY = 'aac_history_v1';
 
 function logEvent(type, payload) {
+  if (tierUnlocks('dashboard') && _activePatientId) {
+    payload = { ...payload, patient_id: _activePatientId };
+  }
   const now = new Date();
   const event = {
     type,
@@ -212,6 +215,85 @@ function tierUnlocks(feature) {
     institution: ["institution"],
   };
   return (access[feature] || []).includes(tier);
+}
+
+// ── Clinic Patient Switcher ────────────────────────────────────────
+let _activePatientId = sessionStorage.getItem('aac_active_patient') || null;
+
+function getClinicPatients() {
+  return (loadSettings().clinicPatients || []).filter(p => !p.archivedAt);
+}
+
+function saveClinicPatients(patients) {
+  const s = loadSettings();
+  s.clinicPatients = patients;
+  saveSettings(s);
+}
+
+function getActivePatient() {
+  if (!_activePatientId) return null;
+  return getClinicPatients().find(p => p.id === _activePatientId) || null;
+}
+
+function setActivePatient(id) {
+  _activePatientId = id;
+  if (id) sessionStorage.setItem('aac_active_patient', id);
+  else sessionStorage.removeItem('aac_active_patient');
+  updatePatientChip();
+}
+
+function updatePatientChip() {
+  const chip = document.getElementById('patient-chip');
+  if (!chip) return;
+  if (!tierUnlocks('dashboard')) { chip.classList.add('hidden'); return; }
+  chip.classList.remove('hidden');
+  const patient = getActivePatient();
+  const nameEl  = document.getElementById('patient-chip-name');
+  if (patient) {
+    nameEl.textContent = patient.name;
+    chip.classList.remove('no-patient');
+  } else {
+    nameEl.textContent = 'Select Patient';
+    chip.classList.add('no-patient');
+  }
+}
+
+function renderPatientList() {
+  const list = document.getElementById('patient-list');
+  if (!list) return;
+  const patients = getClinicPatients();
+  if (!patients.length) {
+    list.innerHTML = '<div class="patient-empty">No patients yet — add your first patient below.</div>';
+    return;
+  }
+  list.innerHTML = patients.map(p => `
+    <div class="patient-list-item${p.id === _activePatientId ? ' active-patient' : ''}" data-pid="${esc(p.id)}">
+      <div class="patient-avatar">${esc(p.name.charAt(0).toUpperCase())}</div>
+      <div class="patient-info">
+        <div class="patient-name">${esc(p.name)}</div>
+        ${p.notes ? `<div class="patient-meta">${esc(p.notes)}</div>` : ''}
+      </div>
+      ${p.id === _activePatientId
+        ? `<button class="patient-end-btn" data-end-pid="${esc(p.id)}">End Session</button>`
+        : ''}
+    </div>
+  `).join('');
+
+  list.querySelectorAll('.patient-list-item').forEach(el => {
+    el.addEventListener('click', e => {
+      if (e.target.closest('.patient-end-btn')) return;
+      setActivePatient(el.dataset.pid);
+      document.getElementById('patientModal').classList.add('hidden');
+    });
+  });
+
+  list.querySelectorAll('.patient-end-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      setActivePatient(null);
+      renderPatientList();
+    });
+  });
 }
 
 // ── Sentence display ───────────────────────────────────────────────
@@ -1165,6 +1247,7 @@ setupSave.addEventListener("click", () => {
   settings.kiosk = document.getElementById("s-kiosk").checked;
 
   saveSettings(settings);
+  if (window.Sync) Sync.setTeacherEmail(settings.teacherEmail).catch(() => {});
 
   // Apply or exit kiosk based on new value
   if (settings.kiosk && !wasKiosk) applyKioskMode();
@@ -1815,9 +1898,9 @@ function finishInit() {
   hideAppLoading();
   document.getElementById('onboarding-overlay').classList.add('hidden');
   applyProfileConfig();
-  // Apply saved language (updates cat labels, grid, core bar)
   applyLang(getLang());
   updateDisplay();
+  updatePatientChip();
   applyKioskMode();
   if (_returnVisit) showSessionLock();
   resetInactivityTimer();
@@ -1976,21 +2059,24 @@ document.addEventListener('ob:done', async () => {
 // ── Account section in Provider Settings ──────────────────────────
 async function updateAccountSection() {
   if (!window.Sync) return;
-  const session    = await Sync.getSession();
-  const statusEl   = document.getElementById('setup-account-status');
-  const signinBtn  = document.getElementById('setup-signin-btn');
-  const signoutBtn = document.getElementById('setup-signout-btn');
+  const session      = await Sync.getSession();
+  const statusEl     = document.getElementById('setup-account-status');
+  const signinBtn    = document.getElementById('setup-signin-btn');
+  const signoutBtn   = document.getElementById('setup-signout-btn');
+  const deleteBtn    = document.getElementById('deleteAccountBtn');
 
   if (session) {
     statusEl.textContent = `✅ Signed in as ${session.user.email}`;
     statusEl.className   = 'key-status ok';
     signinBtn.classList.add('hidden');
     signoutBtn.classList.remove('hidden');
+    deleteBtn.classList.remove('hidden');
   } else {
     statusEl.textContent = 'Not signed in — settings saved on this device only.';
     statusEl.className   = 'key-status missing';
     signinBtn.classList.remove('hidden');
     signoutBtn.classList.add('hidden');
+    deleteBtn.classList.add('hidden');
   }
 }
 
@@ -2003,6 +2089,128 @@ document.getElementById('setup-signout-btn').addEventListener('click', async () 
   await Sync.signOut();
   updateAccountSection();
 });
+
+// ── Patient Picker Modal ───────────────────────────────────────────
+(function () {
+  const chip       = document.getElementById('patient-chip');
+  const modal      = document.getElementById('patientModal');
+  const closeBtn   = document.getElementById('patientModalClose');
+  const showAddBtn = document.getElementById('showAddPatientForm');
+  const addForm    = document.getElementById('addPatientForm');
+  const addSubmit  = document.getElementById('addPatientSubmit');
+  const cancelAdd  = document.getElementById('cancelAddPatient');
+  const nameInput  = document.getElementById('newPatientName');
+  const notesInput = document.getElementById('newPatientNotes');
+
+  function openModal() {
+    renderPatientList();
+    addForm.classList.add('hidden');
+    nameInput.value = '';
+    notesInput.value = '';
+    modal.classList.remove('hidden');
+  }
+
+  chip.addEventListener('click', openModal);
+  closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
+  modal.addEventListener('click', e => { if (e.target === modal) modal.classList.add('hidden'); });
+
+  showAddBtn.addEventListener('click', () => {
+    const opening = addForm.classList.toggle('hidden');
+    if (!addForm.classList.contains('hidden')) nameInput.focus();
+  });
+
+  cancelAdd.addEventListener('click', () => addForm.classList.add('hidden'));
+
+  nameInput.addEventListener('keydown', e => { if (e.key === 'Enter') addSubmit.click(); });
+
+  addSubmit.addEventListener('click', () => {
+    const name = nameInput.value.trim();
+    if (!name) { nameInput.style.outline = '2px solid var(--gold)'; nameInput.focus(); return; }
+    nameInput.style.outline = '';
+    const patients = getClinicPatients();
+    const newPatient = {
+      id:        (typeof crypto !== 'undefined' && crypto.randomUUID)
+                   ? crypto.randomUUID()
+                   : Date.now().toString(36) + Math.random().toString(36).slice(2),
+      name,
+      notes:     notesInput.value.trim(),
+      createdAt: new Date().toISOString(),
+    };
+    patients.push(newPatient);
+    saveClinicPatients(patients);
+    setActivePatient(newPatient.id);
+    modal.classList.add('hidden');
+    showToast(`Session started — ${name}`, 'success', 2500);
+  });
+})();
+
+// ── Delete Account ─────────────────────────────────────────────────
+(function () {
+  const deleteBtn   = document.getElementById('deleteAccountBtn');
+  const modal       = document.getElementById('deleteAccountModal');
+  const step1       = document.getElementById('deleteStep1');
+  const step2       = document.getElementById('deleteStep2');
+  const confirmBtn  = document.getElementById('deleteConfirmBtn');
+  const finalBtn    = document.getElementById('deleteFinalBtn');
+  const cancelBtn   = document.getElementById('deleteCancelBtn');
+  const cancelBtn2  = document.getElementById('deleteCancelBtn2');
+  const errorEl     = document.getElementById('deleteError');
+
+  function openModal() {
+    step1.classList.remove('hidden');
+    step2.classList.add('hidden');
+    errorEl.classList.add('hidden');
+    errorEl.textContent = '';
+    finalBtn.disabled = false;
+    finalBtn.textContent = 'Yes, delete everything';
+    modal.classList.remove('hidden');
+  }
+
+  function closeModal() {
+    modal.classList.add('hidden');
+  }
+
+  deleteBtn.addEventListener('click', openModal);
+  cancelBtn.addEventListener('click', closeModal);
+  cancelBtn2.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+  confirmBtn.addEventListener('click', () => {
+    step1.classList.add('hidden');
+    step2.classList.remove('hidden');
+  });
+
+  finalBtn.addEventListener('click', async () => {
+    finalBtn.disabled = true;
+    finalBtn.textContent = 'Deleting…';
+    errorEl.classList.add('hidden');
+
+    try {
+      const session = await Sync.getSession();
+      if (!session?.access_token) throw new Error('Not signed in');
+
+      const res = await fetch('/.netlify/functions/delete-account', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+
+      if (!res.ok) {
+        const body = await res.text();
+        throw new Error(body || `Server error ${res.status}`);
+      }
+
+      // Clear all local state before redirecting
+      localStorage.clear();
+      await Sync.signOut();
+      window.location.href = 'index.html?deleted=1';
+    } catch (err) {
+      errorEl.textContent = `Deletion failed: ${err.message}. Please try again or contact support.`;
+      errorEl.classList.remove('hidden');
+      finalBtn.disabled = false;
+      finalBtn.textContent = 'Yes, delete everything';
+    }
+  });
+})();
 
 // ── About / FAQ Modal ──────────────────────────────────────────────
 const FAQ_ITEMS = [

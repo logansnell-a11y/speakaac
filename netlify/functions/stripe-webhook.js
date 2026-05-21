@@ -117,7 +117,37 @@ exports.handler = async function (event) {
     return { statusCode: 400, body: 'Invalid JSON' };
   }
 
-  // Only handle completed checkouts
+  // ── Subscription cancelled → revert tier to free ─────────────────────
+  if (stripeEvent.type === 'customer.subscription.deleted') {
+    const subscription = stripeEvent.data.object;
+    const customerId   = subscription.customer;
+
+    // Retrieve customer email from Stripe
+    const custRes = await fetch(`https://api.stripe.com/v1/customers/${customerId}`, {
+      headers: { Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}` },
+    });
+    if (!custRes.ok) {
+      console.error('Failed to retrieve Stripe customer:', customerId);
+      return { statusCode: 200, body: 'Could not retrieve customer — skipped' };
+    }
+    const customer = await custRes.json();
+    const email    = customer.email;
+    if (!email) {
+      return { statusCode: 200, body: 'No customer email — skipped' };
+    }
+
+    const user = await getUserByEmail(email);
+    if (!user) {
+      console.warn(`subscription.deleted: no Supabase user for ${email}`);
+      return { statusCode: 200, body: 'User not found — skipped' };
+    }
+
+    await setUserTier(user.id, 'free');
+    console.log(`Reverted tier to free for user=${user.id} (${email})`);
+    return { statusCode: 200, body: 'OK' };
+  }
+
+  // ── Completed checkout → upgrade tier ────────────────────────────────
   if (stripeEvent.type !== 'checkout.session.completed') {
     return { statusCode: 200, body: 'Ignored' };
   }

@@ -501,7 +501,7 @@
     <input class="auth-input" type="password" id="t-password" placeholder="Password" autocomplete="current-password" />
     <div id="auth-error"></div>
     <button class="btn-gold" id="t-signin">Sign In</button>
-    <p class="auth-note">Don't have an account? Ask your school's Speak admin to set up access for you.</p>
+    <p class="auth-note">Don't have an account? Create a free Speak account at <a href="https://speakaac.org" style="color:var(--gold)">speakaac.org</a> — then have the family enter your email in their Provider Settings.</p>
   </div>
 </div>
 
@@ -513,6 +513,7 @@
     <div id="dash-header" style="display:none">
       <div class="dash-heading">Communication Dashboard</div>
       <div class="dash-sub" id="dash-sub"></div>
+      <div id="last-refreshed" style="font-size:0.78rem;color:var(--text-muted);margin-bottom:12px;"></div>
 
       <!-- Summary stats across all children -->
       <div id="summary-stats">
@@ -702,52 +703,112 @@ document.getElementById('t-signin').addEventListener('click', async () => {
 });
 
 document.getElementById('nav-signout').addEventListener('click', async () => {
+  clearInterval(_refreshInterval);
+  _refreshInterval = null;
+  _currentSession  = null;
   await Sync.signOut();
   location.reload();
 });
 
 // ── Dashboard ─────────────────────────────────────────────────────────
-let _allEvents = []; // flat array of all events across all children
+let _allEvents      = [];
+let _currentSession = null;
+let _refreshInterval = null;
+let _lastRefreshed  = null;
 
 async function showDash(session) {
+  _currentSession = session;
+
   document.getElementById('auth-screen').style.display = 'none';
   document.getElementById('dash-screen').style.display = 'block';
   document.getElementById('nav-email').textContent = session.user.email;
   document.getElementById('nav-signout').style.display = 'inline-block';
   document.getElementById('loading').style.display = 'block';
 
-  const profiles = await Sync.loadAsTeacher();
+  // Detect mode: does this therapist have clinic patients in their own profile?
+  const myProfile     = await Sync.load();
+  const clinicPats    = (myProfile?.clinicPatients || []).filter(p => !p.archivedAt);
+  const isClinicMode  = clinicPats.length > 0;
 
   document.getElementById('loading').style.display = 'none';
   document.getElementById('help-section').style.display = 'block';
 
-  if (!profiles.length) {
-    document.getElementById('no-children').style.display = 'block';
-    return;
+  if (isClinicMode) {
+    // ── Clinic mode: therapist manages patients directly ───────────
+    // Load the therapist's own events, then group by payload.patient_id
+    const myEvents = await Sync.loadEventsForProfile(session.user.id, 1000);
+
+    document.getElementById('no-children').style.display = 'none';
+    document.getElementById('dash-header').style.display = 'block';
+    document.getElementById('children-section-label').style.display = 'block';
+    document.getElementById('dash-sub').textContent =
+      `${clinicPats.length} patient${clinicPats.length !== 1 ? 's' : ''} — clinic mode`;
+
+    const allProfileData = clinicPats.map(patient => ({
+      profile: { user_id: patient.id, settings: { userName: patient.name } },
+      events:  myEvents.filter(e => e.payload?.patient_id === patient.id),
+    }));
+
+    _allEvents = allProfileData.flatMap(x => x.events);
+    renderSummaryStats(_allEvents);
+
+    const list = document.getElementById('children-list');
+    list.innerHTML = '';
+    for (const { profile, events } of allProfileData) {
+      renderChildCard(list, profile, events);
+    }
+
+  } else {
+    // ── School / institution mode: families assigned via teacher_email ──
+    const profiles = await Sync.loadAsTeacher();
+
+    if (!profiles.length) {
+      document.getElementById('no-children').style.display = 'block';
+      startAutoRefresh();
+      return;
+    }
+
+    document.getElementById('no-children').style.display = 'none';
+    document.getElementById('dash-header').style.display = 'block';
+    document.getElementById('children-section-label').style.display = 'block';
+
+    const childCount = profiles.length;
+    document.getElementById('dash-sub').textContent =
+      `${childCount} child${childCount !== 1 ? 'ren' : ''} assigned to you`;
+
+    const allProfiles = await Promise.all(profiles.map(async p => {
+      const events = await Sync.loadEventsForProfile(p.user_id);
+      return { profile: p, events };
+    }));
+
+    _allEvents = allProfiles.flatMap(x => x.events);
+    renderSummaryStats(_allEvents);
+
+    const list = document.getElementById('children-list');
+    list.innerHTML = '';
+    for (const { profile, events } of allProfiles) {
+      renderChildCard(list, profile, events);
+    }
   }
 
-  document.getElementById('dash-header').style.display = 'block';
-  document.getElementById('children-section-label').style.display = 'block';
+  _lastRefreshed = new Date();
+  updateRefreshLabel();
+  startAutoRefresh();
+}
 
-  const childCount = profiles.length;
-  document.getElementById('dash-sub').textContent =
-    `${childCount} child${childCount !== 1 ? 'ren' : ''} assigned to you`;
+function startAutoRefresh() {
+  if (_refreshInterval) return; // already running
+  _refreshInterval = setInterval(async () => {
+    if (!_currentSession) return;
+    await showDash(_currentSession);
+  }, 60000);
+}
 
-  // Load all events first to compute summary stats
-  const allProfiles = await Promise.all(profiles.map(async p => {
-    const events = await Sync.loadEventsForProfile(p.user_id);
-    return { profile: p, events };
-  }));
-
-  _allEvents = allProfiles.flatMap(x => x.events);
-  renderSummaryStats(_allEvents);
-
-  const list = document.getElementById('children-list');
-  list.innerHTML = '';
-
-  for (const { profile, events } of allProfiles) {
-    renderChildCard(list, profile, events);
-  }
+function updateRefreshLabel() {
+  const el = document.getElementById('last-refreshed');
+  if (!el || !_lastRefreshed) return;
+  const secs = Math.round((Date.now() - _lastRefreshed) / 1000);
+  el.textContent = secs < 10 ? 'Updated just now' : `Updated ${secs}s ago`;
 }
 
 function renderSummaryStats(allEvents) {
@@ -901,11 +962,17 @@ function renderEventLog(events) {
 }
 
 // ── CSV Export ────────────────────────────────────────────────────────
+function csvField(v) {
+  const s = String(v ?? '');
+  return (s.includes(',') || s.includes('"') || s.includes('\n') || s.includes('\r'))
+    ? '"' + s.replace(/"/g, '""') + '"'
+    : s;
+}
+
 function exportCSV(events, childName) {
   const rows = [
-    ['Date', 'Time', 'Type', 'Content', 'Category'],
+    ['Date', 'Time', 'Type', 'Content', 'Category'].map(csvField),
     ...events.map(ev => {
-      const type = ev.type || '';
       let content = '';
       switch (ev.type) {
         case 'sentence_spoken': content = ev.payload?.text || ''; break;
@@ -915,19 +982,18 @@ function exportCSV(events, childName) {
         case 'help_alert':      content = `Safety alert: ${ev.payload?.reason || ''}`; break;
         default:                content = JSON.stringify(ev.payload || '');
       }
-      const cat = ev.payload?.category || '';
       return [
         ev.date_str || '',
         ev.time_str || '',
-        type,
-        `"${content.replace(/"/g, '""')}"`,
-        cat,
-      ];
+        ev.type || '',
+        content,
+        ev.payload?.category || '',
+      ].map(csvField);
     }),
   ];
 
   const csv = rows.map(r => r.join(',')).join('\n');
-  const blob = new Blob([csv], { type: 'text/csv' });
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
   const safe = childName.replace(/[^a-z0-9]/gi, '_');
@@ -936,6 +1002,9 @@ function exportCSV(events, childName) {
   a.click();
   URL.revokeObjectURL(url);
 }
+
+// Update "last refreshed" label every 10s
+setInterval(updateRefreshLabel, 10000);
 
 // ── Troubleshooting panel ─────────────────────────────────────────────
 document.getElementById('help-toggle').addEventListener('click', () => {

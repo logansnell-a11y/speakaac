@@ -30,6 +30,9 @@
     <button id="app-logo" title="Speak — tap to clear">
       <img src="icons/icon.png" alt="Speak" />
     </button>
+    <div id="patient-chip" class="patient-chip hidden no-patient" title="Select patient for this session">
+      <span>👤</span><span id="patient-chip-name">Select Patient</span>
+    </div>
     <div id="sentence-display">
       <div id="sentence-text" class="placeholder">Tap a symbol to speak...</div>
       <div id="ai-translation-note"></div>
@@ -270,11 +273,11 @@
         </section>
 
         <section class="setup-section" id="setup-teacher-section">
-          <h3>Teacher / School Access</h3>
-          <p class="setup-hint">Institution plan: enter a teacher's email to give them read-only access to this child's communication log in the <a href="teacher.html" target="_blank" style="color:var(--gold)">Teacher Dashboard</a>.</p>
+          <h3>Therapist / Teacher Access</h3>
+          <p class="setup-hint">Clinic and Institution plans: give your SLP, therapist, or teacher read-only access to this child's communication log in the <a href="teacher.html" target="_blank" style="color:var(--gold)">Therapist Dashboard</a>.</p>
           <label class="setup-label">
-            Teacher Email
-            <input class="setup-input" type="email" id="s-teacher-email" placeholder="teacher@school.edu" />
+            Therapist or Teacher Email
+            <input class="setup-input" type="email" id="s-teacher-email" placeholder="therapist@clinic.com" />
           </label>
         </section>
 
@@ -284,7 +287,25 @@
           <div id="setup-account-status"></div>
           <button id="setup-signin-btn" class="hidden">Sign In / Create Account</button>
           <button id="setup-signout-btn" class="hidden">Sign Out</button>
+          <button id="deleteAccountBtn" class="btn-danger-text hidden">Delete Account</button>
         </section>
+
+        <!-- Delete Account confirmation modal -->
+        <div id="deleteAccountModal" class="modal-overlay hidden">
+          <div class="modal-box">
+            <h3 id="deleteModalTitle">Delete your account?</h3>
+            <p id="deleteModalBody">This permanently deletes your account and all data — symbols, settings, communication history. This cannot be undone.</p>
+            <div id="deleteStep1" class="modal-actions">
+              <button id="deleteConfirmBtn" class="btn-danger-confirm">I understand, delete my account</button>
+              <button id="deleteCancelBtn" class="btn-modal-cancel">Cancel</button>
+            </div>
+            <div id="deleteStep2" class="modal-actions hidden">
+              <button id="deleteFinalBtn" class="btn-danger-confirm">Yes, delete everything</button>
+              <button id="deleteCancelBtn2" class="btn-modal-cancel">Cancel</button>
+            </div>
+            <div id="deleteError" class="modal-error hidden"></div>
+          </div>
+        </div>
 
         <section class="setup-section" id="setup-custom-section">
           <h3>My Symbols</h3>
@@ -753,6 +774,28 @@
       <div class="safety-prompt-btns">
         <button id="safety-prompt-yes" class="safety-prompt-btn safety-prompt-yes">Yes, get help</button>
         <button id="safety-prompt-no"  class="safety-prompt-btn safety-prompt-no">No, I'm okay</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PATIENT PICKER MODAL (clinic tier) ──────────────────── -->
+  <div id="patientModal" class="modal-overlay hidden">
+    <div class="modal-box" style="max-width:420px;width:100%">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+        <h3 style="margin:0;font-size:1.1rem">Session Patient</h3>
+        <button id="patientModalClose" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--text-muted);line-height:1">✕</button>
+      </div>
+      <div id="patient-list" style="margin-bottom:1rem;max-height:300px;overflow-y:auto"></div>
+      <div id="patient-add-section">
+        <button id="showAddPatientForm" class="btn-add-patient">+ Add New Patient</button>
+        <div id="addPatientForm" class="hidden" style="margin-top:0.75rem;display:flex;flex-direction:column;gap:0.5rem">
+          <input type="text" id="newPatientName" class="setup-input" placeholder="Patient name (e.g. Alex M.)" autocomplete="off" />
+          <input type="text" id="newPatientNotes" class="setup-input" placeholder="Notes — age, diagnosis (optional)" autocomplete="off" />
+          <div style="display:flex;gap:0.5rem">
+            <button id="addPatientSubmit" class="btn btn-primary" style="flex:1">Add Patient</button>
+            <button id="cancelAddPatient" class="btn-modal-cancel" style="flex:0 0 auto">Cancel</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
