@@ -4,18 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="google-site-verification" content="lzWIG3-GD9Z6oszDiI-f6ukCE94lyhz9-_2d3ofVfBo" />
-  <title>Speak — A voice for every child</title>
-  <meta name="description" content="Free AAC communication app for nonverbal children — with a private safety channel that lets them silently alert a trusted adult if they feel unsafe." />
+  <title>Speak — For children and adults who need to be heard</title>
+  <meta name="description" content="Free AAC communication app for children and adults who are nonverbal or minimally verbal — with a private safety channel that lets them silently alert a trusted adult if they feel unsafe." />
   <!-- Open Graph / Facebook / TikTok / Instagram -->
   <meta property="og:type"        content="website" />
   <meta property="og:url"         content="https://speakaac.org/" />
-  <meta property="og:title"       content="Speak — A voice for every child" />
-  <meta property="og:description" content="Free AAC app for nonverbal kids. Symbols, AI sentences, and a private safety channel so they can silently ask for help." />
+  <meta property="og:title"       content="Speak — For children and adults who need to be heard" />
+  <meta property="og:description" content="Free AAC app for children and adults who are nonverbal or minimally verbal. Symbols, AI sentences, and a private safety channel so they can silently ask for help." />
   <meta property="og:image"       content="https://speakaac.org/icons/icon.png" />
   <!-- Twitter card -->
   <meta name="twitter:card"        content="summary_large_image" />
-  <meta name="twitter:title"       content="Speak — A voice for every child" />
-  <meta name="twitter:description" content="Free AAC app for nonverbal kids. Symbols, AI sentences, and a private safety channel so they can silently ask for help." />
+  <meta name="twitter:title"       content="Speak — For children and adults who need to be heard" />
+  <meta name="twitter:description" content="Free AAC app for children and adults who are nonverbal or minimally verbal. Symbols, AI sentences, and a private safety channel so they can silently ask for help." />
   <meta name="twitter:image"       content="https://speakaac.org/icons/icon.png" />
   <meta name="color-scheme" content="light dark" />
   <link rel="icon" type="image/svg+xml" href="icons/icon.svg" />
@@ -1265,7 +1265,7 @@
           'nav.features':'Features','nav.pricing':'Pricing','nav.safety':'Safety','nav.mission':'Mission','nav.guide':'Guide','nav.clinics':'For Clinics','nav.open':'Open App →',
           'hero.eyebrow':'Open · Personalized · Built for families',
           'hero.title':'Give them <em>words.</em><br>Give them <em>safety.</em>',
-          'hero.sub':"Speak is an AAC communication app personalized for your child's diagnosis, age, and needs — with a private safety channel built in from day one.",
+          'hero.sub':"Speak is an AAC communication app for children and adults with communication differences — personalized by diagnosis, age, and needs, with a private safety channel built in from day one.",
           'hero.cta1':'Open the App →','hero.cta2':'See How Setup Works',
           'hero.fundraiser':'Support this project on GoFundMe',
           'hero.access':"School or clinic that can't afford it? See our access program →",
@@ -1276,7 +1276,7 @@
           'safety.p2':'Bypasses the primary caretaker — goes to a grandparent, teacher, or therapist you choose',
           'safety.p3':"Hidden trigger — works even if the child can't navigate to the Help button",
           'safety.p4':'Always free — because safety should never be behind a paywall',
-          'safety.stat':'higher rate of abuse and maltreatment among children with communication disabilities compared to typically developing peers',
+          'safety.stat':'higher rate of abuse and maltreatment among children and adults with communication disabilities compared to typically developing peers',
           'safety.source':'Sullivan & Knutson, 2000 · Journal of Pediatric Psychology',
           'feat.label':'What Speak does','feat.title':"Built around your child — not around everyone else's",'feat.sub':'Every existing AAC app gives every child the same grid. Speak configures itself based on who your child actually is.',
           'f1.icon':'Onboarding','f1.title':'Personalized from day one','f1.body':'Answer 10 questions about your child — diagnosis, age, motor ability, sensory needs, interests. Speak configures the layout, vocabulary, symbol size, and starting categories automatically. Setup that used to take hours takes minutes.',
@@ -1327,7 +1327,7 @@
           'nav.features':'Características','nav.pricing':'Precios','nav.safety':'Seguridad','nav.mission':'Misión','nav.guide':'Guía','nav.clinics':'Para Clínicas','nav.open':'Abrir App →',
           'hero.eyebrow':'Abierto · Personalizado · Hecho para familias',
           'hero.title':'Dales <em>palabras.</em><br>Dales <em>seguridad.</em>',
-          'hero.sub':'Speak es una app de comunicación CAA personalizada según el diagnóstico, edad y necesidades de tu hijo — con un canal de seguridad privado desde el primer día.',
+          'hero.sub':'Speak es una app de comunicación CAA para niños y adultos con diferencias de comunicación — personalizada según diagnóstico, edad y necesidades, con un canal de seguridad privado desde el primer día.',
           'hero.cta1':'Abrir la App →','hero.cta2':'Ver Cómo Funciona',
           'hero.fundraiser':'Apoya este proyecto en GoFundMe',
           'hero.access':'¿Escuela o clínica sin presupuesto? Conoce nuestro programa de acceso →',
@@ -1838,8 +1838,8 @@
           <ul class="price-features">
             <li class="yes">Everything in Family</li>
             <li class="yes">Full provider dashboard</li>
-            <li class="yes">Unlimited student profiles</li>
-            <li class="yes">Teacher read-only accounts</li>
+            <li class="yes">Per-patient session management</li>
+            <li class="yes">Therapist / provider dashboard</li>
             <li class="yes">Exportable communication reports</li>
             <li class="yes">Priority email support</li>
             <li class="yes">BAA available on request</li>
@@ -2320,6 +2320,18 @@
         entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); } });
       }, { threshold: 0.08 });
       document.querySelectorAll('.fade-in').forEach(function(el){ io.observe(el); });
+    })();
+  </script>
+
+  <script>
+    (function() {
+      if (new URLSearchParams(window.location.search).get('deleted') !== '1') return;
+      var bar = document.createElement('div');
+      bar.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#166534;color:#fff;text-align:center;padding:14px 20px;font-size:0.95rem;font-weight:600;z-index:9999;';
+      bar.textContent = 'Your account has been permanently deleted. All data has been removed.';
+      document.body.prepend(bar);
+      history.replaceState(null, '', window.location.pathname);
+      setTimeout(function(){ bar.remove(); }, 6000);
     })();
   </script>
 </body>

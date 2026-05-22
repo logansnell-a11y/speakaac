@@ -242,6 +242,13 @@ function setActivePatient(id) {
   updatePatientChip();
 }
 
+function updateClinicDashBtn() {
+  const btn = document.getElementById('setup-open-clinic-dash');
+  if (!btn) return;
+  if (tierUnlocks('dashboard')) btn.classList.remove('hidden');
+  else btn.classList.add('hidden');
+}
+
 function updatePatientChip() {
   const chip = document.getElementById('patient-chip');
   if (!chip) return;
@@ -1901,6 +1908,7 @@ function finishInit() {
   applyLang(getLang());
   updateDisplay();
   updatePatientChip();
+  updateClinicDashBtn();
   applyKioskMode();
   if (_returnVisit) showSessionLock();
   resetInactivityTimer();
@@ -2078,6 +2086,7 @@ async function updateAccountSection() {
     signoutBtn.classList.add('hidden');
     deleteBtn.classList.add('hidden');
   }
+  updateClinicDashBtn();
 }
 
 document.getElementById('setup-signin-btn').addEventListener('click', () => {

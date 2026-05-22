@@ -1910,6 +1910,26 @@ button, [role="button"] {
 
 #setup-open-dashboard:active { transform: scale(0.97); }
 
+#setup-open-clinic-dash {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  border-radius: var(--radius);
+  border: 1.5px solid var(--gold);
+  background: transparent;
+  color: var(--gold-bright);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: center;
+  text-decoration: none;
+  letter-spacing: 0.03em;
+  transition: background 0.15s;
+}
+#setup-open-clinic-dash:hover { background: var(--gold-glow); }
+
 /* ── Utility ─────────────────────────────────────────────────── */
 .hidden { display: none !important; }
 
