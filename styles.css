@@ -1821,6 +1821,52 @@ button, [role="button"] {
 
 .db-alert-meta { font-size: 0.74rem; color: var(--text-muted); }
 
+.db-alert-message {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  font-style: italic;
+  margin: 3px 0 4px;
+  padding-left: 8px;
+  border-left: 2px solid var(--border-light);
+}
+
+.db-alert-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 5px;
+  flex-wrap: wrap;
+}
+
+.db-alert-sent {
+  font-size: 0.72rem;
+  color: var(--green, #2e7d4f);
+  font-weight: 500;
+}
+
+.db-alert-no-contact {
+  font-size: 0.72rem;
+  color: var(--warn, #c4760a);
+  font-weight: 500;
+}
+
+.db-alert-copy {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  background: none;
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  padding: 2px 8px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.db-alert-copy:hover {
+  color: var(--text);
+  border-color: var(--text-muted);
+}
+
 /* ── Communication rows ── */
 .db-comm-row {
   display: flex;

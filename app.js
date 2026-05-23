@@ -883,6 +883,16 @@ const REASON_LABELS = {
   hidden_trigger: "Triggered via hidden symbol sequence (distress + help symbols tapped)",
 };
 
+// Adult/elder care home context — more specific for evidence and reporting
+const REASON_LABELS_ADULT = {
+  scared:         "A worker here is making me feel unsafe",
+  hurting:        "Someone here is hurting me",
+  talk:           "I need to speak with my family",
+  unsafe:         "Something is wrong here and I need help",
+  unsure:         "I'm not sure — I need someone to check on me",
+  hidden_trigger: "Triggered via hidden interaction sequence",
+};
+
 const ALERT_COOLDOWN_MS = 60_000; // one alert per minute max
 let   lastAlertTime     = 0;
 
@@ -917,10 +927,11 @@ function sendPrivateAlert(reason) {
   lastAlertTime = now;
 
   const settings     = loadSettings();
-  const userName     = settings.userName     || "A child";
+  const isAdultMode  = !!(settings.profile || {}).adultMode;
+  const userName     = settings.userName  || (isAdultMode ? "A resident" : "A child");
   const contactName  = settings.contactName  || "their trusted contact";
   const contactEmail = settings.contactEmail || "";
-  const reasonLabel  = REASON_LABELS[reason] || "I need help";
+  const reasonLabel  = (isAdultMode ? REASON_LABELS_ADULT : REASON_LABELS)[reason] || "I need help";
   const currentMsg   = sentence.join(" ") || "(no message typed)";
   const timestamp    = new Date().toLocaleString();
 
@@ -993,8 +1004,26 @@ function sendPrivateAlert(reason) {
 
   logEvent('help_alert', {
     reason,
-    method: reason === 'hidden_trigger' ? 'symbol_sequence' : 'private_channel',
+    reason_label:    reasonLabel,
+    method:          reason === 'hidden_trigger' ? 'symbol_sequence' : 'private_channel',
+    user_name:       userName,
+    message_at_time: currentMsg,
+    alert_sent_to:   contactEmail || null,
   });
+
+  // Persist full incident record to Supabase for evidence-grade audit trail
+  if (window.Sync) {
+    Sync.createIncident({
+      user_name:          userName,
+      reason,
+      reason_label:       reasonLabel,
+      message_at_time:    currentMsg,
+      alert_sent_to:      contactEmail || null,
+      alert_sent_to_name: contactName,
+      no_contact:         !contactEmail,
+      ts:                 new Date().toISOString(),
+    }).catch(() => {});
+  }
 
   // Full audit log
   console.warn("🛡️ PRIVATE SAFETY ALERT FIRED:", {

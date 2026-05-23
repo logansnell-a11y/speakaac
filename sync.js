@@ -106,4 +106,42 @@ window.Sync = {
       });
     } catch (e) { console.warn('Event sync failed:', e); }
   },
+
+  // Dedicated safety incident table — structured record for evidence and clinical reporting
+  async createIncident(data) {
+    try {
+      const session = await this.getSession();
+      if (!session) return null;
+      const { data: row, error } = await _sb
+        .from('safety_incidents')
+        .insert({
+          user_id:            session.user.id,
+          user_name:          data.user_name,
+          reason:             data.reason,
+          reason_label:       data.reason_label,
+          message_at_time:    data.message_at_time || null,
+          alert_sent_to:      data.alert_sent_to   || null,
+          alert_sent_to_name: data.alert_sent_to_name || null,
+          no_contact:         data.no_contact || false,
+          ts:                 data.ts,
+        })
+        .select('id')
+        .single();
+      return error ? null : (row?.id ?? null);
+    } catch { return null; }
+  },
+
+  async loadIncidents(limit = 50) {
+    try {
+      const session = await this.getSession();
+      if (!session) return [];
+      const { data } = await _sb
+        .from('safety_incidents')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .order('ts', { ascending: false })
+        .limit(limit);
+      return data || [];
+    } catch { return []; }
+  },
 };
