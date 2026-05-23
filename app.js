@@ -1132,6 +1132,9 @@ function openSetupModal() {
     : "Kiosk mode is off.";
   kioskStatusEl.className = `key-status ${settings.kiosk ? "ok" : "missing"}`;
 
+  // Adult mode toggle
+  document.getElementById('s-adult-mode').checked = !!(settings.profile || {}).adultMode;
+
   // Show current tier
   const tierNames  = { free: "Free", family: "Family", lifetime: "Lifetime", clinic: "Clinic", institution: "Institution" };
   const tierColors = { free: "missing", family: "ok", lifetime: "ok", clinic: "ok", institution: "ok" };
@@ -1282,7 +1285,13 @@ setupSave.addEventListener("click", () => {
   const wasKiosk = settings.kiosk;
   settings.kiosk = document.getElementById("s-kiosk").checked;
 
+  settings.profile = settings.profile || {};
+  const wasAdult = settings.profile.adultMode;
+  settings.profile.adultMode = document.getElementById('s-adult-mode').checked;
+  if (settings.profile.adultMode && !wasAdult) settings.profile.largeTargets = true;
+
   saveSettings(settings);
+  applyProfileConfig();
   if (window.Sync) Sync.setTeacherEmail(settings.teacherEmail).catch(() => {});
 
   // Apply or exit kiosk based on new value

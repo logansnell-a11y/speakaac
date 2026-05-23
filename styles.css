@@ -2015,6 +2015,9 @@ body.reduced-animations #btn-ai              { animation: none; }
 body.reduced-animations #ps-glow            { animation: none; }
 body.reduced-animations #pc-shield          { animation: none; }
 
+body.adult-mode #sentence-text              { font-size: 1.35rem; }
+body.adult-mode #sentence-text.placeholder  { font-size: 1.1rem; }
+
 /* ── Password Gate ───────────────────────────────────────────── */
 #password-gate {
   position: fixed;
