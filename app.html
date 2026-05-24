@@ -270,6 +270,16 @@
         </section>
 
         <section class="setup-section">
+          <h3>Eye Gaze Control</h3>
+          <p class="setup-hint">When running on the platform device, Speak can be fully controlled by eye gaze — no touch required. Requires the gaze tracking service to be running on the device (port 5050). Stare at a symbol for ~1 second to select it.</p>
+          <label class="setup-toggle">
+            <input type="checkbox" id="s-gaze-enabled" />
+            <span class="setup-toggle-label">Enable Eye Gaze Control</span>
+          </label>
+          <p class="setup-hint" style="margin-top:6px;">Use <strong>Gaze Calibration</strong> from the platform launcher before enabling. Dwell time defaults to 1.2 seconds.</p>
+        </section>
+
+        <section class="setup-section">
           <h3>Trusted Safety Contact</h3>
           <p class="setup-hint">This person receives a private alert when the user presses the Help button — bypassing the primary caretaker. Use a grandparent, teacher, therapist, or other trusted adult.</p>
           <p class="setup-hint" style="color:#e05555;font-size:0.8rem;margin-top:6px;">⚠ The private safety channel is not a substitute for emergency services. In an immediate emergency, always call 911 first.</p>

@@ -1135,6 +1135,10 @@ function openSetupModal() {
   // Adult mode toggle
   document.getElementById('s-adult-mode').checked = !!(settings.profile || {}).adultMode;
 
+  // Gaze tracking toggle
+  const gazeEl = document.getElementById('s-gaze-enabled');
+  if (gazeEl) gazeEl.checked = !!settings.gazeEnabled;
+
   // Show current tier
   const tierNames  = { free: "Free", family: "Family", lifetime: "Lifetime", clinic: "Clinic", institution: "Institution" };
   const tierColors = { free: "missing", family: "ok", lifetime: "ok", clinic: "ok", institution: "ok" };
@@ -1289,6 +1293,15 @@ setupSave.addEventListener("click", () => {
   const wasAdult = settings.profile.adultMode;
   settings.profile.adultMode = document.getElementById('s-adult-mode').checked;
   if (settings.profile.adultMode && !wasAdult) settings.profile.largeTargets = true;
+
+  // Gaze tracking toggle
+  const gazeEl = document.getElementById('s-gaze-enabled');
+  if (gazeEl) {
+    const wasGaze = settings.gazeEnabled;
+    settings.gazeEnabled = gazeEl.checked;
+    if (settings.gazeEnabled && !wasGaze) window.GazeClient?.enable();
+    else if (!settings.gazeEnabled && wasGaze) window.GazeClient?.disable();
+  }
 
   saveSettings(settings);
   applyProfileConfig();
@@ -2430,4 +2443,171 @@ document.getElementById('setup-open-about').addEventListener('click', () => {
     localStorage.setItem(DISMISS_KEY, '1');
     reviewModal.classList.add('hidden');
   });
+})();
+
+// ── Gaze tracking client ──────────────────────────────────────────────
+// Connects to the platform gaze server (ws://localhost:5050).
+// Only activates when gazeEnabled is true in settings.
+// Shows a cursor overlay, draws dwell progress rings on symbol cards,
+// and fires onSymbolTap when dwell threshold is reached.
+;(function initGaze() {
+  const GAZE_WS = 'ws://localhost:5050';
+  const DWELL_MS = 1200;   // default — overridden by settings.dwellMs
+
+  let ws = null;
+  let enabled = false;
+  let targets = [];      // [{id, sym, card, x, y, w, h}] rebuilt on each renderGrid
+  let progRings = {};    // card element → {canvas, ctx, prog}
+
+  // ── Cursor overlay ──────────────────────────────────────────────────
+  const cursor = document.createElement('div');
+  cursor.id = 'gaze-cursor';
+  Object.assign(cursor.style, {
+    position: 'fixed', width: '18px', height: '18px', borderRadius: '50%',
+    border: '2px solid rgba(100, 180, 255, 0.8)',
+    background: 'rgba(100, 180, 255, 0.15)',
+    transform: 'translate(-50%, -50%)',
+    pointerEvents: 'none', display: 'none', zIndex: '9999',
+    transition: 'left 0.04s linear, top 0.04s linear',
+  });
+  document.body.appendChild(cursor);
+
+  // ── Dwell ring canvas per card ──────────────────────────────────────
+  function ensureRing(card) {
+    if (progRings[card]) return progRings[card];
+    const canvas = document.createElement('canvas');
+    canvas.width  = 40;
+    canvas.height = 40;
+    Object.assign(canvas.style, {
+      position: 'absolute', top: '4px', right: '4px',
+      pointerEvents: 'none', zIndex: '2',
+    });
+    card.style.position = 'relative';
+    card.appendChild(canvas);
+    const entry = { canvas, ctx: canvas.getContext('2d'), prog: 0 };
+    progRings[card] = entry;
+    return entry;
+  }
+
+  function drawRing(card, fraction) {
+    const { canvas, ctx } = ensureRing(card);
+    ctx.clearRect(0, 0, 40, 40);
+    if (fraction <= 0) return;
+    ctx.beginPath();
+    ctx.arc(20, 20, 16, -Math.PI / 2, -Math.PI / 2 + fraction * 2 * Math.PI);
+    ctx.strokeStyle = 'rgba(100, 200, 255, 0.9)';
+    ctx.lineWidth = 3;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+  }
+
+  function clearRings() {
+    for (const [card, entry] of Object.entries(progRings)) {
+      entry.ctx.clearRect(0, 0, 40, 40);
+    }
+  }
+
+  // ── Target registration ─────────────────────────────────────────────
+  // Called after renderGrid — maps visible symbol cards to normalized coords
+  function registerTargets() {
+    if (!ws || ws.readyState !== WebSocket.OPEN) return;
+    targets = [];
+    const cards = grid.querySelectorAll('.symbol-card[data-id]');
+    const wsTargets = [];
+    cards.forEach(card => {
+      const r = card.getBoundingClientRect();
+      const vw = window.innerWidth, vh = window.innerHeight;
+      const t = {
+        id: card.dataset.id,
+        x:  r.left / vw,
+        y:  r.top  / vh,
+        w:  r.width  / vw,
+        h:  r.height / vh,
+      };
+      targets.push({ ...t, card });
+      wsTargets.push(t);
+    });
+    progRings = {};   // reset rings when grid redraws
+    ws.send(JSON.stringify({ action: 'set_targets', targets: wsTargets }));
+    const s = loadSettings();
+    if (s.dwellMs) ws.send(JSON.stringify({ action: 'set_dwell_ms', dwell_ms: s.dwellMs }));
+  }
+
+  // ── Message handling ────────────────────────────────────────────────
+  function onMessage({ data }) {
+    let msg;
+    try { msg = JSON.parse(data); } catch { return; }
+
+    if (msg.type === 'gaze') {
+      cursor.style.display = 'block';
+      cursor.style.left = `${msg.x * 100}vw`;
+      cursor.style.top  = `${msg.y * 100}vh`;
+    }
+
+    if (msg.type === 'progress') {
+      clearRings();
+      for (const t of targets) {
+        const f = msg.targets?.[t.id] ?? 0;
+        if (f > 0.02) drawRing(t.card, f);
+      }
+    }
+
+    if (msg.type === 'selection') {
+      const hit = targets.find(t => t.id === msg.target_id);
+      if (!hit) return;
+      // Find the matching symbol and fire the same handler as a tap
+      const sym = getAllSymbols().find(s => String(s.id) === String(hit.id));
+      if (sym) onSymbolTap(sym, hit.card);
+    }
+  }
+
+  // ── Connection ──────────────────────────────────────────────────────
+  function connect() {
+    if (!enabled) return;
+    try { ws = new WebSocket(GAZE_WS); } catch { return; }
+
+    ws.onopen = () => {
+      registerTargets();
+    };
+
+    ws.onmessage = onMessage;
+
+    ws.onclose = () => {
+      cursor.style.display = 'none';
+      clearRings();
+      setTimeout(() => { if (enabled) connect(); }, 3000);
+    };
+
+    ws.onerror = () => {};
+  }
+
+  function disconnect() {
+    if (ws) { ws.close(); ws = null; }
+    cursor.style.display = 'none';
+    clearRings();
+  }
+
+  // ── Public API ──────────────────────────────────────────────────────
+  window.GazeClient = {
+    enable()  { enabled = true;  connect(); },
+    disable() { enabled = false; disconnect(); },
+    refresh() { registerTargets(); },   // call after grid re-render
+    get active() { return enabled && ws && ws.readyState === WebSocket.OPEN; },
+  };
+
+  // Hook into renderGrid so targets stay in sync after category switches
+  const _origRenderGrid = window.renderGrid ?? null;
+  // Patch: observe grid mutations instead of monkey-patching renderGrid
+  // (renderGrid is a module-level function, not easily patchable cross-scope)
+  const observer = new MutationObserver(() => {
+    if (window.GazeClient.active) {
+      // Brief delay: let layout settle before measuring card rects
+      setTimeout(registerTargets, 80);
+    }
+  });
+  observer.observe(grid, { childList: true });
+
+  // Boot: check setting
+  const s = loadSettings();
+  if (s.gazeEnabled) window.GazeClient.enable();
 })();
