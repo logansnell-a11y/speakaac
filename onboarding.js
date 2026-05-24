@@ -667,21 +667,32 @@ function generateObConfig(answers) {
 
   // Grid density
   if (age === '2-4' || answers.reading === 'no') {
-    cfg.gridColumns = 3;
+    cfg.gridColumns = 2;
     cfg.coreOnly    = true;
+    cfg.simpleMode  = true;   // 4-button layout for very young / non-readers
   } else {
     cfg.gridColumns = 4;
     cfg.coreOnly    = false;
+    cfg.simpleMode  = false;
   }
 
-  // Large targets
+  // Large targets + simple mode for severe motor impairment
+  const needsSimple = (
+    answers.motor === 'very_limited' ||
+    diag === 'rett'                  ||
+    diag === 'als'                   ||
+    diag === 'dementia'
+  );
+  if (needsSimple && !cfg.simpleMode) cfg.simpleMode = true;
+
   cfg.largeTargets = (
     answers.motor === 'limited'      ||
     answers.motor === 'very_limited' ||
     age === '2-4'                    ||
     diag === 'cp'                    ||
     diag === 'rett'                  ||
-    diag === 'als'
+    diag === 'als'                   ||
+    diag === 'dementia'
   );
 
   // Sound

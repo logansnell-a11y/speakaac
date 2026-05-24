@@ -153,6 +153,7 @@ let picCache       = {};
 let showingMore    = false;
 let sessionLog     = [];       // in-memory log for the current session
 let historyOpen    = false;
+let categoryPage   = {};       // tracks current page per category in simple mode
 
 // ── DOM refs ───────────────────────────────────────────────────────
 const grid           = document.getElementById("symbol-grid");
@@ -563,8 +564,6 @@ function renderGrid(category) {
 
   const profile  = loadSettings().profile || {};
   const all      = SYMBOLS[category] || [];
-  const core     = all.filter(s => s.core);
-  const extra    = all.filter(s => !s.core);
 
   // Empty category — show placeholder (e.g. custom interest not yet populated)
   if (all.length === 0) {
@@ -579,6 +578,42 @@ function renderGrid(category) {
     grid.appendChild(ph);
     return;
   }
+
+  // Simple mode: show 4 symbols per page with large prev/next buttons
+  if (profile.simpleMode) {
+    const PAGE_SIZE  = 4;
+    if (categoryPage[category] == null) categoryPage[category] = 0;
+    const totalPages = Math.ceil(all.length / PAGE_SIZE);
+    if (categoryPage[category] >= totalPages) categoryPage[category] = totalPages - 1;
+    const page       = categoryPage[category];
+
+    all.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE).forEach(sym => grid.appendChild(makeCard(sym, category)));
+
+    if (totalPages > 1) {
+      const pager = document.createElement('div');
+      pager.className = 'pager-row';
+      pager.innerHTML = `
+        <button class="pager-btn" id="pager-prev" ${page === 0 ? 'disabled' : ''} aria-label="Previous page">◀</button>
+        <span class="pager-info">${page + 1} / ${totalPages}</span>
+        <button class="pager-btn" id="pager-next" ${page >= totalPages - 1 ? 'disabled' : ''} aria-label="Next page">▶</button>
+      `;
+      grid.appendChild(pager);
+      pager.querySelector('#pager-prev').addEventListener('click', e => {
+        e.stopPropagation();
+        categoryPage[category] = Math.max(0, page - 1);
+        renderGrid(category);
+      });
+      pager.querySelector('#pager-next').addEventListener('click', e => {
+        e.stopPropagation();
+        categoryPage[category] = Math.min(totalPages - 1, page + 1);
+        renderGrid(category);
+      });
+    }
+    return;
+  }
+
+  const core  = all.filter(s => s.core);
+  const extra = all.filter(s => !s.core);
 
   core.forEach(sym => grid.appendChild(makeCard(sym, category)));
 
@@ -656,6 +691,7 @@ catBtns.forEach(btn => {
     catBtns.forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
     activeCategory = btn.dataset.cat;
+    categoryPage[activeCategory] = 0;
     renderGrid(activeCategory);
     grid.scrollTop = 0;
     if (typeof gtag === 'function') gtag('event', 'category_switch', { category: activeCategory });
@@ -1135,6 +1171,10 @@ function openSetupModal() {
   // Adult mode toggle
   document.getElementById('s-adult-mode').checked = !!(settings.profile || {}).adultMode;
 
+  // Simple mode toggle
+  const simpleModeEl = document.getElementById('s-simple-mode');
+  if (simpleModeEl) simpleModeEl.checked = !!(settings.profile || {}).simpleMode;
+
   // Gaze tracking toggle
   const gazeEl = document.getElementById('s-gaze-enabled');
   if (gazeEl) gazeEl.checked = !!settings.gazeEnabled;
@@ -1293,6 +1333,12 @@ setupSave.addEventListener("click", () => {
   const wasAdult = settings.profile.adultMode;
   settings.profile.adultMode = document.getElementById('s-adult-mode').checked;
   if (settings.profile.adultMode && !wasAdult) settings.profile.largeTargets = true;
+
+  const simpleModeEl = document.getElementById('s-simple-mode');
+  if (simpleModeEl) {
+    settings.profile.simpleMode = simpleModeEl.checked;
+    if (simpleModeEl.checked) settings.profile.largeTargets = true;
+  }
 
   // Gaze tracking toggle
   const gazeEl = document.getElementById('s-gaze-enabled');
@@ -1507,13 +1553,20 @@ function applyProfileConfig() {
   const root    = document.documentElement;
   const body    = document.body;
 
-  if (profile.gridColumns) root.style.setProperty('--grid-cols', profile.gridColumns);
+  if (profile.simpleMode) {
+    root.style.setProperty('--grid-cols', '2');
+  } else if (profile.gridColumns) {
+    root.style.setProperty('--grid-cols', profile.gridColumns);
+  } else {
+    root.style.setProperty('--grid-cols', '4');
+  }
 
-  body.classList.toggle('large-targets',      !!profile.largeTargets);
+  body.classList.toggle('large-targets',      !!profile.largeTargets || !!profile.simpleMode);
   body.classList.toggle('high-contrast',      !!profile.highContrast);
   body.classList.toggle('reduced-animations', !!profile.reducedAnimations);
   body.classList.toggle('adult-mode',         !!profile.adultMode);
   body.classList.toggle('keyboard-forward',   !!profile.keyboardForward);
+  body.classList.toggle('simple-mode',        !!profile.simpleMode);
 
   // Background theme
   ['sky', 'meadow', 'lavender', 'minimal'].forEach(t => body.classList.remove(`theme-${t}`));

@@ -2018,6 +2018,70 @@ body.reduced-animations #pc-shield          { animation: none; }
 body.adult-mode #sentence-text              { font-size: 1.35rem; }
 body.adult-mode #sentence-text.placeholder  { font-size: 1.1rem; }
 
+/* ── Simple Mode: 4-button paginated layout ──────────────────── */
+body.simple-mode #symbol-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr auto;
+  gap: 14px;
+  padding: 14px;
+  /* fill available space below topbar + corebar */
+  height: calc(100dvh - var(--topbar-h, 60px) - var(--corebar-h, 54px) - var(--bottombar-h, 72px));
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+body.simple-mode .symbol-card {
+  min-height: 0;
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  border-radius: 20px;
+}
+
+body.simple-mode .symbol-emoji { font-size: 4.5rem; }
+body.simple-mode .symbol-label { font-size: 1.05rem; font-weight: 600; margin-top: 6px; }
+
+/* Pager row */
+.pager-row {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 6px 0 2px;
+}
+
+.pager-btn {
+  background: var(--accent, #1a4fa0);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-size: 1.5rem;
+  width: 76px;
+  height: 56px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.12s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pager-btn:disabled          { opacity: 0.25; cursor: default; }
+.pager-btn:not(:disabled):active { opacity: 0.65; }
+
+.pager-info {
+  font-size: 1rem;
+  color: var(--text-muted, #888);
+  min-width: 52px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
 /* ── Password Gate ───────────────────────────────────────────── */
 #password-gate {
   position: fixed;
