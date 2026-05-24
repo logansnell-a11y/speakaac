@@ -2018,32 +2018,33 @@ body.reduced-animations #pc-shield          { animation: none; }
 body.adult-mode #sentence-text              { font-size: 1.35rem; }
 body.adult-mode #sentence-text.placeholder  { font-size: 1.1rem; }
 
-/* ── Simple Mode: 4-button paginated layout ──────────────────── */
-body.simple-mode #symbol-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr auto;
-  gap: 14px;
-  padding: 14px;
-  /* fill available space below topbar + corebar */
-  height: calc(100dvh - var(--topbar-h, 60px) - var(--corebar-h, 54px) - var(--bottombar-h, 72px));
-  box-sizing: border-box;
-  overflow: hidden;
-}
+/* ── Simple Mode: 4-button paginated layout (phones only) ────── */
+@media (max-width: 539px) {
+  body.simple-mode #symbol-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr auto;
+    gap: 14px;
+    padding: 14px;
+    height: calc(100dvh - var(--topbar-h, 60px) - var(--corebar-h, 54px) - var(--bottombar-h, 72px));
+    box-sizing: border-box;
+    overflow: hidden;
+  }
 
-body.simple-mode .symbol-card {
-  min-height: 0;
-  flex: 1 1 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.1rem;
-  border-radius: 20px;
-}
+  body.simple-mode .symbol-card {
+    min-height: 0;
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    border-radius: 20px;
+  }
 
-body.simple-mode .symbol-emoji { font-size: 4.5rem; }
-body.simple-mode .symbol-label { font-size: 1.05rem; font-weight: 600; margin-top: 6px; }
+  body.simple-mode .symbol-emoji { font-size: 4.5rem; }
+  body.simple-mode .symbol-label { font-size: 1.05rem; font-weight: 600; margin-top: 6px; }
+}
 
 /* Pager row */
 .pager-row {

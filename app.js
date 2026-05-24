@@ -579,8 +579,9 @@ function renderGrid(category) {
     return;
   }
 
-  // Simple mode: show 4 symbols per page with large prev/next buttons
-  if (profile.simpleMode) {
+  // Simple mode: paginate 4 symbols per page on phones only.
+  // On tablets/desktops (>= 540px) the full grid fits fine — just keep large targets.
+  if (profile.simpleMode && window.matchMedia('(max-width: 539px)').matches) {
     const PAGE_SIZE  = 4;
     if (categoryPage[category] == null) categoryPage[category] = 0;
     const totalPages = Math.ceil(all.length / PAGE_SIZE);
@@ -1175,9 +1176,16 @@ function openSetupModal() {
   const simpleModeEl = document.getElementById('s-simple-mode');
   if (simpleModeEl) simpleModeEl.checked = !!(settings.profile || {}).simpleMode;
 
-  // Gaze tracking toggle
+  // Gaze tracking toggle + dwell time
   const gazeEl = document.getElementById('s-gaze-enabled');
   if (gazeEl) gazeEl.checked = !!settings.gazeEnabled;
+  const dwellEl = document.getElementById('s-dwell-ms');
+  if (dwellEl) {
+    const ms = settings.dwellMs || 1800;
+    dwellEl.value = ms;
+    const lbl = document.getElementById('dwell-ms-label');
+    if (lbl) lbl.textContent = (ms / 1000).toFixed(1) + 's';
+  }
 
   // Show current tier
   const tierNames  = { free: "Free", family: "Family", lifetime: "Lifetime", clinic: "Clinic", institution: "Institution" };
@@ -1340,7 +1348,7 @@ setupSave.addEventListener("click", () => {
     if (simpleModeEl.checked) settings.profile.largeTargets = true;
   }
 
-  // Gaze tracking toggle
+  // Gaze tracking toggle + dwell time
   const gazeEl = document.getElementById('s-gaze-enabled');
   if (gazeEl) {
     const wasGaze = settings.gazeEnabled;
@@ -1348,6 +1356,8 @@ setupSave.addEventListener("click", () => {
     if (settings.gazeEnabled && !wasGaze) window.GazeClient?.enable();
     else if (!settings.gazeEnabled && wasGaze) window.GazeClient?.disable();
   }
+  const dwellSaveEl = document.getElementById('s-dwell-ms');
+  if (dwellSaveEl) settings.dwellMs = parseInt(dwellSaveEl.value, 10) || 1800;
 
   saveSettings(settings);
   applyProfileConfig();
@@ -1553,7 +1563,7 @@ function applyProfileConfig() {
   const root    = document.documentElement;
   const body    = document.body;
 
-  if (profile.simpleMode) {
+  if (profile.simpleMode && window.matchMedia('(max-width: 539px)').matches) {
     root.style.setProperty('--grid-cols', '2');
   } else if (profile.gridColumns) {
     root.style.setProperty('--grid-cols', profile.gridColumns);
@@ -2505,7 +2515,7 @@ document.getElementById('setup-open-about').addEventListener('click', () => {
 // and fires onSymbolTap when dwell threshold is reached.
 ;(function initGaze() {
   const GAZE_WS = 'ws://localhost:5050';
-  const DWELL_MS = 1200;   // default — overridden by settings.dwellMs
+  const DWELL_MS = 1800;   // default — long enough to distinguish reading from intentional selection
 
   let ws = null;
   let enabled = false;

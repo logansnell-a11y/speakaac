@@ -280,12 +280,19 @@
 
         <section class="setup-section">
           <h3>Eye Gaze Control</h3>
-          <p class="setup-hint">When running on the platform device, Speak can be fully controlled by eye gaze — no touch required. Requires the gaze tracking service to be running on the device (port 5050). Stare at a symbol for ~1 second to select it.</p>
+          <p class="setup-hint">When running on the platform device, Speak can be fully controlled by eye gaze — no touch required. Requires the gaze tracking service to be running on the device (port 5050). Look at a symbol and hold your gaze to select it.</p>
           <label class="setup-toggle">
             <input type="checkbox" id="s-gaze-enabled" />
             <span class="setup-toggle-label">Enable Eye Gaze Control</span>
           </label>
-          <p class="setup-hint" style="margin-top:6px;">Use <strong>Gaze Calibration</strong> from the platform launcher before enabling. Dwell time defaults to 1.2 seconds.</p>
+          <label class="setup-label" style="margin-top:14px;">
+            Dwell Time: <span id="dwell-ms-label">1.8s</span>
+            <input type="range" id="s-dwell-ms" min="800" max="3000" step="100" value="1800"
+              style="width:100%;margin-top:6px;"
+              oninput="document.getElementById('dwell-ms-label').textContent=(this.value/1000).toFixed(1)+'s'" />
+          </label>
+          <p class="setup-hint" style="margin-top:4px;">How long to hold your gaze before a symbol is selected. Higher = less likely to accidentally select while reading. Default 1.8s.</p>
+          <p class="setup-hint" style="margin-top:6px;">Use <strong>Gaze Calibration</strong> from the platform launcher before enabling.</p>
         </section>
 
         <section class="setup-section">
