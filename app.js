@@ -1597,6 +1597,7 @@ const INACTIVITY_MS  = 10 * 60 * 1000; // 10 minutes
 let   _inactivityTimer = null;
 let   _slEntry         = '';
 let   _returnVisit     = false;          // true if onboarding was already done on load
+let   _slOwnerBypass   = false;          // true when lock was dismissed via owner email auth
 
 const sessionLockEl  = document.getElementById('session-lock');
 const slNameEl       = document.getElementById('sl-name');
@@ -1676,6 +1677,17 @@ document.getElementById('sl-forgot')?.addEventListener('click', () => {
     slErrorEl.textContent = 'Incorrect PIN — try again';
     slErrorEl.classList.add('hidden');
   }, 5000);
+});
+
+document.getElementById('sl-owner-link')?.addEventListener('click', () => {
+  _slOwnerBypass = true;
+  // Force sign-in tab so owner goes straight to email+password
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('auth-tab-active'));
+  document.querySelector('.auth-tab[data-tab="signin"]').classList.add('auth-tab-active');
+  document.getElementById('auth-submit').textContent = 'Sign In';
+  document.getElementById('auth-password').placeholder = 'Password';
+  document.getElementById('auth-forgot-link').classList.remove('hidden');
+  showAuthModal(false);
 });
 
 document.addEventListener('keydown', (e) => {
@@ -2151,6 +2163,7 @@ document.getElementById('auth-submit').addEventListener('click', async () => {
     if (error) throw error;
 
     hideAuthModal();
+    if (_slOwnerBypass) { _slOwnerBypass = false; sessionLockEl.classList.add('hidden'); }
     if (_authPostOnboarding) completeOnboarding();
     else if (_authPreOnboarding) { _authPreOnboarding = false; startOnboarding(); }
     updateAccountSection();
