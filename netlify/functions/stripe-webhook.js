@@ -14,6 +14,9 @@ const SUPABASE_SERVICE_KEY   = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const PRICE_TO_TIER = {
   [process.env.STRIPE_PRICE_FAMILY]:      'family',
   [process.env.STRIPE_PRICE_CLINIC]:      'clinic',
+  [process.env.STRIPE_PRICE_CLINIC_YR]:   'clinic',
+  [process.env.STRIPE_PRICE_FACILITY]:    'facility',
+  [process.env.STRIPE_PRICE_FACILITY_YR]: 'facility',
   [process.env.STRIPE_PRICE_INSTITUTION]: 'institution',
   [process.env.STRIPE_PRICE_LIFETIME]:    'lifetime',
 };
@@ -159,7 +162,7 @@ exports.handler = async function (event) {
   let tier = session.metadata?.tier || session.client_reference_id;
 
   // If no metadata tier, fall back to price ID mapping
-  if (!tier || !['family', 'clinic', 'institution', 'lifetime'].includes(tier)) {
+  if (!tier || !['family', 'clinic', 'facility', 'institution', 'lifetime'].includes(tier)) {
     const lineItemsRes = await fetch(
       `https://api.stripe.com/v1/checkout/sessions/${session.id}/line_items`,
       {
