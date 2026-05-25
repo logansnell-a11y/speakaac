@@ -1,12 +1,13 @@
-// ── Mulberry Symbol Loader ─────────────────────────────────────────
-// Replaces the ARASAAC loader. Uses Mulberry Symbols (CC BY-SA 4.0)
-// which permits commercial use. Falls back to emoji for any symbol
-// not available in the Mulberry library.
-//
-// License: Mulberry Symbols © Garry Pye, CC BY-SA 4.0
-// https://mulberrysymbols.org / https://github.com/mulberrysymbols/mulberry-symbols
+// ── Symbol Loader ──────────────────────────────────────────────────
+// Primary:   Mulberry Symbols © Garry Pye, CC BY-SA 4.0
+//            https://mulberrysymbols.org
+// Secondary: OpenMoji, CC BY-SA 4.0
+//            https://openmoji.org / https://github.com/hfg-gmuend/openmoji
+// Both licenses permit commercial use with attribution.
+// Lookup order: Mulberry → OpenMoji → emoji text fallback.
 
-const MULBERRY_BASE = "https://cdn.jsdelivr.net/gh/mulberrysymbols/mulberry-symbols@master/EN";
+const MULBERRY_BASE  = "https://cdn.jsdelivr.net/gh/mulberrysymbols/mulberry-symbols@master/EN";
+const OPENMOJI_BASE  = "https://cdn.jsdelivr.net/gh/hfg-gmuend/openmoji@15.0.0/color/svg";
 
 // Map from search term → Mulberry filename (null = use emoji fallback)
 const MULBERRY_MAP = {
@@ -28,7 +29,7 @@ const MULBERRY_MAP = {
   "hot":                "hot.svg",
   "stop":               null,
   "please":             null,
-  "finished":           null,
+  "finished":           "finish.svg",
   "pain":               null,
   "sick":               null,
   "cold":               null,
@@ -44,16 +45,16 @@ const MULBERRY_MAP = {
   "angry":              "angry_lady.svg",
   "excited":            "excited_lady.svg",
   "confused":           "confused_lady.svg",
-  "scared":             null,
+  "scared":             "afraid_lady.svg",
   "hurt":               null,
-  "tired":              null,
-  "frustrated":         null,
-  "calm":               null,
+  "tired":              "yawn_,_to.svg",
+  "frustrated":         "cross.svg",
+  "calm":               "relax_,_to.svg",
   "lonely":             null,
   "overwhelmed":        null,
-  "loved":              null,
+  "loved":              "heart.svg",
   "bored":              null,
-  "nervous":            null,
+  "nervous":            "worried_lady.svg",
   "proud":              null,
 
   // People
@@ -61,11 +62,11 @@ const MULBERRY_MAP = {
   "doctor":             "doctor_1a.svg",
   "grandmother":        "grandmother.svg",
   "grandfather":        "grandfather.svg",
-  "mother":             null,
-  "father":             null,
+  "mother":             "mum_parent.svg",
+  "father":             "dad_parent.svg",
   "friend":             null,
-  "sibling":            null,
-  "therapist":          null,
+  "sibling":            "brother.svg",
+  "therapist":          "occupational_therapist_1a.svg",
 
   // Places
   "house":              "house.svg",
@@ -103,7 +104,7 @@ const MULBERRY_MAP = {
   "soup":               "soup.svg",
   "ice cream":          "ice_cream.svg",
   "snack":              null,
-  "cookie":             null,
+  "cookie":             "biscuits.svg",
 
   // Social
   "hello":              "hello.svg",
@@ -115,18 +116,68 @@ const MULBERRY_MAP = {
   "thank you":          null,
   "again":              null,
   "goodbye":            null,
-  "question":           null,
+  "question":           "ask_,_to.svg",
   "understand":         null,
   "do not understand":  null,
 };
 
-// Returns an <img> element for the Mulberry symbol, or null for emoji fallback
+// OpenMoji codepoints for vocabulary not in Mulberry (CC BY-SA 4.0)
+const OPENMOJI_MAP = {
+  // Core vocab
+  "stop":              "1F6D1",  // 🛑 stop sign
+  "please":            "1F64F",  // 🙏 folded hands
+  "pain":              "1F623",  // 😣 persevering face
+  "sick":              "1F912",  // 🤒 thermometer face
+  "cold":              "1F976",  // 🥶 cold face
+  "no":                "1F6AB",  // 🚫 prohibited
+  "yes":               "2705",   // ✅ check mark
+  "me":                "1F464",  // 👤 silhouette / self
+  "you":               "1F449",  // 👉 pointing right
+  "feel":              "1F4AD",  // 💭 thought balloon
+
+  // Feelings
+  "hurt":              "1F915",  // 🤕 bandaged head
+  "lonely":            "1F614",  // 😔 pensive face
+  "overwhelmed":       "1F629",  // 😩 weary face
+  "bored":             "1F611",  // 😑 expressionless face
+  "proud":             "1F3C6",  // 🏆 trophy
+
+  // People
+  "friend":            "1F91D",  // 🤝 handshake
+
+  // Places
+  "bedroom":           "1F6CF",  // 🛏️ bed
+  "bathroom":          "1F6C1",  // 🛁 bathtub
+  "kitchen":           "1F373",  // 🍳 cooking
+  "park":              "1F333",  // 🌳 tree / park
+  "hospital":          "1F3E5",  // 🏥 hospital
+
+  // Food
+  "snack":             "1F37F",  // 🍿 popcorn / snack
+
+  // Social
+  "like":              "1F44D",  // 👍 thumbs up
+  "dislike":           "1F44E",  // 👎 thumbs down
+  "sorry":             "1F647",  // 🙇 person bowing
+  "thank you":         "1F64F",  // 🙏 folded hands
+  "again":             "1F504",  // 🔄 repeat arrows
+  "goodbye":           "1F44B",  // 👋 waving hand
+  "understand":        "1F4A1",  // 💡 light bulb
+  "do not understand": "1F937",  // 🤷 shrug
+};
+
+// Returns an <img> element — tries Mulberry first, then OpenMoji, null = emoji fallback
 function makePicImg(searchTerm, _cache) {
-  const filename = MULBERRY_MAP[searchTerm];
-  if (!filename) return null;
+  const mulFile = MULBERRY_MAP[searchTerm];
+  const omCode  = OPENMOJI_MAP[searchTerm];
+
+  let src = null;
+  if (mulFile)  src = `${MULBERRY_BASE}/${mulFile}`;
+  else if (omCode) src = `${OPENMOJI_BASE}/${omCode}.svg`;
+  else return null;
 
   const img = document.createElement("img");
-  img.src       = `${MULBERRY_BASE}/${filename}`;
+  img.src       = src;
   img.alt       = searchTerm;
   img.className = "symbol-pic";
   img.onerror   = () => { img.style.display = "none"; };
