@@ -761,7 +761,7 @@ function completeOnboarding() {
   }
 
   const cfg = generateObConfig(obAnswers);
-  if (obAnswers.userName)     settings.userName     = obAnswers.userName.trim();
+  settings.userName = (obAnswers.userName || '').trim();
   if (obAnswers.contactName)  settings.contactName  = obAnswers.contactName.trim();
   if (obAnswers.contactEmail) settings.contactEmail = obAnswers.contactEmail.trim();
 

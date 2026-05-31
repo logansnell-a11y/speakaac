@@ -1669,14 +1669,23 @@ document.getElementById('sl-del').addEventListener('click', () => {
 
 document.getElementById('sl-forgot')?.addEventListener('click', () => {
   const pin = loadSettings().pin;
-  slErrorEl.textContent = !pin
-    ? 'No PIN set yet — complete setup to secure this device'
-    : 'Contact your provider if you\'ve forgotten your PIN';
+  if (!pin) {
+    slErrorEl.textContent = 'No PIN set yet — complete setup to secure this device';
+    slErrorEl.classList.remove('hidden');
+    setTimeout(() => { slErrorEl.textContent = 'Incorrect PIN — try again'; slErrorEl.classList.add('hidden'); }, 5000);
+    return;
+  }
+  // Highlight the owner bypass link so they can see it
+  const ownerLink = document.getElementById('sl-owner-link');
+  if (ownerLink) {
+    ownerLink.style.color = 'white';
+    ownerLink.style.fontWeight = '600';
+    setTimeout(() => { ownerLink.style.color = ''; ownerLink.style.fontWeight = ''; }, 3000);
+    ownerLink.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+  slErrorEl.textContent = 'Account owner? Tap "Sign in with email" below ↓';
   slErrorEl.classList.remove('hidden');
-  setTimeout(() => {
-    slErrorEl.textContent = 'Incorrect PIN — try again';
-    slErrorEl.classList.add('hidden');
-  }, 5000);
+  setTimeout(() => { slErrorEl.textContent = 'Incorrect PIN — try again'; slErrorEl.classList.add('hidden'); }, 4000);
 });
 
 document.getElementById('sl-owner-link')?.addEventListener('click', () => {

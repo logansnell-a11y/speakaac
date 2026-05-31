@@ -2325,12 +2325,15 @@ body.adult-mode #sentence-text.placeholder  { font-size: 1.1rem; }
 }
 
 .ob-welcome-icon {
-  width: 80px;
-  height: 80px;
-  border-radius: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: var(--gold, #f59e0b);
+  padding: 8px;
   box-shadow: var(--shadow-md);
   animation: heart-beat 3s ease-in-out infinite;
   display: block;
+  filter: none;
 }
 
 .ob-welcome-title {
@@ -3148,7 +3151,7 @@ body.theme-minimal {
   gap: 12px;
 }
 
-#auth-logo { width: 56px; height: 56px; border-radius: 14px; display: block; filter: none; }
+#auth-logo { width: 48px; height: 48px; border-radius: 12px; background: var(--gold, #f59e0b); padding: 8px; display: block; filter: none; box-shadow: 0 2px 8px rgba(0,0,0,0.25); }
 
 #auth-inner h2 {
   font-size: 1.35rem;
@@ -3552,11 +3555,14 @@ body.theme-minimal {
 }
 
 #sl-logo {
-  width: 64px;
-  height: 64px;
-  border-radius: 16px;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--gold, #f59e0b);
+  padding: 8px;
   margin-bottom: 10px;
   filter: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
 }
 
 #sl-greeting {
@@ -3656,14 +3662,14 @@ body.theme-minimal {
   display: block;
   margin-top: 18px;
   font-size: 0.78rem;
-  color: var(--text-dim, rgba(255,255,255,0.35));
+  color: rgba(255,255,255,0.72);
   text-decoration: underline;
   text-underline-offset: 3px;
   cursor: pointer;
   text-align: center;
   transition: color 0.15s;
 }
-#sl-owner-link:hover { color: var(--text-muted, rgba(255,255,255,0.65)); }
+#sl-owner-link:hover { color: rgba(255,255,255,0.95); }
 
 /* ══════════════════════════════════════════════════════════════════
    CORE VOCABULARY BAR
@@ -4128,11 +4134,14 @@ body.large-targets .core-word-emoji {
   gap: 20px;
 }
 #loading-logo {
-  width: 72px;
-  height: 72px;
-  border-radius: 18px;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--gold, #f59e0b);
+  padding: 8px;
   animation: loading-pulse 2s ease-in-out infinite;
   filter: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.20);
 }
 #loading-spinner {
   width: 30px;
