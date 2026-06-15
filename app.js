@@ -1303,6 +1303,19 @@ function openSetupModal() {
     if (lbl) lbl.textContent = (ms / 1000).toFixed(1) + 's';
   }
 
+  // Switch scanning
+  const scanEl = document.getElementById('s-scan-enabled');
+  if (scanEl) scanEl.checked = !!settings.scanEnabled;
+  const scanSpeedEl = document.getElementById('s-scan-speed');
+  if (scanSpeedEl) {
+    const sp = settings.scanSpeedMs || 1500;
+    scanSpeedEl.value = sp;
+    const slbl = document.getElementById('scan-speed-label');
+    if (slbl) slbl.textContent = (sp / 1000).toFixed(1) + 's';
+  }
+  const scanAudioEl = document.getElementById('s-scan-audio');
+  if (scanAudioEl) scanAudioEl.checked = !!settings.scanAudio;
+
   // Show current tier
   const tierNames  = { free: "Free", family: "Family", lifetime: "Lifetime", clinic: "Clinic", institution: "Institution" };
   const tierColors = { free: "missing", family: "ok", lifetime: "ok", clinic: "ok", institution: "ok" };
@@ -1475,8 +1488,17 @@ setupSave.addEventListener("click", () => {
   const dwellSaveEl = document.getElementById('s-dwell-ms');
   if (dwellSaveEl) settings.dwellMs = parseInt(dwellSaveEl.value, 10) || 1800;
 
+  // Switch scanning
+  const scanSaveEl = document.getElementById('s-scan-enabled');
+  if (scanSaveEl) settings.scanEnabled = scanSaveEl.checked;
+  const scanSpeedSaveEl = document.getElementById('s-scan-speed');
+  if (scanSpeedSaveEl) settings.scanSpeedMs = parseInt(scanSpeedSaveEl.value, 10) || 1500;
+  const scanAudioSaveEl = document.getElementById('s-scan-audio');
+  if (scanAudioSaveEl) settings.scanAudio = scanAudioSaveEl.checked;
+
   saveSettings(settings);
   applyProfileConfig();
+  if (window.Scanner) Scanner.applyFromSettings(settings);
   if (window.Sync) Sync.setTeacherEmail(settings.teacherEmail).catch(() => {});
 
   // Apply or exit kiosk based on new value
@@ -2812,3 +2834,81 @@ document.getElementById('setup-open-about').addEventListener('click', () => {
   const s = loadSettings();
   if (s.gazeEnabled) window.GazeClient.enable();
 })();
+
+// ── Switch Scanning ───────────────────────────────────────────────
+// Single-switch auto-scan access method for users who can't reliably touch.
+// Highlights each symbol in turn; Space/Enter (or any switch that sends those
+// keys) selects the highlighted one. Opt-in — touch behaviour is unaffected.
+const Scanner = (() => {
+  let active = false, speed = 1500, audio = false, timer = null, hi = -1;
+
+  const overlayIds = ['setup-modal','dashboard-modal','report-modal','keyboard-overlay',
+                      'pin-modal','auth-modal','session-lock','upgrade-modal','help-modal'];
+  function overlayOpen() {
+    return overlayIds.some(id => {
+      const el = document.getElementById(id);
+      return el && !el.classList.contains('hidden');
+    });
+  }
+  function items() { return Array.from(document.querySelectorAll('#symbol-grid .symbol-card')); }
+  function clearHi() { items().forEach(c => c.classList.remove('scan-highlight')); }
+
+  function cue(card) {
+    if (!audio || !window.speechSynthesis) return;
+    const label = card.querySelector('.symbol-label')?.textContent || '';
+    if (!label) return;
+    try {
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(label);
+      u.rate = 1.5; u.volume = 0.9;
+      window.speechSynthesis.speak(u);
+    } catch {}
+  }
+
+  function tick() {
+    if (overlayOpen()) return;            // pause while a dialog is open
+    const list = items();
+    if (!list.length) { hi = -1; return; }
+    list.forEach(c => c.classList.remove('scan-highlight'));
+    hi = (hi + 1) % list.length;
+    const card = list[hi];
+    card.classList.add('scan-highlight');
+    card.scrollIntoView({ block: 'nearest' });
+    cue(card);
+  }
+
+  function select() {
+    if (overlayOpen()) return;
+    const list = items();
+    if (!list.length || hi < 0 || hi >= list.length) return;
+    list[hi].click();                     // speaks + adds to sentence
+    hi = -1; clearHi();
+    if (timer) { clearInterval(timer); timer = null; }
+    // brief pause so the chosen word is heard, then resume scanning
+    setTimeout(() => { if (active && !timer) { tick(); timer = setInterval(tick, speed); } },
+               Math.max(speed, 1400));
+  }
+
+  function start() { stop(); active = true; hi = -1; tick(); timer = setInterval(tick, speed); }
+  function stop()  { active = false; if (timer) { clearInterval(timer); timer = null; } clearHi(); }
+
+  document.addEventListener('keydown', e => {
+    if (!active || overlayOpen()) return;
+    if (e.key === ' ' || e.key === 'Spacebar' || e.code === 'Space' || e.key === 'Enter') {
+      e.preventDefault();
+      select();
+    }
+  });
+
+  return {
+    applyFromSettings(s) {
+      s = s || {};
+      speed = s.scanSpeedMs || 1500;
+      audio = !!s.scanAudio;
+      if (s.scanEnabled) start(); else stop();
+    },
+    isActive() { return active; },
+  };
+})();
+window.Scanner = Scanner;
+Scanner.applyFromSettings(loadSettings());

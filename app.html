@@ -308,6 +308,27 @@
         </section>
 
         <section class="setup-section">
+          <h3>Switch Scanning</h3>
+          <p class="setup-hint">For users who can't reliably touch the screen. Speak highlights each symbol in turn — press the switch (or Space / Enter) to select the highlighted one. Works with any switch that sends a keypress.</p>
+          <label class="setup-toggle">
+            <input type="checkbox" id="s-scan-enabled" />
+            <span class="setup-toggle-label">Enable Switch Scanning</span>
+          </label>
+          <label class="setup-label" style="margin-top:14px;">
+            Scan Speed: <span id="scan-speed-label">1.5s</span>
+            <input type="range" id="s-scan-speed" min="600" max="4000" step="100" value="1500"
+              style="width:100%;margin-top:6px;"
+              oninput="document.getElementById('scan-speed-label').textContent=(this.value/1000).toFixed(1)+'s'" />
+          </label>
+          <p class="setup-hint" style="margin-top:4px;">How long each symbol stays highlighted before the scan moves on. Slower = easier to time the switch.</p>
+          <label class="setup-toggle" style="margin-top:12px;">
+            <input type="checkbox" id="s-scan-audio" />
+            <span class="setup-toggle-label">Speak each symbol as it highlights</span>
+          </label>
+          <p class="setup-hint" style="margin-top:4px;">Auditory scanning — for users with low vision, Speak says each option aloud as it's highlighted.</p>
+        </section>
+
+        <section class="setup-section">
           <h3>Trusted Safety Contact</h3>
           <p class="setup-hint">This person receives a private alert when the user presses the Help button — bypassing the primary caretaker. Use a grandparent, teacher, therapist, or other trusted adult.</p>
           <p class="setup-hint" style="color:#e05555;font-size:0.8rem;margin-top:6px;">⚠ The private safety channel is not a substitute for emergency services. In an immediate emergency, always call 911 first.</p>

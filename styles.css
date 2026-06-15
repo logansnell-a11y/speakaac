@@ -4451,3 +4451,14 @@ body.large-targets .core-word-emoji {
   .report-tables { grid-template-columns: 1fr; }
   #report-actions { margin-left: 0; width: 100%; }
 }
+
+/* ── Switch Scanning highlight ────────────────────────────────────── */
+.symbol-card.scan-highlight {
+  outline: 5px solid #8b5cf6;
+  outline-offset: -2px;
+  box-shadow: 0 0 0 4px rgba(139,92,246,0.45), 0 0 20px rgba(139,92,246,0.65);
+  transform: scale(1.04);
+  border-radius: var(--radius-sm);
+  position: relative;
+  z-index: 3;
+}
