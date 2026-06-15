@@ -350,3 +350,206 @@ document.getElementById('db-close').addEventListener('click', () => {
 document.getElementById('db-seed').addEventListener('click', () => {
   if (confirm('Load demo data? This replaces any existing history.')) seedDemoData();
 });
+
+// ── Progress Report ────────────────────────────────────────────────
+// Turns the logged event history into a clinician-facing outcomes report
+// for IEP meetings, Medicaid documentation, and district/SLP trials.
+
+const RANGE_LABELS = { '7': 'Last 7 days', '30': 'Last 30 days', '90': 'Last 90 days', '0': 'All time' };
+const COMM_TYPES   = ['symbol', 'vocab_word', 'keyboard', 'sentence_spoken', 'ai_sentence'];
+
+function rEsc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function patientNameById(id) {
+  if (!id) return 'All communicators';
+  if (typeof getClinicPatients === 'function') {
+    const p = getClinicPatients().find(x => x.id === id);
+    if (p) return p.name || 'Communicator';
+  }
+  return 'Communicator';
+}
+
+function computeReport(rangeDays, patientId) {
+  const now    = Date.now();
+  const cutoff = rangeDays > 0 ? now - rangeDays * 86400000 : 0;
+  const events = getEvents().filter(e => {
+    if (tsToMs(e.ts) < cutoff) return false;
+    if (patientId && (e.payload && e.payload.patient_id) !== patientId) return false;
+    return true;
+  });
+
+  const r = {
+    rangeLabel: RANGE_LABELS[String(rangeDays)] || 'Custom',
+    patientName: patientNameById(patientId),
+    generated: new Date().toLocaleString(),
+    messagesSpoken: 0, aiSentences: 0, wordSelections: 0, typedMessages: 0, safetyEvents: 0,
+    uniqueVocab: 0, activeDays: 0, topWords: [], topCats: [], daily: [], hasData: false,
+  };
+
+  const vocab = new Set(), wordFreq = {}, catFreq = {}, dayFreq = {}, activeDaySet = new Set();
+
+  events.forEach(e => {
+    const p = e.payload || {};
+    switch (e.type) {
+      case 'sentence_spoken': r.messagesSpoken++; break;
+      case 'ai_sentence':     r.aiSentences++;    break;
+      case 'keyboard':        r.typedMessages++;  break;
+      case 'help_general':
+      case 'help_alert':      r.safetyEvents++;   break;
+      case 'symbol': {
+        r.wordSelections++;
+        const w = (p.label || '').trim();
+        if (w) { vocab.add(w.toLowerCase()); wordFreq[w] = (wordFreq[w] || 0) + 1; }
+        if (p.category) catFreq[p.category] = (catFreq[p.category] || 0) + 1;
+        break;
+      }
+      case 'vocab_word': {
+        r.wordSelections++;
+        const w = (p.word || '').trim();
+        if (w) { vocab.add(w.toLowerCase()); wordFreq[w] = (wordFreq[w] || 0) + 1; }
+        break;
+      }
+    }
+    if (COMM_TYPES.includes(e.type)) {
+      const d = e.dateStr || new Date(tsToMs(e.ts)).toLocaleDateString();
+      dayFreq[d] = (dayFreq[d] || 0) + 1;
+      activeDaySet.add(d);
+    }
+  });
+
+  r.uniqueVocab = vocab.size;
+  r.activeDays  = activeDaySet.size;
+  r.topWords = Object.entries(wordFreq).sort((a, b) => b[1] - a[1]).slice(0, 10);
+  r.topCats  = Object.entries(catFreq).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  r.daily = Object.keys(dayFreq)
+    .sort((a, b) => new Date(a) - new Date(b))
+    .slice(-42)
+    .map(d => ({ date: d, count: dayFreq[d] }));
+  r.hasData = events.some(e => COMM_TYPES.includes(e.type));
+  return r;
+}
+
+function reportBodyHTML(r) {
+  if (!r.hasData) {
+    return '<p class="report-empty">No communication was recorded in this period. Once the communicator uses Speak, their progress will appear here.</p>';
+  }
+  const stat = (v, l) => `<div class="report-stat"><div class="report-stat-v">${v}</div><div class="report-stat-l">${l}</div></div>`;
+  const maxDay = Math.max(1, ...r.daily.map(d => d.count));
+  const bars = r.daily.map(d =>
+    `<div class="report-bar" title="${rEsc(d.date)}: ${d.count}">
+       <div class="report-bar-fill" style="height:${Math.round((d.count / maxDay) * 100)}%"></div>
+     </div>`).join('');
+  const wordRows = r.topWords.map(([w, c]) =>
+    `<tr><td>${rEsc(w)}</td><td>${c}</td></tr>`).join('') || '<tr><td>—</td><td></td></tr>';
+  const catRows = r.topCats.map(([c, n]) =>
+    `<tr><td>${rEsc(c)}</td><td>${n}</td></tr>`).join('') || '<tr><td>—</td><td></td></tr>';
+
+  return `
+    <div class="report-stats">
+      ${stat(r.messagesSpoken, 'Messages spoken')}
+      ${stat(r.wordSelections, 'Words &amp; symbols selected')}
+      ${stat(r.uniqueVocab, 'Unique vocabulary')}
+      ${stat(r.aiSentences, 'AI sentences built')}
+      ${stat(r.typedMessages, 'Typed messages')}
+      ${stat(r.activeDays, 'Active days')}
+    </div>
+    ${r.safetyEvents ? `<p class="report-note">🛡️ Safety channel used <strong>${r.safetyEvents}</strong> time(s) this period — see Provider Dashboard → Safety Alerts for details.</p>` : ''}
+    <h3 class="report-h3">Daily communication activity</h3>
+    <div class="report-chart">${bars}</div>
+    <div class="report-tables">
+      <div><h3 class="report-h3">Most-used words</h3><table class="report-table"><tr><th>Word</th><th>Uses</th></tr>${wordRows}</table></div>
+      <div><h3 class="report-h3">Category focus</h3><table class="report-table"><tr><th>Category</th><th>Uses</th></tr>${catRows}</table></div>
+    </div>`;
+}
+
+function renderReportPreview() {
+  const range     = parseInt(document.getElementById('report-range').value, 10);
+  const patientId = document.getElementById('report-patient').value || null;
+  const r = computeReport(range, patientId);
+  document.getElementById('report-preview').innerHTML = `
+    <div class="report-doc-head">
+      <div><strong>${rEsc(r.patientName)}</strong> · ${rEsc(r.rangeLabel)}</div>
+      <div class="report-generated">Generated ${rEsc(r.generated)}</div>
+    </div>
+    ${reportBodyHTML(r)}`;
+  document.getElementById('report-modal')._current = r;
+}
+
+function openReport() {
+  const sel = document.getElementById('report-patient');
+  const patients = (typeof getClinicPatients === 'function') ? getClinicPatients() : [];
+  const activeId = (typeof getActivePatient === 'function' && getActivePatient()) ? getActivePatient().id : '';
+  sel.innerHTML = '<option value="">All communicators</option>' +
+    patients.map(p => `<option value="${rEsc(p.id)}"${p.id === activeId ? ' selected' : ''}>${rEsc(p.name || 'Communicator')}</option>`).join('');
+  renderReportPreview();
+  document.getElementById('report-modal').classList.remove('hidden');
+}
+
+function printReport() {
+  const r = computeReport(parseInt(document.getElementById('report-range').value, 10),
+                          document.getElementById('report-patient').value || null);
+  const w = window.open('', '_blank');
+  if (!w) { alert('Please allow pop-ups to print the report.'); return; }
+  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Speak — Progress Report</title>
+    <style>
+      body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;color:#1a1a1a;max-width:760px;margin:32px auto;padding:0 24px;}
+      .brand{display:flex;align-items:center;gap:10px;border-bottom:3px solid #8b5cf6;padding-bottom:12px;margin-bottom:8px;}
+      .brand h1{font-size:1.4rem;margin:0;} .brand .sub{color:#666;font-size:.85rem;margin-left:auto;}
+      .meta{color:#444;margin:6px 0 20px;font-size:.95rem;}
+      .report-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0;}
+      .report-stat{border:1px solid #e3e3e8;border-radius:10px;padding:14px;text-align:center;}
+      .report-stat-v{font-size:1.8rem;font-weight:800;color:#6d28d9;} .report-stat-l{font-size:.78rem;color:#555;margin-top:4px;}
+      .report-note{background:#f4f0ff;border-radius:8px;padding:10px 12px;font-size:.88rem;}
+      .report-h3{font-size:1rem;margin:22px 0 8px;border-bottom:1px solid #eee;padding-bottom:4px;}
+      .report-chart{display:flex;align-items:flex-end;gap:3px;height:90px;border-bottom:1px solid #ddd;padding-bottom:2px;}
+      .report-bar{flex:1;display:flex;align-items:flex-end;} .report-bar-fill{width:100%;background:#8b5cf6;border-radius:2px 2px 0 0;min-height:2px;}
+      .report-tables{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+      .report-table{width:100%;border-collapse:collapse;font-size:.9rem;} .report-table th,.report-table td{text-align:left;padding:5px 6px;border-bottom:1px solid #eee;}
+      .report-empty{color:#666;font-style:italic;padding:30px 0;}
+      footer{margin-top:30px;border-top:1px solid #eee;padding-top:10px;color:#999;font-size:.78rem;}
+    </style></head><body>
+    <div class="brand"><h1>Speak — Communication Progress Report</h1><span class="sub">speakaac.org</span></div>
+    <div class="meta"><strong>${rEsc(r.patientName)}</strong> &nbsp;·&nbsp; ${rEsc(r.rangeLabel)} &nbsp;·&nbsp; Generated ${rEsc(r.generated)}</div>
+    ${reportBodyHTML(r)}
+    <footer>Generated by Speak (speakaac.org) from in-app communication logs. For clinical and educational documentation.</footer>
+    </body></html>`);
+  w.document.close();
+  w.focus();
+  setTimeout(() => w.print(), 350);
+}
+
+function csvReport() {
+  const r = computeReport(parseInt(document.getElementById('report-range').value, 10),
+                         document.getElementById('report-patient').value || null);
+  const q = s => `"${String(s == null ? '' : s).replace(/"/g, '""')}"`;
+  const lines = [
+    ['Speak — Communication Progress Report'],
+    ['Communicator', r.patientName], ['Period', r.rangeLabel], ['Generated', r.generated], [],
+    ['Metric', 'Value'],
+    ['Messages spoken', r.messagesSpoken], ['Words & symbols selected', r.wordSelections],
+    ['Unique vocabulary', r.uniqueVocab], ['AI sentences built', r.aiSentences],
+    ['Typed messages', r.typedMessages], ['Active days', r.activeDays],
+    ['Safety channel used', r.safetyEvents], [],
+    ['Date', 'Communications'], ...r.daily.map(d => [d.date, d.count]), [],
+    ['Top word', 'Uses'], ...r.topWords.map(([w, c]) => [w, c]),
+  ].map(row => row.map(q).join(',')).join('\n');
+
+  const blob = new Blob([lines], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `speak-progress-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+const _dbReportBtn = document.getElementById('db-report');
+if (_dbReportBtn) _dbReportBtn.addEventListener('click', openReport);
+document.getElementById('report-close').addEventListener('click', () =>
+  document.getElementById('report-modal').classList.add('hidden'));
+document.getElementById('report-range').addEventListener('change', renderReportPreview);
+document.getElementById('report-patient').addEventListener('change', renderReportPreview);
+document.getElementById('report-print').addEventListener('click', printReport);
+document.getElementById('report-csv').addEventListener('click', csvReport);

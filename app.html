@@ -584,6 +584,7 @@
           <p id="db-user-name"></p>
         </div>
         <div id="db-header-actions">
+          <button id="db-report">📄 Progress Report</button>
           <button id="db-seed">Load Demo</button>
           <button id="db-close">✕ Close</button>
         </div>
@@ -630,6 +631,34 @@
         </section>
 
       </div>
+    </div>
+  </div>
+
+  <!-- ── PROGRESS REPORT ───────────────────────────────────────── -->
+  <div id="report-modal" class="hidden">
+    <div id="report-inner">
+      <div id="report-head">
+        <h2>📄 Communication Progress Report</h2>
+        <button id="report-close">✕ Close</button>
+      </div>
+      <div id="report-controls">
+        <label>Period
+          <select id="report-range">
+            <option value="7">Last 7 days</option>
+            <option value="30" selected>Last 30 days</option>
+            <option value="90">Last 90 days</option>
+            <option value="0">All time</option>
+          </select>
+        </label>
+        <label>Communicator
+          <select id="report-patient"><option value="">All</option></select>
+        </label>
+        <div id="report-actions">
+          <button id="report-print">🖨 Print / Save PDF</button>
+          <button id="report-csv">⬇ CSV</button>
+        </div>
+      </div>
+      <div id="report-preview"></div>
     </div>
   </div>
 

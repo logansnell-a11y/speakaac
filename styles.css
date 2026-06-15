@@ -4353,3 +4353,101 @@ body.large-targets .core-word-emoji {
 }
 .ob-pin-key:active { background: var(--primary); color: #fff; }
 .ob-pin-key:empty, .ob-pin-key[data-key=""] { pointer-events:none; background:transparent; border:none; }
+
+/* ── Progress Report ──────────────────────────────────────────────── */
+#report-modal {
+  position: fixed; inset: 0; z-index: 1200;
+  background: rgba(0,0,0,0.55);
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px;
+}
+#report-modal.hidden { display: none; }
+
+#report-inner {
+  background: var(--surface);
+  width: 100%; max-width: 720px; max-height: 90vh;
+  border-radius: var(--radius-lg);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  box-shadow: var(--shadow-top);
+}
+
+#report-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 20px; border-bottom: 1px solid var(--border-light);
+}
+#report-head h2 { font-size: 1.1rem; color: var(--text); }
+#report-close {
+  background: var(--surface2); color: var(--text-muted);
+  border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+  padding: 8px 14px; cursor: pointer; font-weight: 600; font-family: inherit;
+}
+
+#report-controls {
+  display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end;
+  padding: 16px 20px; border-bottom: 1px solid var(--border-light);
+}
+#report-controls label {
+  display: flex; flex-direction: column; gap: 5px;
+  font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--text-muted); font-weight: 700;
+}
+#report-controls select {
+  background: var(--bg); color: var(--text);
+  border: 1.5px solid var(--border-light); border-radius: var(--radius-sm);
+  padding: 10px 12px; font-size: 0.95rem; font-family: inherit; min-width: 150px;
+}
+#report-actions { display: flex; gap: 10px; margin-left: auto; }
+#report-actions button {
+  padding: 10px 16px; border: none; border-radius: var(--radius-sm);
+  font-weight: 700; cursor: pointer; font-family: inherit; font-size: 0.9rem;
+}
+#report-print { background: #8b5cf6; color: #fff; }
+#report-csv   { background: var(--surface2); color: var(--text); border: 1px solid var(--border-light); }
+
+#report-preview { padding: 20px; overflow-y: auto; }
+
+.report-doc-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  flex-wrap: wrap; gap: 6px; margin-bottom: 14px;
+  color: var(--text); font-size: 1rem;
+}
+.report-generated { color: var(--text-dim); font-size: 0.8rem; }
+
+.report-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.report-stat {
+  border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+  padding: 14px; text-align: center; background: var(--surface-high);
+}
+.report-stat-v { font-size: 1.7rem; font-weight: 800; color: #8b5cf6; }
+.report-stat-l { font-size: 0.74rem; color: var(--text-muted); margin-top: 4px; }
+
+.report-note {
+  background: rgba(139,92,246,0.12); border-radius: var(--radius-sm);
+  padding: 10px 12px; font-size: 0.85rem; color: var(--text); margin-top: 14px;
+}
+
+.report-h3 {
+  font-size: 0.95rem; color: var(--text); margin: 22px 0 8px;
+  border-bottom: 1px solid var(--border-light); padding-bottom: 4px;
+}
+.report-chart {
+  display: flex; align-items: flex-end; gap: 3px; height: 90px;
+  border-bottom: 1px solid var(--border-light); padding-bottom: 2px;
+}
+.report-bar { flex: 1; display: flex; align-items: flex-end; min-width: 4px; }
+.report-bar-fill { width: 100%; background: #8b5cf6; border-radius: 2px 2px 0 0; min-height: 2px; }
+
+.report-tables { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.report-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; color: var(--text); }
+.report-table th, .report-table td {
+  text-align: left; padding: 6px; border-bottom: 1px solid var(--border-light);
+}
+.report-table th { color: var(--text-muted); font-size: 0.78rem; text-transform: uppercase; }
+.report-empty { color: var(--text-muted); font-style: italic; padding: 30px 0; text-align: center; }
+
+@media (max-width: 540px) {
+  .report-stats { grid-template-columns: repeat(2, 1fr); }
+  .report-tables { grid-template-columns: 1fr; }
+  #report-actions { margin-left: 0; width: 100%; }
+}
