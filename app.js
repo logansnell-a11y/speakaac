@@ -583,6 +583,15 @@ function renderGrid(category) {
     return;
   }
 
+  // Motor-planning / fixed layout: every symbol keeps a permanent position —
+  // no pagination, no "More" expansion — so the user builds motor memory and
+  // always finds a word in the same spot (the LAMP principle).
+  if (profile.fixedLayout) {
+    const items = profile.coreOnly ? all.filter(s => s.core) : all;
+    items.forEach(sym => grid.appendChild(makeCard(sym, category)));
+    return;
+  }
+
   // Simple mode: paginate 4 symbols per page on phones only.
   // On tablets/desktops (>= 540px) the full grid fits fine — just keep large targets.
   if (profile.simpleMode && window.matchMedia('(max-width: 539px)').matches) {
@@ -1292,6 +1301,10 @@ function openSetupModal() {
   const simpleModeEl = document.getElementById('s-simple-mode');
   if (simpleModeEl) simpleModeEl.checked = !!(settings.profile || {}).simpleMode;
 
+  // Fixed layout (motor planning) toggle
+  const fixedLayoutEl = document.getElementById('s-fixed-layout');
+  if (fixedLayoutEl) fixedLayoutEl.checked = !!(settings.profile || {}).fixedLayout;
+
   // Gaze tracking toggle + dwell time
   const gazeEl = document.getElementById('s-gaze-enabled');
   if (gazeEl) gazeEl.checked = !!settings.gazeEnabled;
@@ -1477,6 +1490,9 @@ setupSave.addEventListener("click", () => {
     if (simpleModeEl.checked) settings.profile.largeTargets = true;
   }
 
+  const fixedLayoutEl = document.getElementById('s-fixed-layout');
+  if (fixedLayoutEl) settings.profile.fixedLayout = fixedLayoutEl.checked;
+
   // Gaze tracking toggle + dwell time
   const gazeEl = document.getElementById('s-gaze-enabled');
   if (gazeEl) {
@@ -1499,6 +1515,7 @@ setupSave.addEventListener("click", () => {
   saveSettings(settings);
   applyProfileConfig();
   if (window.Scanner) Scanner.applyFromSettings(settings);
+  if (typeof renderGrid === 'function' && activeCategory) renderGrid(activeCategory);
   if (window.Sync) Sync.setTeacherEmail(settings.teacherEmail).catch(() => {});
 
   // Apply or exit kiosk based on new value
