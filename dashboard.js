@@ -553,3 +553,136 @@ document.getElementById('report-range').addEventListener('change', renderReportP
 document.getElementById('report-patient').addEventListener('change', renderReportPreview);
 document.getElementById('report-print').addEventListener('click', printReport);
 document.getElementById('report-csv').addEventListener('click', csvReport);
+
+// ── AAC Evaluation / Funding Summary ──────────────────────────────
+// Combines the clinician's narrative with auto-pulled objective usage data
+// into the documentation packet insurance / Medicaid / IEP teams require.
+
+const EVAL_FIELDS = ['name','dob','slp','date','dx','abilities','impact','trialed','recommendation','training','outcomes'];
+
+function evalPatientId() { return document.getElementById('eval-patient').value || ''; }
+function evalDraftKey(pid) { return 'aac_eval_draft_' + (pid || 'default'); }
+
+function gatherEvalFields() {
+  const o = {};
+  EVAL_FIELDS.forEach(f => { o[f] = (document.getElementById('ev-' + f)?.value || ''); });
+  return o;
+}
+
+function saveEvalDraft(pid) {
+  try { localStorage.setItem(evalDraftKey(pid), JSON.stringify(gatherEvalFields())); } catch {}
+}
+
+function loadEvalDraft(pid) {
+  let d = {};
+  try { d = JSON.parse(localStorage.getItem(evalDraftKey(pid))) || {}; } catch {}
+  EVAL_FIELDS.forEach(f => {
+    const el = document.getElementById('ev-' + f);
+    if (el) el.value = d[f] || '';
+  });
+  // Sensible prefill for the trialed field
+  const trialedEl = document.getElementById('ev-trialed');
+  if (trialedEl && !trialedEl.value) {
+    trialedEl.value = 'Speak AAC (speakaac.org) — open-symbol speech-generating app — trialed over the period summarized below.';
+  }
+}
+
+function renderEvalData() {
+  const range = parseInt(document.getElementById('eval-range').value, 10);
+  const r = computeReport(range, evalPatientId() || null);
+  const from = r.daily.length ? r.daily[0].date : '—';
+  const to   = r.daily.length ? r.daily[r.daily.length - 1].date : '—';
+  const stat = (v, l) => `<div class="report-stat"><div class="report-stat-v">${v}</div><div class="report-stat-l">${l}</div></div>`;
+  document.getElementById('eval-data-preview').innerHTML = `
+    <h3 class="report-h3">Objective trial data (auto-filled from usage logs)</h3>
+    <p class="eval-hint">Trial period: <strong>${rEsc(from)} – ${rEsc(to)}</strong> · ${r.activeDays} active day(s)</p>
+    <div class="report-stats">
+      ${stat(r.messagesSpoken, 'Messages spoken')}
+      ${stat(r.uniqueVocab, 'Unique vocabulary')}
+      ${stat(r.wordSelections, 'Words selected')}
+      ${stat(r.aiSentences, 'AI sentences')}
+    </div>`;
+  document.getElementById('eval-modal')._r = r;
+  document.getElementById('eval-modal')._span = { from, to };
+}
+
+function buildEvalDoc(f, r, span) {
+  const para = v => v ? rEsc(v).replace(/\n/g, '<br>') : '<em>—</em>';
+  const sec = (n, t, v) => `<h2>${n}. ${rEsc(t)}</h2><p>${para(v)}</p>`;
+  return `<!doctype html><html><head><meta charset="utf-8"><title>AAC Evaluation Summary</title>
+    <style>
+      body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;color:#1a1a1a;max-width:760px;margin:32px auto;padding:0 24px;line-height:1.45;}
+      .brand{display:flex;align-items:center;gap:10px;border-bottom:3px solid #8b5cf6;padding-bottom:12px;}
+      .brand h1{font-size:1.3rem;margin:0;} .brand .sub{color:#666;font-size:.85rem;margin-left:auto;}
+      .who{margin:14px 0 8px;font-size:.95rem;} .who div{margin:2px 0;}
+      h2{font-size:1rem;margin:18px 0 4px;border-bottom:1px solid #eee;padding-bottom:3px;}
+      p{margin:0 0 4px;font-size:.93rem;}
+      .data{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:8px 0;}
+      .data .c{border:1px solid #e3e3e8;border-radius:8px;padding:10px;text-align:center;}
+      .data .v{font-size:1.4rem;font-weight:800;color:#6d28d9;} .data .l{font-size:.72rem;color:#555;}
+      .note{font-style:italic;color:#444;font-size:.9rem;}
+      .sign{margin-top:34px;display:flex;justify-content:space-between;font-size:.9rem;}
+      footer{margin-top:24px;border-top:1px solid #eee;padding-top:10px;color:#999;font-size:.76rem;}
+    </style></head><body>
+    <div class="brand"><h1>AAC Evaluation &amp; Funding Summary</h1><span class="sub">speakaac.org</span></div>
+    <div class="who">
+      <div><strong>Communicator:</strong> ${para(f.name)} &nbsp; <strong>DOB:</strong> ${para(f.dob)}</div>
+      <div><strong>Evaluating SLP:</strong> ${para(f.slp)} &nbsp; <strong>Date:</strong> ${para(f.date)}</div>
+    </div>
+    ${sec(1, 'Diagnosis (communication impairment)', f.dx)}
+    ${sec(2, 'Current communication abilities & limitations', f.abilities)}
+    ${sec(3, 'Functional impact on daily activities', f.impact)}
+    ${sec(4, 'Assessment & devices/methods trialed', f.trialed)}
+    <h2>5. Objective trial data (Speak usage logs)</h2>
+    <p>Trial period: <strong>${rEsc(span.from)} – ${rEsc(span.to)}</strong> · ${r.activeDays} active day(s)</p>
+    <div class="data">
+      <div class="c"><div class="v">${r.messagesSpoken}</div><div class="l">Messages spoken</div></div>
+      <div class="c"><div class="v">${r.uniqueVocab}</div><div class="l">Unique vocabulary</div></div>
+      <div class="c"><div class="v">${r.wordSelections}</div><div class="l">Words selected</div></div>
+      <div class="c"><div class="v">${r.aiSentences}</div><div class="l">AI sentences</div></div>
+    </div>
+    <p class="note">The objective data above demonstrates the communicator can learn and functionally use the recommended system.</p>
+    ${sec(6, 'Device recommendation & justification', f.recommendation)}
+    ${sec(7, 'Training plan (communicator & partners)', f.training)}
+    ${sec(8, 'Expected functional outcomes', f.outcomes)}
+    <div class="sign"><span>Clinician signature: __________________________</span><span>Date: ____________</span></div>
+    <footer>Prepared with Speak (speakaac.org). Objective data auto-generated from in-app communication logs. For AAC funding documentation (insurance / Medicaid / IDEA-IEP).</footer>
+    </body></html>`;
+}
+
+function openEval() {
+  const sel = document.getElementById('eval-patient');
+  const patients = (typeof getClinicPatients === 'function') ? getClinicPatients() : [];
+  const activeId = (typeof getActivePatient === 'function' && getActivePatient()) ? getActivePatient().id : '';
+  sel.innerHTML = '<option value="">— this device —</option>' +
+    patients.map(p => `<option value="${rEsc(p.id)}"${p.id === activeId ? ' selected' : ''}>${rEsc(p.name || 'Communicator')}</option>`).join('');
+  loadEvalDraft(evalPatientId());
+  renderEvalData();
+  document.getElementById('eval-modal').classList.remove('hidden');
+}
+
+function printEval() {
+  const r = document.getElementById('eval-modal')._r || computeReport(parseInt(document.getElementById('eval-range').value, 10), evalPatientId() || null);
+  const span = document.getElementById('eval-modal')._span || { from: '—', to: '—' };
+  const w = window.open('', '_blank');
+  if (!w) { alert('Please allow pop-ups to print the summary.'); return; }
+  w.document.write(buildEvalDoc(gatherEvalFields(), r, span));
+  w.document.close(); w.focus();
+  setTimeout(() => w.print(), 350);
+}
+
+const _dbEvalBtn = document.getElementById('db-eval');
+if (_dbEvalBtn) _dbEvalBtn.addEventListener('click', openEval);
+document.getElementById('eval-close').addEventListener('click', () =>
+  document.getElementById('eval-modal').classList.add('hidden'));
+document.getElementById('eval-save').addEventListener('click', () => {
+  saveEvalDraft(evalPatientId());
+  const b = document.getElementById('eval-save'); const t = b.textContent;
+  b.textContent = '✓ Saved'; setTimeout(() => b.textContent = t, 1400);
+});
+document.getElementById('eval-print').addEventListener('click', printEval);
+document.getElementById('eval-patient').addEventListener('change', () => { loadEvalDraft(evalPatientId()); renderEvalData(); });
+document.getElementById('eval-range').addEventListener('change', renderEvalData);
+document.getElementById('eval-form').addEventListener('input', e => {
+  if (e.target && e.target.id && e.target.id.indexOf('ev-') === 0) saveEvalDraft(evalPatientId());
+});

@@ -614,6 +614,7 @@
           <p id="db-user-name"></p>
         </div>
         <div id="db-header-actions">
+          <button id="db-eval">📋 AAC Evaluation</button>
           <button id="db-report">📄 Progress Report</button>
           <button id="db-seed">Load Demo</button>
           <button id="db-close">✕ Close</button>
@@ -689,6 +690,51 @@
         </div>
       </div>
       <div id="report-preview"></div>
+    </div>
+  </div>
+
+  <!-- ── AAC EVALUATION / FUNDING SUMMARY ──────────────────────────── -->
+  <div id="eval-modal" class="hidden">
+    <div id="eval-inner">
+      <div id="report-head">
+        <h2>📋 AAC Evaluation &amp; Funding Summary</h2>
+        <button id="eval-close">✕ Close</button>
+      </div>
+      <div id="report-controls">
+        <label>Communicator
+          <select id="eval-patient"><option value="">—</option></select>
+        </label>
+        <label>Trial data period
+          <select id="eval-range">
+            <option value="30">Last 30 days</option>
+            <option value="90" selected>Last 90 days</option>
+            <option value="0">All time</option>
+          </select>
+        </label>
+        <div id="report-actions">
+          <button id="eval-save">💾 Save Draft</button>
+          <button id="eval-print">🖨 Print / Save PDF</button>
+        </div>
+      </div>
+      <div id="eval-form">
+        <p class="eval-hint">Fill in the clinical narrative — Speak auto-fills the objective trial data from usage logs. The result is the documentation packet that insurance, Medicaid, and IEP teams require to fund a device.</p>
+        <div class="eval-row">
+          <label>Communicator name<input id="ev-name" type="text" /></label>
+          <label>Date of birth<input id="ev-dob" type="text" placeholder="MM/DD/YYYY" /></label>
+        </div>
+        <div class="eval-row">
+          <label>Evaluating SLP (name, credentials)<input id="ev-slp" type="text" /></label>
+          <label>Evaluation date<input id="ev-date" type="text" placeholder="MM/DD/YYYY" /></label>
+        </div>
+        <label>Diagnosis (communication impairment)<textarea id="ev-dx" rows="2"></textarea></label>
+        <label>Current communication abilities &amp; limitations<textarea id="ev-abilities" rows="3"></textarea></label>
+        <label>Functional impact on daily activities<textarea id="ev-impact" rows="2"></textarea></label>
+        <label>Assessment &amp; devices/methods trialed<textarea id="ev-trialed" rows="2"></textarea></label>
+        <label>Device recommendation &amp; justification<textarea id="ev-recommendation" rows="3"></textarea></label>
+        <label>Training plan (communicator &amp; partners)<textarea id="ev-training" rows="2"></textarea></label>
+        <label>Expected functional outcomes<textarea id="ev-outcomes" rows="2"></textarea></label>
+        <div id="eval-data-preview"></div>
+      </div>
     </div>
   </div>
 
