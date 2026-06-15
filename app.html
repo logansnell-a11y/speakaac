@@ -615,6 +615,7 @@
         </div>
         <div id="db-header-actions">
           <button id="db-eval">📋 AAC Evaluation</button>
+          <button id="db-matrix">📈 Comm. Matrix</button>
           <button id="db-report">📄 Progress Report</button>
           <button id="db-seed">Load Demo</button>
           <button id="db-close">✕ Close</button>
@@ -734,6 +735,27 @@
         <label>Training plan (communicator &amp; partners)<textarea id="ev-training" rows="2"></textarea></label>
         <label>Expected functional outcomes<textarea id="ev-outcomes" rows="2"></textarea></label>
         <div id="eval-data-preview"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── COMMUNICATION MATRIX ──────────────────────────────────────── -->
+  <div id="matrix-modal" class="hidden">
+    <div id="matrix-inner">
+      <div id="report-head">
+        <h2>📈 Communication Matrix</h2>
+        <button id="matrix-close">✕ Close</button>
+      </div>
+      <div id="report-controls">
+        <label>Communicator
+          <select id="matrix-patient"><option value="">—</option></select>
+        </label>
+      </div>
+      <div id="matrix-body">
+        <p class="eval-hint">Track where the communicator sits on the 7-level Communication Matrix (Rowland). Tap their current level — Speak records the date and shows the progression in the Progress Report.</p>
+        <div id="matrix-levels"></div>
+        <h3 class="report-h3">Progression history</h3>
+        <div id="matrix-history"></div>
       </div>
     </div>
   </div>

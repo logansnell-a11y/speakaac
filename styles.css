@@ -4498,3 +4498,47 @@ body.large-targets .core-word-emoji {
 #eval-save  { background: var(--surface2); color: var(--text); border: 1px solid var(--border-light); }
 #eval-print { background: #8b5cf6; color: #fff; }
 @media (max-width: 540px) { .eval-row { grid-template-columns: 1fr; } }
+
+/* ── Communication Matrix modal ───────────────────────────────────── */
+#matrix-modal {
+  position: fixed; inset: 0; z-index: 1200;
+  background: rgba(0,0,0,0.55);
+  display: flex; align-items: center; justify-content: center; padding: 16px;
+}
+#matrix-modal.hidden { display: none; }
+#matrix-inner {
+  background: var(--surface);
+  width: 100%; max-width: 680px; max-height: 92vh;
+  border-radius: var(--radius-lg);
+  display: flex; flex-direction: column; overflow: hidden;
+  box-shadow: var(--shadow-top);
+}
+#matrix-body { padding: 16px 20px; overflow-y: auto; }
+#matrix-levels { display: flex; flex-direction: column; gap: 8px; }
+.matrix-level {
+  text-align: left; width: 100%; cursor: pointer; font-family: inherit;
+  background: var(--surface-high); color: var(--text);
+  border: 1.5px solid var(--border-light); border-radius: var(--radius-sm);
+  padding: 12px 14px; transition: border-color 0.15s ease, background 0.15s ease;
+}
+.matrix-level:hover { border-color: #8b5cf6; }
+.matrix-level.current { border-color: #8b5cf6; background: rgba(139,92,246,0.12); }
+.matrix-level-top { display: flex; align-items: center; gap: 10px; }
+.matrix-roman {
+  flex: none; min-width: 34px; text-align: center;
+  font-weight: 800; color: #8b5cf6; font-size: 1rem;
+  background: rgba(139,92,246,0.12); border-radius: 6px; padding: 2px 4px;
+}
+.matrix-name { font-weight: 700; font-size: 0.98rem; }
+.matrix-badge {
+  margin-left: auto; font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.04em; color: #fff; background: #8b5cf6;
+  border-radius: 20px; padding: 3px 10px;
+}
+.matrix-desc { font-size: 0.85rem; color: var(--text-muted); margin-top: 5px; }
+#matrix-history { display: flex; flex-direction: column; gap: 6px; }
+.matrix-hist-row {
+  display: flex; gap: 14px; font-size: 0.9rem; color: var(--text);
+  padding: 6px 0; border-bottom: 1px solid var(--border-light);
+}
+.matrix-hist-date { color: var(--text-muted); min-width: 90px; }
