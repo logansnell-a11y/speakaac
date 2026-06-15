@@ -28,7 +28,7 @@
   <!-- ── SENTENCE BAR ───────────────────────────────────────────── -->
   <header id="topbar">
     <button id="app-logo" title="Speak — tap to clear">
-      <img src="icons/icon.png" alt="Speak" />
+      <img src="icons/butterfly.svg" alt="Speak" />
     </button>
     <div id="patient-chip" class="patient-chip hidden no-patient" title="Select patient for this session">
       <span>👤</span><span id="patient-chip-name">Select Patient</span>
@@ -292,7 +292,14 @@
               oninput="document.getElementById('dwell-ms-label').textContent=(this.value/1000).toFixed(1)+'s'" />
           </label>
           <p class="setup-hint" style="margin-top:4px;">How long to hold your gaze before a symbol is selected. Higher = less likely to accidentally select while reading. Default 1.8s.</p>
-          <p class="setup-hint" style="margin-top:6px;">Use <strong>Gaze Calibration</strong> from the platform launcher before enabling.</p>
+          <button
+            onclick="window.open('http://localhost:5051/calibrate', '_blank')"
+            style="margin-top:14px; padding:10px 18px; background:rgba(0,212,255,0.1);
+                   border:1px solid rgba(0,212,255,0.35); border-radius:8px;
+                   color:#00d4ff; font-size:13px; font-weight:600; cursor:pointer; width:100%;">
+            Run Gaze Calibration
+          </button>
+          <p class="setup-hint" style="margin-top:6px;">Calibrate once per user or whenever their seating position changes. Opens a full-screen dot sequence — takes about 15 seconds.</p>
         </section>
 
         <section class="setup-section">
@@ -625,7 +632,7 @@
   <!-- ── AUTH MODAL ─────────────────────────────────────────────── -->
   <div id="auth-modal" class="hidden">
     <div id="auth-inner">
-      <img id="auth-logo" src="icons/icon.png" alt="Speak" />
+      <img id="auth-logo" src="icons/butterfly.svg" alt="Speak" />
       <h2 id="auth-title">Save your profile</h2>
       <p id="auth-sub">Create a free account so their settings are never lost — even if you switch devices.</p>
       <div id="auth-tabs">
@@ -644,7 +651,7 @@
   <!-- ── SESSION LOCK ───────────────────────────────────────────── -->
   <div id="session-lock" class="hidden">
     <div id="sl-card">
-      <img id="sl-logo" src="icons/icon.png" alt="Speak" />
+      <img id="sl-logo" src="icons/butterfly.svg" alt="Speak" />
       <div id="sl-greeting">Welcome back,</div>
       <div id="sl-name"></div>
       <p id="sl-hint">Enter provider PIN to unlock</p>
@@ -766,7 +773,7 @@
 
   <!-- ── App loading screen ───────────────────────────────────── -->
   <div id="app-loading">
-    <img src="icons/icon.png" alt="Speak" id="loading-logo" />
+    <img src="icons/butterfly.svg" alt="Speak" id="loading-logo" />
     <div id="loading-spinner"></div>
     <p id="loading-text">Loading Speak…</p>
   </div>

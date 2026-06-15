@@ -1,0 +1,216 @@
+const { BedrockRuntimeClient, InvokeModelCommand } = require('@aws-sdk/client-bedrock-runtime');
+
+const SUPABASE_URL        = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+const PAID_TIERS       = ['family', 'clinic', 'institution'];
+const FREE_DAILY_LIMIT  = 10;
+const ANON_LIFETIME_LIMIT = 3;
+
+const BLOCKLIST = [
+  'kill','murder','suicide','rape','porn','naked','sex',
+  'fuck','shit','ass','bitch','nigger','faggot','cunt','bastard',
+];
+function containsBlocked(text) {
+  const words = text.toLowerCase().split(/\W+/);
+  return BLOCKLIST.some(w => words.includes(w));
+}
+
+const bedrock = new BedrockRuntimeClient({ region: process.env.AWS_REGION || 'us-east-1' });
+
+async function callBedrock(prompt) {
+  const command = new InvokeModelCommand({
+    modelId: 'us.anthropic.claude-haiku-4-5-20251001-v1:0',
+    contentType: 'application/json',
+    accept: 'application/json',
+    body: JSON.stringify({
+      anthropic_version: 'bedrock-2023-05-31',
+      max_tokens: 120,
+      messages: [{ role: 'user', content: prompt }],
+    }),
+  });
+  const res  = await bedrock.send(command);
+  const data = JSON.parse(new TextDecoder().decode(res.body));
+  return (data.content?.[0]?.text || '').trim();
+}
+
+async function verifySupabaseJWT(jwt) {
+  const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+    headers: { 'Authorization': `Bearer ${jwt}`, 'apikey': SUPABASE_SERVICE_KEY },
+  });
+  if (!res.ok) return null;
+  return res.json();
+}
+
+async function getUserTier(userId) {
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/profiles?user_id=eq.${encodeURIComponent(userId)}&select=settings`,
+    { headers: { 'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`, 'apikey': SUPABASE_SERVICE_KEY } }
+  );
+  if (!res.ok) return 'free';
+  const rows = await res.json();
+  return rows[0]?.settings?.tier || 'free';
+}
+
+async function getTodayUsageCount(userId) {
+  const today = new Date().toISOString().slice(0, 10);
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/ai_usage?user_id=eq.${encodeURIComponent(userId)}&created_at=gte.${today}T00:00:00Z&select=id`,
+    { headers: { 'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`, 'apikey': SUPABASE_SERVICE_KEY } }
+  );
+  if (!res.ok) return 0;
+  return (await res.json()).length;
+}
+
+async function getAnonLifetimeCount(ip) {
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/ai_usage?user_id=is.null&ip=eq.${encodeURIComponent(ip)}&select=id`,
+    { headers: { 'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`, 'apikey': SUPABASE_SERVICE_KEY } }
+  );
+  if (!res.ok) return 0;
+  return (await res.json()).length;
+}
+
+async function logUsage({ userId, ip, wordsCount, tier }) {
+  await fetch(`${SUPABASE_URL}/rest/v1/ai_usage`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+      'apikey': SUPABASE_SERVICE_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=minimal',
+    },
+    body: JSON.stringify({
+      user_id:     userId || null,
+      ip:          userId ? null : ip,
+      words_count: wordsCount,
+      tier,
+    }),
+  });
+}
+
+const ALLOWED_ORIGIN = 'https://speakaac.org';
+
+function corsHeaders(origin) {
+  return {
+    'Access-Control-Allow-Origin': origin === ALLOWED_ORIGIN ? ALLOWED_ORIGIN : '',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  };
+}
+
+exports.handler = async function (event) {
+  const origin = event.headers?.['origin'] || event.headers?.['Origin'] || '';
+  const method = event.requestContext?.http?.method || event.httpMethod || 'GET';
+  const headers = corsHeaders(origin);
+
+  if (method === 'OPTIONS') return { statusCode: 204, headers, body: '' };
+  if (method !== 'POST')    return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
+
+  const ip = (event.headers?.['x-forwarded-for'] || 'unknown').split(',')[0].trim();
+
+  let words, lang;
+  try {
+    const body = JSON.parse(event.body || '{}');
+    words = body.words;
+    lang  = body.lang === 'es' ? 'es' : 'en';
+  } catch {
+    return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid JSON' }) };
+  }
+
+  if (!Array.isArray(words) || words.length < 1 || words.length > 20) {
+    return { statusCode: 400, headers, body: JSON.stringify({ error: 'words must be an array of 1–20 items' }) };
+  }
+
+  const cleaned = words.map(w => String(w).replace(/[^\w\s'.,!?-]/g, '').trim()).filter(Boolean).slice(0, 20);
+  if (cleaned.length === 0) {
+    return { statusCode: 400, headers, body: JSON.stringify({ error: 'No valid words provided' }) };
+  }
+
+  if (cleaned.some(w => containsBlocked(w))) {
+    return { statusCode: 200, headers, body: JSON.stringify({ sentence: 'I would like ' + cleaned.join(', ') + '.' }) };
+  }
+
+  const authHeader = event.headers?.['authorization'] || event.headers?.['Authorization'] || '';
+  const jwt        = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+
+  let userId = null;
+  let tier   = 'anon';
+
+  if (!jwt) {
+    const anonCount = await getAnonLifetimeCount(ip);
+    if (anonCount >= ANON_LIFETIME_LIMIT) {
+      return {
+        statusCode: 429,
+        headers,
+        body: JSON.stringify({ error: 'Create a free account to keep using AI sentences.', limitReached: true }),
+      };
+    }
+  } else {
+    const user = await verifySupabaseJWT(jwt);
+    if (!user?.id) {
+      return { statusCode: 401, headers, body: JSON.stringify({ error: 'Session expired — please sign in again.' }) };
+    }
+    userId = user.id;
+    tier   = await getUserTier(userId);
+
+    if (!PAID_TIERS.includes(tier)) {
+      const usedToday = await getTodayUsageCount(userId);
+      if (usedToday >= FREE_DAILY_LIMIT) {
+        return {
+          statusCode: 429,
+          headers,
+          body: JSON.stringify({
+            error: `You've used your ${FREE_DAILY_LIMIT} free AI sentences for today. Upgrade to Family for unlimited.`,
+            limitReached: true,
+            used: usedToday,
+            limit: FREE_DAILY_LIMIT,
+          }),
+        };
+      }
+    }
+  }
+
+  const prompt = lang === 'es'
+    ? `A nonverbal person using an AAC app tapped these symbols: "${cleaned.join(', ')}". ` +
+      `Return ONLY a JSON object with two keys: "es" (a natural first-person sentence in Spanish) ` +
+      `and "en" (the English translation). No explanation, no markdown, just the JSON object.`
+    : `A nonverbal person using an AAC communication app tapped these symbols in order: ` +
+      `"${cleaned.join(', ')}". Write one clear, natural, first-person sentence that captures ` +
+      `what they're most likely trying to express. Return ONLY the sentence with no explanation.`;
+
+  try {
+    const raw = await callBedrock(prompt);
+    let sentence, translation;
+
+    if (lang === 'es') {
+      try {
+        const parsed = JSON.parse(raw.replace(/^```json\s*|\s*```$/g, ''));
+        sentence    = (parsed.es || '').trim().replace(/^["']|["']$/g, '');
+        translation = (parsed.en || '').trim().replace(/^["']|["']$/g, '');
+      } catch {
+        sentence    = raw.replace(/^["']|["']$/g, '');
+        translation = '';
+      }
+    } else {
+      sentence = raw.replace(/^["']|["']$/g, '');
+    }
+
+    if (!sentence || containsBlocked(sentence)) {
+      sentence    = lang === 'es' ? cleaned.join(', ') + '.' : 'I would like ' + cleaned.join(', ') + '.';
+      translation = '';
+    }
+
+    logUsage({ userId, ip, wordsCount: cleaned.length, tier }).catch(e => console.error('Usage log failed:', e));
+
+    return {
+      statusCode: 200,
+      headers: { ...headers, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sentence, ...(translation ? { translation } : {}) }),
+    };
+
+  } catch (e) {
+    console.error('ai-sentence error:', e);
+    return { statusCode: 500, headers, body: JSON.stringify({ error: 'Could not build sentence — please try again.' }) };
+  }
+};

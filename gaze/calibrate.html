@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Gaze Calibration — Speak</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0a0a0f;
+    color: #fff;
+    font-family: -apple-system, sans-serif;
+    width: 100vw; height: 100vh;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  #status {
+    position: fixed;
+    top: 40px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 22px;
+    color: rgba(255,255,255,0.7);
+    text-align: center;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  #sub {
+    font-size: 14px;
+    color: rgba(255,255,255,0.35);
+    margin-top: 6px;
+    text-align: center;
+  }
+
+  /* Five progress pips at top-center */
+  #pips {
+    position: fixed;
+    top: 20px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; gap: 10px;
+  }
+  .pip {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    transition: background 0.3s;
+  }
+  .pip.done     { background: rgba(0,212,255,0.9); }
+  .pip.active   { background: rgba(255,255,255,0.6); }
+
+  /* The calibration dot */
+  #dot {
+    position: fixed;
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: rgba(0,212,255,0.2);
+    border: 3px solid rgba(0,212,255,0.9);
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), left 0s, top 0s;
+    pointer-events: none;
+  }
+  #dot.visible { transform: translate(-50%, -50%) scale(1); }
+
+  /* Countdown ring around the dot */
+  #dot-ring {
+    position: fixed;
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  /* Completion screen */
+  #done-screen {
+    position: fixed; inset: 0;
+    display: none;
+    flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 24px;
+  }
+  #done-screen h1 { font-size: 32px; color: #00d4ff; }
+  #done-screen p  { font-size: 16px; color: rgba(255,255,255,0.55); max-width: 340px; text-align: center; line-height: 1.6; }
+  #back-btn {
+    padding: 14px 36px;
+    background: rgba(0,212,255,0.12);
+    border: 1px solid rgba(0,212,255,0.4);
+    border-radius: 10px;
+    color: #00d4ff; font-size: 16px; font-weight: 600;
+    cursor: pointer; margin-top: 8px;
+  }
+  #redo-btn {
+    padding: 10px 24px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    color: rgba(255,255,255,0.4); font-size: 13px;
+    cursor: pointer;
+  }
+
+  /* Collecting indicator */
+  #collecting-ring {
+    position: fixed;
+    pointer-events: none;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+  }
+</style>
+</head>
+<body>
+
+<div id="pips"></div>
+
+<div id="status">
+  Gaze Calibration
+  <div id="sub">Point (1 of 5)</div>
+</div>
+
+<div id="dot"></div>
+<canvas id="dot-ring"></canvas>
+
+<div id="done-screen">
+  <h1>Calibration Complete</h1>
+  <p>The system has learned where this person's eyes map to the screen. Calibration is saved and will be used automatically on next start.</p>
+  <button id="back-btn" onclick="window.location.href='https://speakaac.org/app.html'">Return to Speak</button>
+  <button id="redo-btn" onclick="startCalibration()">Recalibrate</button>
+</div>
+
+<script>
+const API = 'http://localhost:5051';
+
+// 5 calibration target positions [x%, y%] as fractions of screen
+const POSITIONS = [
+  [0.10, 0.10],  // top-left
+  [0.90, 0.10],  // top-right
+  [0.90, 0.90],  // bottom-right
+  [0.10, 0.90],  // bottom-left
+  [0.50, 0.50],  // center
+];
+const COLLECT_MS = 2200;  // slightly longer than server's 2s to cover travel time
+
+const dot       = document.getElementById('dot');
+const dotRing   = document.getElementById('dot-ring');
+const statusEl  = document.getElementById('status');
+const subEl     = document.getElementById('sub');
+const doneScreen = document.getElementById('done-screen');
+const pipsEl    = document.getElementById('pips');
+
+let samples = [];
+let running = false;
+
+// Build pips
+POSITIONS.forEach((_, i) => {
+  const pip = document.createElement('div');
+  pip.className = 'pip';
+  pip.id = `pip-${i}`;
+  pipsEl.appendChild(pip);
+});
+
+function updatePips(activeIdx) {
+  POSITIONS.forEach((_, i) => {
+    const pip = document.getElementById(`pip-${i}`);
+    pip.className = 'pip' + (i < activeIdx ? ' done' : i === activeIdx ? ' active' : '');
+  });
+}
+
+function moveDot(xFrac, yFrac) {
+  const x = xFrac * window.innerWidth;
+  const y = yFrac * window.innerHeight;
+  dot.style.left = x + 'px';
+  dot.style.top  = y + 'px';
+  dotRing.style.left = x + 'px';
+  dotRing.style.top  = y + 'px';
+  dotRing.style.width  = '80px';
+  dotRing.style.height = '80px';
+  dotRing.width  = 80;
+  dotRing.height = 80;
+}
+
+function animateDwellRing(startTs, durationMs) {
+  const ctx = dotRing.getContext('2d');
+  function draw(ts) {
+    const elapsed  = ts - startTs;
+    const fraction = Math.min(elapsed / durationMs, 1.0);
+    ctx.clearRect(0, 0, 80, 80);
+    ctx.beginPath();
+    ctx.arc(40, 40, 28, -Math.PI / 2, -Math.PI / 2 + fraction * 2 * Math.PI);
+    ctx.strokeStyle = `rgba(0, 212, 255, ${0.4 + fraction * 0.5})`;
+    ctx.lineWidth = 4;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+    if (fraction < 1.0) requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+}
+
+function clearDwellRing() {
+  const ctx = dotRing.getContext('2d');
+  ctx.clearRect(0, 0, 80, 80);
+}
+
+async function collectSample(xFrac, yFrac) {
+  const resp = await fetch(`${API}/calibrate/sample`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ target_x: xFrac, target_y: yFrac }),
+  });
+  return resp.json();
+}
+
+async function startCalibration() {
+  samples = [];
+  running = true;
+  doneScreen.style.display = 'none';
+
+  for (let i = 0; i < POSITIONS.length; i++) {
+    const [xFrac, yFrac] = POSITIONS[i];
+    updatePips(i);
+    subEl.textContent = `Point ${i + 1} of ${POSITIONS.length}`;
+
+    // Move dot (hidden during transition)
+    dot.classList.remove('visible');
+    clearDwellRing();
+    await sleep(200);
+    moveDot(xFrac, yFrac);
+    await sleep(100);
+    dot.classList.add('visible');
+
+    // Small settle delay before sampling
+    await sleep(600);
+
+    // Animate ring + collect sample simultaneously
+    const startTs = performance.now();
+    animateDwellRing(startTs, COLLECT_MS);
+    const result = await collectSample(xFrac, yFrac);
+
+    if (result.ok) {
+      samples.push({
+        target_x: xFrac,
+        target_y: yFrac,
+        raw_x: result.raw_x,
+        raw_y: result.raw_y,
+      });
+    }
+
+    clearDwellRing();
+    await sleep(200);
+  }
+
+  dot.classList.remove('visible');
+  updatePips(POSITIONS.length);
+
+  // Fit and save
+  const fitResp = await fetch(`${API}/calibrate/fit`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ samples }),
+  });
+  const fitResult = await fitResp.json();
+
+  if (fitResult.ok) {
+    doneScreen.style.display = 'flex';
+  } else {
+    alert('Calibration failed: ' + (fitResult.error || 'unknown error') + '\n\nMake sure the gaze tracker is running and the camera can see the user\'s eyes.');
+    startCalibration();
+  }
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// Start automatically
+window.addEventListener('load', () => {
+  setTimeout(startCalibration, 800);
+});
+</script>
+</body>
+</html>

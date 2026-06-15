@@ -16,15 +16,10 @@ const PAID_TIERS  = ['family', 'clinic', 'institution'];
 const FREE_DAILY_LIMIT = 10;
 const ANON_LIFETIME_LIMIT = 3;
 
-// ── Content safety ───────────────────────────────────────────────────
-const BLOCKLIST = [
-  'kill','murder','suicide','rape','porn','naked','sex',
-  'fuck','shit','ass','bitch','nigger','faggot','cunt','bastard',
-];
-function containsBlocked(text) {
-  const words = text.toLowerCase().split(/\W+/);
-  return BLOCKLIST.some(w => words.includes(w));
-}
+// ── Content policy: no word blocklist ────────────────────────────────
+// Censoring an AAC user's words — including abuse disclosure — is ableist
+// and silences the kids this exists to protect. Claude (safety-trained) and
+// the rate limits below are the real backstops, not a keyword list.
 
 // ── Anon IP tracker — persisted in Supabase (survives cold starts) ───
 
@@ -153,15 +148,6 @@ exports.handler = async function (event) {
     return { statusCode: 400, headers, body: JSON.stringify({ error: 'No valid words provided' }) };
   }
 
-  // Safety: blocklist input — return a safe fallback silently
-  if (cleaned.some(w => containsBlocked(w))) {
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({ sentence: 'I would like ' + cleaned.join(', ') + '.' }),
-    };
-  }
-
   // ── Auth & tier enforcement ─────────────────────────────────────────
   const authHeader = event.headers['authorization'] || '';
   const jwt        = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
@@ -262,8 +248,8 @@ exports.handler = async function (event) {
       sentence = raw.replace(/^["']|["']$/g, '');
     }
 
-    // Output safety check
-    if (!sentence || containsBlocked(sentence)) {
+    // Empty-response fallback only (no content filtering — the user's words are theirs)
+    if (!sentence) {
       sentence = lang === 'es'
         ? cleaned.join(', ') + '.'
         : 'I would like ' + cleaned.join(', ') + '.';

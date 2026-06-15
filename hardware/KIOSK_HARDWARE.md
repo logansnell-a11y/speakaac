@@ -68,8 +68,14 @@ xset s off
 xset s noblank
 xset -dpms
 
-# Wait for desktop
-sleep 3
+# Start gaze tracker in background (restarts automatically if it crashes)
+while true; do
+  python3 ~/aac-app/gaze/tracker.py 2>>/tmp/gaze.log
+  sleep 2
+done &
+
+# Wait for desktop + gaze service
+sleep 4
 
 # Launch Chromium in kiosk mode
 chromium-browser \
@@ -118,12 +124,17 @@ On reboot, Chromium opens speakaac.org/app.html fullscreen automatically.
 
 - [ ] App loads on boot without touching anything (kiosk mode works)
 - [ ] Touch response accurate on the symbol grid
-- [ ] Text-to-speech plays through USB speaker
-- [ ] Help button triggers email (test with your email first)
+- [ ] Text-to-speech plays through speaker (test volume — facilities are loud)
+- [ ] Help button triggers email (test with your own email first)
 - [ ] Sign in to a Clinic tier account and add a test patient
 - [ ] Verify patient events appear in teacher.html Clinic Dashboard
 - [ ] Export CSV from dashboard — opens correctly in Excel/Sheets
-- [ ] 60s auto-refresh works (tap a symbol, wait ~60s, see it appear in dashboard)
+- [ ] 60s auto-refresh works (tap a symbol, wait ~60s, see it in dashboard)
+- [ ] Gaze tracker starts automatically — check /tmp/gaze.log for errors
+- [ ] Run calibration: Settings → Eye Gaze Control → "Run Gaze Calibration"
+- [ ] Enable Eye Gaze Control toggle — sit at normal distance and confirm cursor follows eyes
+- [ ] Confirm dwell selection works: look at a symbol for 1.8s → it selects
+- [ ] Set dwell time appropriate for the user (1.2s–2.5s)
 
 ---
 
