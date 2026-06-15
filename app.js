@@ -174,6 +174,10 @@ const keyboardInput   = document.getElementById("keyboard-input");
 const kbSpeak         = document.getElementById("kb-speak");
 const kbAdd           = document.getElementById("kb-add");
 const kbClose         = document.getElementById("kb-close");
+const kbSuggest       = document.getElementById("kb-suggest");
+const kbVocab         = document.getElementById("kb-vocab");
+const kbVocabHint     = document.getElementById("kb-vocab-hint");
+const kbVocabResults  = document.getElementById("kb-vocab-results");
 
 const helpModal         = document.getElementById("help-modal");
 const helpGeneral       = document.getElementById("help-general");
@@ -827,6 +831,7 @@ function cancelClear() {
 // ── Keyboard overlay ───────────────────────────────────────────────
 barKeyboard.addEventListener("click", () => {
   keyboardOverlay.classList.remove("hidden");
+  resetVocabSuggestions();
   setTimeout(() => keyboardInput.focus(), 100);
 });
 
@@ -844,13 +849,124 @@ kbAdd.addEventListener("click", () => {
     updateDisplay();
     keyboardInput.value = "";
     keyboardOverlay.classList.add("hidden");
+    resetVocabSuggestions();
   }
 });
 
 kbClose.addEventListener("click", () => {
   keyboardOverlay.classList.add("hidden");
   keyboardInput.value = "";
+  resetVocabSuggestions();
 });
+
+// ── Suggest words (generate-vocab) ─────────────────────────────────
+// When the word isn't on the board, the user/caregiver describes what they
+// want to say and Claude returns tappable vocabulary buttons.
+let vocabLoading = false;
+
+function resetVocabSuggestions() {
+  kbVocab.classList.add("hidden");
+  kbVocabResults.innerHTML = "";
+}
+
+function renderVocabChips(words, context) {
+  kbVocabResults.innerHTML = "";
+  words.forEach(word => {
+    const chip = document.createElement("button");
+    chip.className = "vocab-chip";
+    chip.textContent = word;
+    chip.addEventListener("click", () => {
+      speak(word);
+      typedMode = false;
+      sentence.push(word);
+      logEvent('vocab_word', { word, context });
+      updateDisplay();
+      chip.classList.add("added");
+      setTimeout(() => chip.classList.remove("added"), 600);
+    });
+    kbVocabResults.appendChild(chip);
+  });
+  kbVocabHint.textContent = "Tap a word to speak it and add it to the sentence.";
+  kbVocab.classList.remove("hidden");
+}
+
+async function suggestVocab() {
+  if (vocabLoading) return;
+  const context = keyboardInput.value.trim().slice(0, 200);
+  if (!context) {
+    kbVocabResults.innerHTML = "";
+    kbVocabHint.textContent = "Write a few words about what you want to say, then tap Suggest.";
+    kbVocab.classList.remove("hidden");
+    return;
+  }
+
+  const isPaid = tierUnlocks("ai");
+
+  // Client-side gate (server enforces the real limit). Shares the AI daily quota.
+  if (!isPaid) {
+    const today = new Date().toISOString().slice(0, 10);
+    const used = parseInt(localStorage.getItem("aac_ai_count_" + today) || "0", 10);
+    if (used >= 5) {
+      upgradeModal.classList.remove("hidden");
+      return;
+    }
+  }
+
+  vocabLoading = true;
+  kbSuggest.classList.add("loading");
+  const prevLabel = kbSuggest.textContent;
+  kbSuggest.textContent = "…";
+  kbVocabResults.innerHTML = "";
+  kbVocabHint.textContent = "Finding words…";
+  kbVocab.classList.remove("hidden");
+
+  try {
+    const session = window.Sync ? await Sync.getSession() : null;
+    const headers = { "Content-Type": "application/json" };
+    if (session?.access_token) headers["Authorization"] = "Bearer " + session.access_token;
+
+    const res = await fetch("/.netlify/functions/generate-vocab", {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ context, lang: getLang() })
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      if (data.limitReached) {
+        if (!isPaid && data.used !== undefined) {
+          const today = new Date().toISOString().slice(0, 10);
+          localStorage.setItem("aac_ai_count_" + today, String(data.used));
+        }
+        upgradeModal.classList.remove("hidden");
+      }
+      throw new Error(data.error || `API error ${res.status}`);
+    }
+
+    const words = Array.isArray(data.buttons) ? data.buttons.filter(Boolean) : [];
+    if (words.length === 0) throw new Error("No suggestions returned");
+
+    if (!isPaid) {
+      const today = new Date().toISOString().slice(0, 10);
+      const key = "aac_ai_count_" + today;
+      localStorage.setItem(key, String(parseInt(localStorage.getItem(key) || "0", 10) + 1));
+    }
+
+    renderVocabChips(words, context);
+    logEvent('vocab_suggest', { context, count: words.length });
+  } catch (e) {
+    console.error("Suggest words error:", e);
+    kbVocabResults.innerHTML = "";
+    kbVocabHint.textContent = "Couldn't get suggestions — please try again.";
+    kbVocab.classList.remove("hidden");
+  } finally {
+    vocabLoading = false;
+    kbSuggest.classList.remove("loading");
+    kbSuggest.textContent = prevLabel;
+  }
+}
+
+kbSuggest.addEventListener("click", suggestVocab);
 
 // ── Help flow ──────────────────────────────────────────────────────
 barHelp.addEventListener("click", () => {

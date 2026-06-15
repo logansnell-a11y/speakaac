@@ -509,6 +509,45 @@ button, [role="button"] {
 #kb-add   { background: var(--green);   color: #fff;      }
 #kb-close { background: var(--surface2); color: var(--text-muted);
             border: 1px solid var(--border-light); }
+#kb-suggest { background: #8b5cf6; color: #fff; }
+#kb-suggest.loading { opacity: 0.7; cursor: default; }
+
+/* ── Suggest Words (generate-vocab) ──────────────────────────────── */
+#kb-vocab { display: flex; flex-direction: column; gap: 10px; }
+#kb-vocab.hidden { display: none; }
+
+#kb-vocab-hint {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+#kb-vocab-results {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.vocab-chip {
+  min-height: 48px;
+  padding: 12px 18px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid #8b5cf6;
+  background: var(--surface2);
+  color: var(--text);
+  font-size: 1.05rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+
+.vocab-chip:active { transform: scale(0.96); }
+
+.vocab-chip.added {
+  background: var(--green);
+  border-color: var(--green);
+  color: #fff;
+}
 
 /* ── Help Modal — Choose Path ────────────────────────────────────── */
 #help-modal, #help-sent-modal {
