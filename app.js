@@ -1110,8 +1110,9 @@ function sendPrivateAlert(reason) {
     `— Speak AAC App (Private Safety Channel)`
   );
 
-  // Fire silently — server-side first (no rate limits), EmailJS as fallback
-  if (contactEmail) {
+  // Fire silently — server-side first (no rate limits), EmailJS as fallback.
+  // Demo mode NEVER sends a real alert — the flow/modal still shows so it can be demonstrated safely.
+  if (contactEmail && !settings.demoMode) {
     const alertPayload = {
       to_email:     contactEmail,
       to_name:      contactName,
@@ -1800,7 +1801,7 @@ function submitSessionPin() {
 function resetInactivityTimer() {
   clearTimeout(_inactivityTimer);
   _inactivityTimer = setTimeout(() => {
-    if (loadSettings().onboardingComplete && sessionLockEl.classList.contains('hidden')) {
+    if (loadSettings().onboardingComplete && !loadSettings().demoMode && sessionLockEl.classList.contains('hidden')) {
       showSessionLock();
     }
   }, INACTIVITY_MS);
@@ -1880,6 +1881,7 @@ document.addEventListener('keydown', (e) => {
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible'
       && loadSettings().onboardingComplete
+      && !loadSettings().demoMode
       && sessionLockEl.classList.contains('hidden')) {
     showSessionLock();
   }
@@ -2200,7 +2202,7 @@ function finishInit() {
   updatePatientChip();
   updateClinicDashBtn();
   applyKioskMode();
-  if (_returnVisit) showSessionLock();
+  if (_returnVisit && !loadSettings().demoMode) showSessionLock(); // demo: skip PIN lock for zero-friction preview
   resetInactivityTimer();
   // Wire up language toggle buttons
   document.querySelectorAll('.lang-btn').forEach(btn => {

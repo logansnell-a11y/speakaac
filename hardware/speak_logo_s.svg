@@ -1,0 +1,36 @@
+<svg width="260" height="260" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- circle -->
+  <circle cx="100" cy="100" r="90" fill="#2f5fc4"/>
+  <circle cx="100" cy="100" r="90" fill="none" stroke="#16264a" stroke-width="7"/>
+
+  <!-- concentric-line "S": same path stroked in nested widths, white over blue -->
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path id="s" d="M140,68 C140,47 118,41 100,41 C80,41 63,53 63,73
+                    C63,92 82,100 100,104 C118,108 137,114 137,134
+                    C137,155 115,161 97,161 C80,161 62,155 60,137"
+          stroke="#ffffff" stroke-width="50"/>
+    <use href="#s" stroke="#2f5fc4" stroke-width="42"/>
+    <use href="#s" stroke="#ffffff" stroke-width="31"/>
+    <use href="#s" stroke="#2f5fc4" stroke-width="22"/>
+    <use href="#s" stroke="#ffffff" stroke-width="11"/>
+  </g>
+
+  <!-- butterfly perched top-right, white line-art -->
+  <g stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"
+     transform="rotate(12 152 52)">
+    <!-- antennae -->
+    <path d="M152,54 C148,45 145,41 142,37"/>
+    <path d="M152,54 C156,45 159,41 162,37"/>
+    <!-- body -->
+    <path d="M152,55 C151,62 151,72 152,79 C153,72 153,62 152,55 Z"/>
+    <!-- upper wings -->
+    <path d="M152,58 C161,44 178,42 182,52 C185,60 176,66 158,66"/>
+    <path d="M152,58 C143,44 126,42 122,52 C119,60 128,66 146,66"/>
+    <!-- lower wings -->
+    <path d="M152,67 C160,69 170,78 165,88 C161,95 152,88 151,74"/>
+    <path d="M152,67 C144,69 134,78 139,88 C143,95 152,88 153,74"/>
+    <!-- a couple wing veins -->
+    <path d="M158,54 L170,50"/>
+    <path d="M146,54 L134,50"/>
+  </g>
+</svg>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Speak — 3D Tablet (scaffold v2)</title>
+<style>
+  :root{
+    --bg:#eef2f7; --surface:#ffffff; --text:#1e293b; --muted:#64748b;
+    --accent:#2563c4; --border:#e2e8f0; --rail:#ffffff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--text);
+    font:400 17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased}
+
+  /* ── Left sidebar rail ── */
+  .rail{position:fixed;top:0;left:0;bottom:0;width:240px;z-index:3;
+    background:var(--rail);border-right:1px solid var(--border);
+    display:flex;flex-direction:column;padding:26px 18px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px;
+    letter-spacing:-.01em;margin-bottom:34px;padding-left:8px}
+  .brand .mark{width:26px;height:26px;border-radius:7px;
+    background:linear-gradient(135deg,var(--accent),#4d8ef0);display:inline-block}
+  .nav{display:flex;flex-direction:column;gap:2px}
+  .nav a{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:10px;
+    color:var(--muted);text-decoration:none;font-weight:500;font-size:15px;
+    border-left:3px solid transparent;transition:.15s}
+  .nav a:hover{background:#f1f5f9;color:var(--text)}
+  .nav a.active{background:#eaf1fc;color:var(--accent);border-left-color:var(--accent);font-weight:600}
+  .dot{width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.5}
+  .more-btn{margin-top:4px;background:none;border:none;cursor:pointer;
+    display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:10px;
+    color:var(--muted);font:500 15px/1 inherit;width:100%}
+  .more-btn:hover{background:#f1f5f9;color:var(--text)}
+  .more-panel{display:none;flex-direction:column;gap:2px;padding-left:8px;margin-top:2px}
+  .more-panel.open{display:flex}
+  .more-panel a{font-size:14px;padding:9px 12px}
+  .rail-foot{margin-top:auto;font-size:12px;color:var(--muted);text-align:center}
+
+  /* ── Main content (right of rail) ── */
+  #scene{position:fixed;inset:0;left:240px;width:calc(100vw - 240px);height:100vh;z-index:0;pointer-events:none}
+  .content{position:relative;z-index:1;margin-left:240px}
+  section{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:0 64px}
+  .col{max-width:440px}                 /* text stays LEFT; tablet floats right */
+  .eyebrow{color:var(--accent);font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+    font-size:12px;margin-bottom:20px}
+  h1{font-size:clamp(40px,5vw,66px);line-height:1.04;font-weight:700;letter-spacing:-.03em;margin-bottom:24px}
+  h1 .accent{color:var(--accent)}
+  h2{font-size:clamp(28px,3.2vw,44px);line-height:1.08;font-weight:700;letter-spacing:-.02em;margin-bottom:18px}
+  p{color:var(--muted);font-size:18px;line-height:1.62;max-width:400px}
+  .lede{font-size:20px;color:#475569;line-height:1.55}
+  .cta{margin-top:28px;display:inline-block;background:var(--accent);color:#fff;
+    padding:13px 26px;border-radius:12px;font-weight:600;text-decoration:none;font-size:15px}
+  .scroll-hint{position:fixed;bottom:28px;left:270px;color:var(--muted);font-size:12px;
+    letter-spacing:.06em;text-transform:uppercase;z-index:2}
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+}}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+</head>
+<body>
+
+<!-- ── SIDEBAR ── -->
+<aside class="rail">
+  <div class="brand"><span class="mark"></span> Speak</div>
+  <nav class="nav" id="nav">
+    <a href="#" class="active"><span class="dot"></span> Overview</a>
+    <a href="#"><span class="dot"></span> Access</a>
+    <a href="#"><span class="dot"></span> Safety</a>
+    <a href="#"><span class="dot"></span> Hardware</a>
+    <a href="#"><span class="dot"></span> Pricing</a>
+    <button class="more-btn" id="moreBtn"><span class="dot"></span> More ▾</button>
+    <div class="more-panel" id="morePanel">
+      <a href="#">Research</a>
+      <a href="#">Company</a>
+      <a href="#">Docs</a>
+      <a href="#">Contact</a>
+    </div>
+  </nav>
+  <div class="rail-foot">Speak™ · speakaac.org</div>
+</aside>
+
+<canvas id="scene"></canvas>
+
+<div class="content">
+  <section>
+    <div class="col">
+      <div class="eyebrow">Speak · Assistive Communication</div>
+      <h1>A voice.<br>And a way<br>to <span class="accent">stay safe.</span></h1>
+      <p class="lede">An affordable speech device for people who've lost the ability to speak — with a built-in way to signal for help.</p>
+      <a class="cta" href="#">See how it works</a>
+    </div>
+  </section>
+  <section><div class="col"><h2>Eye-gaze, switch, or touch.</h2>
+    <p>Camera + IR ring in an angled chin track the eyes. 3.5mm jacks drive switch scanning. Every access method, one device.</p></div></section>
+  <section><div class="col"><h2>The safety channel nobody else has.</h2>
+    <p>A discreet, fail-safe way to signal pain, fear, or danger — straight to a caregiver.</p></div></section>
+  <section><div class="col"><h2>Built on affordable hardware.</h2>
+    <p>Rugged, wipeable, VESA-mountable. A fraction of the $5,000–15,000 competitors.</p></div></section>
+</div>
+<div class="scroll-hint">Scroll ↓</div>
+
+<script type="module">
+import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+
+const canvas   = document.getElementById('scene');
+const W = () => window.innerWidth - 240, H = () => window.innerHeight;
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(W(), H());
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+
+const scene  = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(32, W()/H(), 0.1, 100);
+camera.position.set(0, 0, 9);
+
+// ── Lightweight procedural environment for subtle glass reflections (can't fail) ──
+{
+  const c = document.createElement('canvas'); c.width = 16; c.height = 16;
+  const g = c.getContext('2d');
+  const grd = g.createLinearGradient(0, 0, 0, 16);
+  grd.addColorStop(0, '#f6f9fd'); grd.addColorStop(0.55, '#c3d1e2'); grd.addColorStop(1, '#2b3a4f');
+  g.fillStyle = grd; g.fillRect(0, 0, 16, 16);
+  const tex = new THREE.CanvasTexture(c);
+  tex.mapping = THREE.EquirectangularReflectionMapping;
+  scene.environment = tex;
+}
+
+// ── Lights ──
+scene.add(new THREE.AmbientLight(0xffffff, 0.35));
+const key = new THREE.DirectionalLight(0xffffff, 2.0);
+key.position.set(5, 9, 7); key.castShadow = true;
+key.shadow.mapSize.set(2048,2048); key.shadow.camera.near=1; key.shadow.camera.far=40;
+key.shadow.camera.left=-10; key.shadow.camera.right=10; key.shadow.camera.top=10; key.shadow.camera.bottom=-10;
+key.shadow.radius = 10; scene.add(key);
+const fill = new THREE.DirectionalLight(0xdbe8ff, 0.5);
+fill.position.set(-7, 3, 5);
+scene.add(fill);
+
+// ── Tablet (real 260×210×50 → 2.6×2.1×0.5), floated on the RIGHT ──
+const tablet = new THREE.Group();
+
+// body — matte PETG plastic with subtle sheen
+const body = new THREE.Mesh(
+  new RoundedBoxGeometry(2.6, 2.1, 0.5, 8, 0.22),
+  new THREE.MeshPhysicalMaterial({ color:0x2b3543, metalness:0.15, roughness:0.52,
+    clearcoat:0.4, clearcoatRoughness:0.5, envMapIntensity:0.9 })
+);
+body.castShadow = true; body.receiveShadow = true; tablet.add(body);
+
+// screen — glossy glass, softened reflection (reads as a screen, not a mirror)
+const screen = new THREE.Mesh(
+  new THREE.PlaneGeometry(2.16, 1.35),
+  new THREE.MeshPhysicalMaterial({ color:0x0a1018, roughness:0.09, metalness:0,
+    clearcoat:1, clearcoatRoughness:0.09, reflectivity:0.6, envMapIntensity:0.7,
+    emissive:0x13233f, emissiveIntensity:0.5 })
+);
+screen.position.set(0, 0.22, 0.2515); tablet.add(screen);
+
+// gaze chin — camera lens + IR ring
+const lens = new THREE.Mesh(new THREE.CircleGeometry(0.05,24),
+  new THREE.MeshPhysicalMaterial({color:0x05070c,roughness:0.1,clearcoat:1,envMapIntensity:1.4}));
+lens.position.set(0,-0.72,0.252); tablet.add(lens);
+const ring = new THREE.Mesh(new THREE.TorusGeometry(0.1,0.018,16,40),
+  new THREE.MeshStandardMaterial({color:0x2563c4,emissive:0x2563c4,emissiveIntensity:0.6,roughness:0.4}));
+ring.position.set(0,-0.72,0.248); tablet.add(ring);
+
+// place it right, gentler + more upright premium 3/4 resting angle (less "tipping back")
+tablet.position.set(1.75, 0.12, 0);
+tablet.rotation.set(-0.08, -0.40, 0);
+scene.add(tablet);
+
+// soft floating shadow under it
+const shadowPlane = new THREE.Mesh(new THREE.PlaneGeometry(16,16),
+  new THREE.ShadowMaterial({opacity:0.16}));
+shadowPlane.rotation.x = -Math.PI/2; shadowPlane.position.set(1.75,-2.2,0);
+shadowPlane.receiveShadow = true; scene.add(shadowPlane);
+
+// ── Idle bounce ──
+const clock = new THREE.Clock();
+const baseY = tablet.position.y;
+(function animate(){
+  requestAnimationFrame(animate);
+  const t = clock.getElapsedTime();
+  tablet.position.y = baseY + Math.sin(t*1.3)*0.08;
+  renderer.render(scene, camera);
+})();
+
+// ── Scroll-tied spin (adds to the resting 3/4 angle) ──
+gsap.registerPlugin(ScrollTrigger);
+gsap.to(tablet.rotation, { y:'+=' + (Math.PI*2), ease:'none',
+  scrollTrigger:{ trigger:'.content', start:'top top', end:'bottom bottom', scrub:1 }});
+
+addEventListener('resize', () => {
+  camera.aspect = W()/H(); camera.updateProjectionMatrix(); renderer.setSize(W(),H());
+});
+
+// ── Sidebar interactions ──
+document.getElementById('moreBtn').onclick = () =>
+  document.getElementById('morePanel').classList.toggle('open');
+document.querySelectorAll('.nav a').forEach(a => a.onclick = e => {
+  e.preventDefault();
+  document.querySelectorAll('.nav a').forEach(x=>x.classList.remove('active'));
+  a.classList.add('active');
+});
+</script>
+</body>
+</html>

@@ -2,6 +2,140 @@
   publish = "."
   functions = "netlify/functions"
 
+# ── Block internal files from being served publicly (publish="." exposes the whole repo). ──
+# force=true is REQUIRED to override the real files that exist at these paths.
+[[redirects]]
+  from = "/aws/*"
+  to = "/404.html"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/patent_records/*"
+  to = "/404.html"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/netlify/*"
+  to = "/404.html"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/hardware/__pycache__/*"
+  to = "/404.html"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/hardware/DEVICE_BUILD_SHEET.md"
+  to = "/404.html"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/hardware/KIOSK_HARDWARE.md"
+  to = "/404.html"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/hardware/SPEAK_TABLET_3D_SPEC.md"
+  to = "/404.html"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/hardware/switch_input.py"
+  to = "/404.html"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/baa_template.md"
+  to = "/404.html"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/BUILD_PLAN_sms_messaging.md"
+  to = "/404.html"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/contractor_agreement.md"
+  to = "/404.html"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/dpa_template.md"
+  to = "/404.html"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/nda_template.md"
+  to = "/404.html"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/operating_agreement.md"
+  to = "/404.html"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/patent_assignment.md"
+  to = "/404.html"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/ppa_specification.md"
+  to = "/404.html"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/grants.md"
+  to = "/404.html"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/research_concept.md"
+  to = "/404.html"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/SPEAK_BUILD_CHECKLIST.md"
+  to = "/404.html"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/student_data_privacy.md"
+  to = "/404.html"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/supabase_ai_usage.sql"
+  to = "/404.html"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/supabase_safety_incidents.sql"
+  to = "/404.html"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/generate_audio.py"
+  to = "/404.html"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/tts_server.py"
+  to = "/404.html"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/test-generate-vocab.mjs"
+  to = "/404.html"
+  status = 404
+  force = true
+
+# Clean shareable demo link → opens the app straight into frictionless demo mode
+[[redirects]]
+  from = "/demo"
+  to = "/app.html?demo=1"
+  status = 302
+
 [[redirects]]
   from = "/*"
   to = "/404.html"

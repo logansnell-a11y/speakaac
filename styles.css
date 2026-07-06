@@ -3,13 +3,13 @@
 
 :root {
   color-scheme: light dark;
-  /* Three clean levels — ground, lifted, highest — warm light (default) */
-  --bg:           #d6c9b2;
-  --surface:      #f0e6d4;
-  --surface-high: #f8f2e8;
-  --surface2:     #d6c9b2;
-  --border:       #bfb09a;
-  --border-light: #d0c2aa;
+  /* Three clean levels — ground, lifted, highest — clean clinical (default) */
+  --bg:           #eef2f7;
+  --surface:      #ffffff;
+  --surface-high: #f8fafc;
+  --surface2:     #e2e8f0;
+  --border:       #cbd5e1;
+  --border-light: #e2e8f0;
 
   --gold:         #1a4fa0;
   --gold-bright:  #2563c4;
@@ -18,15 +18,15 @@
   --sticky:       #dbe8ff;
   --sticky-dark:  #1a4fa0;
 
-  --text:         #221408;
-  --text-muted:   #6a5030;
-  --text-dim:     #a89070;
+  --text:         #1e293b;
+  --text-muted:   #64748b;
+  --text-dim:     #94a3b8;
 
-  --shadow-sm:    0 1px 3px rgba(80, 50, 10, 0.10), 0 1px 2px rgba(80, 50, 10, 0.08);
-  --shadow-md:    0 4px 12px rgba(80, 50, 10, 0.12), 0 2px 4px rgba(80, 50, 10, 0.08);
-  --shadow-top:   0 2px 16px rgba(80, 50, 10, 0.14), 0 1px 4px rgba(80, 50, 10, 0.10);
-  --shadow-card:  0 2px 8px rgba(80, 50, 10, 0.10), 0 1px 2px rgba(80, 50, 10, 0.07);
-  --shadow-press: 0 1px 2px rgba(80, 50, 10, 0.08);
+  --shadow-sm:    0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-md:    0 4px 12px rgba(15, 23, 42, 0.10), 0 2px 4px rgba(15, 23, 42, 0.06);
+  --shadow-top:   0 2px 16px rgba(15, 23, 42, 0.12), 0 1px 4px rgba(15, 23, 42, 0.08);
+  --shadow-card:  0 2px 8px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow-press: 0 1px 2px rgba(15, 23, 42, 0.06);
 
   --red:          #c94a2e;
   --red-glow:     rgba(201, 74, 46, 0.12);
@@ -42,15 +42,15 @@
   --bottombar-h:  72px;
 }
 
-/* ── Dark mode — warm dark parchment ──────────────────────────── */
+/* ── Dark mode — cool clinical slate ──────────────────────────── */
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg:           #1c1610;
-    --surface:      #252018;
-    --surface-high: #2e2820;
-    --surface2:     #1c1610;
-    --border:       #3c3428;
-    --border-light: #4a4038;
+    --bg:           #0f172a;
+    --surface:      #1e293b;
+    --surface-high: #334155;
+    --surface2:     #0f172a;
+    --border:       #334155;
+    --border-light: #475569;
 
     --gold:         #2563c4;
     --gold-bright:  #4d8ef0;
@@ -59,9 +59,9 @@
     --sticky:       #1a3a6e;
     --sticky-dark:  #122a52;
 
-    --text:         #f0e8d8;
-    --text-muted:   #c0a878;
-    --text-dim:     #7a6848;
+    --text:         #f1f5f9;
+    --text-muted:   #94a3b8;
+    --text-dim:     #64748b;
 
     --shadow-sm:    0 1px 3px rgba(0,0,0,0.35), 0 1px 2px rgba(0,0,0,0.25);
     --shadow-md:    0 4px 12px rgba(0,0,0,0.45), 0 2px 4px rgba(0,0,0,0.3);

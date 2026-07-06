@@ -941,6 +941,38 @@
   <script src="sync.js"></script>
   <script src="onboarding.js"></script>
   <script src="dashboard.js"></script>
+
+  <!-- ── FRICTIONLESS DEMO MODE (?demo=1) — no signup, no onboarding ──────── -->
+  <script>
+  (function(){
+    var p = new URLSearchParams(location.search);
+    if (!p.has('demo')) return;
+    // Seed a clean sample profile so the app opens straight into a working board.
+    var demo = {
+      onboardingComplete: true,
+      demoMode: true,
+      tier: 'clinic',                                 // unlock every feature for the demo
+      userName: 'Alex',
+      contactName: 'Mom',
+      contactEmail: 'caregiver@demo.speakaac.org',    // NEVER actually emailed — guarded in app.js
+      profile: { adultMode: false, age: '9-12', soundMuted: false }
+    };
+    try {
+      // Safety: never clobber a real local profile — stash it first so it's recoverable.
+      var existing = localStorage.getItem('aac_settings');
+      if (existing) { var e0 = JSON.parse(existing); if (e0 && e0.onboardingComplete && !e0.demoMode) localStorage.setItem('aac_settings_backup', existing); }
+      localStorage.setItem('aac_settings', JSON.stringify(demo));
+    } catch(e){}
+    window.addEventListener('DOMContentLoaded', function(){
+      var b = document.createElement('div');
+      b.id = 'demo-banner';
+      b.innerHTML = '🔎 <b>DEMO</b> — sample profile “Alex.” Tap symbols to build a sentence, and try the safety button. <a href="index.html" style="color:#fff;text-decoration:underline;">Sign up free</a> to save your own setup &amp; enable real alerts.';
+      b.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:99999;background:#0f766e;color:#fff;font:600 13px/1.45 system-ui,sans-serif;padding:9px 14px;text-align:center;box-shadow:0 -2px 10px rgba(0,0,0,.25);';
+      document.body.appendChild(b);
+    });
+  })();
+  </script>
+
   <script src="app.js"></script>
 
   <!-- ── SAFETY PROMPT ────────────────────────────────────────── -->

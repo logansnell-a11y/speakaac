@@ -1,0 +1,30 @@
+<svg width="260" height="260" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="wing" x1="30" y1="40" x2="170" y2="165" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4d8ef0"/>
+      <stop offset="1" stop-color="#2563c4"/>
+    </linearGradient>
+  </defs>
+
+  <g transform="rotate(-18 100 100)"
+     stroke="url(#wing)" stroke-width="3.1" stroke-linecap="round" stroke-linejoin="miter" stroke-miterlimit="8" fill="none">
+
+    <!-- antennae with soft curl (kept elegant) -->
+    <path d="M100,80 C92,60 86,50 79,42 C76,39 75,44 78,45"/>
+    <path d="M100,80 C108,60 114,50 121,42 C124,39 125,44 122,45"/>
+
+    <!-- slim body -->
+    <path d="M100,80 C98,94 98,110 100,122 C102,110 102,94 100,80 Z"/>
+
+    <!-- RIGHT upper wing — swept up to a SHARP jet-tip, angular trailing edge -->
+    <path d="M100,86 C124,60 156,50 176,54 C154,66 126,80 105,92"/>
+    <!-- RIGHT lower wing — swept DOWN to a sharp point -->
+    <path d="M105,94 C128,104 150,126 152,156 C132,140 112,118 100,108"/>
+
+    <!-- LEFT upper wing -->
+    <path d="M100,86 C76,60 44,50 24,54 C46,66 74,80 95,92"/>
+    <!-- LEFT lower wing -->
+    <path d="M95,94 C72,104 50,126 48,156 C68,140 88,118 100,108"/>
+
+  </g>
+</svg>
