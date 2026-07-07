@@ -286,10 +286,8 @@ const baseY = tablet.position.y;
 
 if (!REDUCE) {
   gsap.registerPlugin(ScrollTrigger);
-  // tablet turns to face the viewer then eases back — a showcase turn, not a barrel roll
-  gsap.to(tablet.rotation, { y: 0.28, ease:'sine.inOut',
-    scrollTrigger:{ trigger:'main', start:'top top', end:'bottom bottom', scrub:1.2 }});
-  gsap.to(tablet.rotation, { x: -0.02, ease:'sine.inOut',
+  // tablet makes exactly one full, smooth 360° revolution across the scroll
+  gsap.to(tablet.rotation, { y: POSE.rotY + Math.PI*2, ease:'none',
     scrollTrigger:{ trigger:'main', start:'top top', end:'bottom bottom', scrub:1.2 }});
   gsap.to({v:0}, { v:1, ease:'power2.out',
     scrollTrigger:{ trigger:'main', start:'top top', end:'top -30%', scrub:1,
