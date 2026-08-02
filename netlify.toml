@@ -130,6 +130,17 @@
   status = 404
   force = true
 
+[[redirects]]
+  from = "/supabase_safety_incidents_lockdown.sql"
+  to = "/404.html"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/gaze/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
 # Clean shareable demo link → opens the app straight into frictionless demo mode
 [[redirects]]
   from = "/demo"
