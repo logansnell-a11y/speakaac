@@ -59,9 +59,41 @@ exports.handler = async function (event) {
     return { statusCode: 400, body: 'Missing required fields' };
   }
 
+  // ────────────────────────────────────────────────────────────────────
+  // TEMPORARY — REVERT WHEN supabase_safety_incidents_lockdown.sql HAS RUN
+  //
+  // The old RLS policy (auth.uid() = user_id) is still live on
+  // safety_incidents, so the device account can still read the table
+  // directly through PostgREST with the public anon key. Redacting fields
+  // does not fix that: the existence and timestamp of a row is itself the
+  // disclosure — it tells the caretaker that a report was filed and when.
+  //
+  // So until the lockdown runs, do not write a row at all. The alert email
+  // to the trusted contact is unaffected and remains the primary safety
+  // path. The incident is written to the function log instead, which only
+  // the site owner can read and the caretaker cannot query.
+  //
+  // To revert: delete this block and the early return below.
+  // ────────────────────────────────────────────────────────────────────
+  const LOCKDOWN_APPLIED = false;
+
+  if (!LOCKDOWN_APPLIED) {
+    console.warn('[SAFETY INCIDENT — not persisted, awaiting RLS lockdown]', JSON.stringify({
+      user_id: user_id || null,
+      user_name,
+      reason: reason_key || 'unknown',
+      reason_label: reason || '(not specified)',
+      message_at_time: last_message || null,
+      alert_sent_to: to_email || null,
+      alert_sent_to_name: to_name || null,
+      no_contact: !to_email,
+      ts: new Date().toISOString(),
+    }));
+  }
+
   // Always log the incident — including when no trusted contact is configured,
   // which is itself a finding worth surfacing to the institution.
-  await recordIncident({
+  if (LOCKDOWN_APPLIED) await recordIncident({
     user_id:            user_id || null,
     user_name,
     reason:             reason_key || 'unknown',

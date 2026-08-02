@@ -42,9 +42,21 @@ exports.handler = async function (event) {
   } = payload;
   if (!user_name) return { statusCode: 400, body: 'Missing required fields' };
 
+  // TEMPORARY — REVERT WHEN supabase_safety_incidents_lockdown.sql HAS RUN.
+  // See the Netlify copy for the full reasoning: the old RLS policy is still
+  // live, and the existence of a row is itself the disclosure. Kept in sync so
+  // the two copies do not drift.
+  const LOCKDOWN_APPLIED = false;
+
+  if (!LOCKDOWN_APPLIED) {
+    console.warn('[SAFETY INCIDENT — not persisted, awaiting RLS lockdown]', JSON.stringify({
+      user_name, reason: reason_key || 'unknown', ts: new Date().toISOString(),
+    }));
+  }
+
   // Always log the incident — including when no trusted contact is configured,
   // which is itself a finding worth surfacing to the institution.
-  await recordIncident({
+  if (LOCKDOWN_APPLIED) await recordIncident({
     user_id:            user_id || null,
     user_name,
     reason:             reason_key || 'unknown',
