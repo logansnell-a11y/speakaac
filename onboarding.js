@@ -70,7 +70,7 @@ const OB_STRINGS_ES = {
   pin: {
     question: 'Establece un PIN de proveedor',
     hint: 'Un PIN de 4 dígitos bloquea la configuración para que solo tú puedas cambiarla.',
-    enter: 'Ingresa 4 dígitos', saved: '✅ PIN guardado',
+    enter: 'Ingresa 4 dígitos', saved: 'PIN guardado',
   },
   done: {
     ready: 'está listo para ser escuchado.', allset: 'Todo listo para ser escuchado.',
@@ -309,11 +309,11 @@ function renderObWelcome() {
           <span class="ob-wf-text">${es ? 'Personalizado según diagnóstico, edad y necesidades' : 'Personalized for their diagnosis, age &amp; needs'}</span>
         </div>
         <div class="ob-welcome-feat">
-          <span class="ob-wf-icon">🛡️</span>
+          <span class="ob-wf-icon icon" data-icon="shield"></span>
           <span class="ob-wf-text">${es ? 'Canal de seguridad privado — siempre gratis, siempre activo' : 'Private safety channel — always free, always on'}</span>
         </div>
         <div class="ob-welcome-feat">
-          <span class="ob-wf-icon">✨</span>
+          <span class="ob-wf-icon icon" data-icon="sparkle"></span>
           <span class="ob-wf-text">${es ? 'Oraciones con IA, audio real y panel de proveedor' : 'AI sentences, real audio &amp; provider dashboard'}</span>
         </div>
       </div>
@@ -567,7 +567,7 @@ function renderObPin(step) {
         const s = typeof loadSettings === 'function' ? loadSettings() : {};
         s.pin = pin;
         if (typeof saveSettings === 'function') saveSettings(s);
-        document.getElementById('ob-pin-hint').textContent = obStr('pin', 'saved', '✅ PIN saved!');
+        document.getElementById('ob-pin-hint').textContent = obStr('pin', 'saved', 'PIN saved!');
         setTimeout(() => obAdvance(), 700);
       }
     });
@@ -607,7 +607,7 @@ function renderObDone() {
 
   obContent.innerHTML = `
     <div class="ob-done-wrap">
-      <div class="ob-done-icon">💛</div>
+      <div class="ob-done-icon icon" data-icon="heart"></div>
       <h2 class="ob-done-title">${doneTitle}</h2>
       <div class="ob-done-config">${bulletHTML}</div>
       <button id="ob-launch" class="ob-launch-btn">${es ? 'Comenzar a usar Speak →' : 'Start using Speak →'}</button>

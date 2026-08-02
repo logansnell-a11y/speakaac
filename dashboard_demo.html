@@ -163,6 +163,7 @@
       .section-grid { grid-template-columns: 1fr; }
     }
   </style>
+  <script src="icons.js" defer></script>
 </head>
 <body>
 
@@ -180,7 +181,7 @@
 
 <div class="alert-banner">
   <div class="alert-dot"></div>
-  <span class="alert-banner-text">⚠ Safety alert — Tyler K. triggered the private safety channel</span>
+  <span class="alert-banner-text">Safety alert — Tyler K. triggered the private safety channel</span>
   <span class="alert-banner-time">2 minutes ago</span>
   <button class="alert-view-btn">View →</button>
 </div>
@@ -190,22 +191,22 @@
   <nav class="sidebar">
     <div class="sidebar-section">
       <div class="sidebar-label">Overview</div>
-      <div class="sidebar-link active"><span class="sidebar-icon">👥</span> Patient Roster <span class="sidebar-badge">1</span></div>
-      <div class="sidebar-link"><span class="sidebar-icon">🔔</span> Alerts <span class="sidebar-badge">1</span></div>
-      <div class="sidebar-link"><span class="sidebar-icon">📊</span> Reports</div>
-      <div class="sidebar-link"><span class="sidebar-icon">📅</span> Sessions</div>
+      <div class="sidebar-link active"><span class="sidebar-icon"><span class="icon" data-icon="users"></span></span> Patient Roster <span class="sidebar-badge">1</span></div>
+      <div class="sidebar-link"><span class="sidebar-icon"><span class="icon" data-icon="bell"></span></span> Alerts <span class="sidebar-badge">1</span></div>
+      <div class="sidebar-link"><span class="sidebar-icon"><span class="icon" data-icon="chart"></span></span> Reports</div>
+      <div class="sidebar-link"><span class="sidebar-icon"><span class="icon" data-icon="calendar"></span></span> Sessions</div>
     </div>
     <div class="sidebar-section" style="margin-top:16px;">
       <div class="sidebar-label">Patients</div>
-      <div class="sidebar-link"><span class="sidebar-icon">🔴</span> Tyler K.</div>
-      <div class="sidebar-link"><span class="sidebar-icon">🟢</span> James R.</div>
-      <div class="sidebar-link"><span class="sidebar-icon">🟡</span> Sarah M.</div>
-      <div class="sidebar-link"><span class="sidebar-icon">⚪</span> Aiden L.</div>
+      <div class="sidebar-link"><span class="sidebar-icon"><span class="icon" data-icon="dot-red"></span></span> Tyler K.</div>
+      <div class="sidebar-link"><span class="sidebar-icon"><span class="icon" data-icon="dot-green"></span></span> James R.</div>
+      <div class="sidebar-link"><span class="sidebar-icon"><span class="icon" data-icon="dot-amber"></span></span> Sarah M.</div>
+      <div class="sidebar-link"><span class="sidebar-icon"><span class="icon" data-icon="dot-grey"></span></span> Aiden L.</div>
     </div>
     <div class="sidebar-section" style="margin-top:16px;">
       <div class="sidebar-label">Clinic</div>
-      <div class="sidebar-link"><span class="sidebar-icon">👤</span> Team Members</div>
-      <div class="sidebar-link"><span class="sidebar-icon">⚙️</span> Settings</div>
+      <div class="sidebar-link"><span class="sidebar-icon"><span class="icon" data-icon="user"></span></span> Team Members</div>
+      <div class="sidebar-link"><span class="sidebar-icon"><span class="icon" data-icon="settings"></span></span> Settings</div>
     </div>
   </nav>
 
@@ -308,7 +309,7 @@
           </div>
 
           <div class="log-row">
-            <div class="log-icon log-icon-red">🚨</div>
+            <div class="log-icon log-icon-red"><span class="icon" data-icon="siren"></span></div>
             <div class="log-body">
               <div class="log-text"><strong>Tyler K.</strong> triggered the private safety channel — reason: <em>"I don't feel safe"</em></div>
               <div class="log-time">2:14 PM · Alert sent to designated contact</div>
@@ -316,7 +317,7 @@
           </div>
 
           <div class="log-row">
-            <div class="log-icon log-icon-blue">✨</div>
+            <div class="log-icon log-icon-blue"><span class="icon" data-icon="sparkle"></span></div>
             <div class="log-body">
               <div class="log-text"><strong>James R.</strong> used AI sentence builder — built "I want to go outside and play"</div>
               <div class="log-time">1:52 PM</div>
@@ -324,7 +325,7 @@
           </div>
 
           <div class="log-row">
-            <div class="log-icon log-icon-green">💬</div>
+            <div class="log-icon log-icon-green"><span class="icon" data-icon="message"></span></div>
             <div class="log-body">
               <div class="log-text"><strong>Tyler K.</strong> completed a 14-symbol communication session — top category: <em>Feelings</em></div>
               <div class="log-time">1:44 PM</div>
@@ -332,7 +333,7 @@
           </div>
 
           <div class="log-row">
-            <div class="log-icon log-icon-amber">📋</div>
+            <div class="log-icon log-icon-amber"><span class="icon" data-icon="clipboard"></span></div>
             <div class="log-body">
               <div class="log-text"><strong>Sarah M.</strong> session ended — 22 symbols used, 3 AI sentences, 18 minutes</div>
               <div class="log-time">11:48 AM</div>
@@ -340,7 +341,7 @@
           </div>
 
           <div class="log-row">
-            <div class="log-icon log-icon-blue">✨</div>
+            <div class="log-icon log-icon-blue"><span class="icon" data-icon="sparkle"></span></div>
             <div class="log-body">
               <div class="log-text"><strong>Sarah M.</strong> used AI sentence builder 3 times — most used: <em>"I need a break please"</em></div>
               <div class="log-time">11:35 AM</div>
@@ -365,7 +366,7 @@
             <div class="alert-message">"I don't feel safe"</div>
             <div class="alert-last-symbol">Last symbols: <strong>Feelings → Scared → Help</strong></div>
             <div class="alert-actions">
-              <button class="btn-sm btn-call">📞 Call contact</button>
+              <button class="btn-sm btn-call">Call contact</button>
               <button class="btn-sm btn-resolve">✓ Resolve</button>
             </div>
           </div>

@@ -478,6 +478,7 @@
     }
       img[src="icons/icon.png"] { filter: none; }
     </style>
+  <script src="icons.js" defer></script>
 </head>
 <body>
 
@@ -518,25 +519,25 @@
       <!-- Summary stats across all children -->
       <div id="summary-stats">
         <div class="stat-card">
-          <div class="stat-icon">💬</div>
+          <div class="stat-icon"><span class="icon" data-icon="message"></span></div>
           <div class="stat-val" id="s-total-week">—</div>
           <div class="stat-label">Communications</div>
           <div class="stat-sub">This week</div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">📅</div>
+          <div class="stat-icon"><span class="icon" data-icon="calendar"></span></div>
           <div class="stat-val" id="s-total-today">—</div>
           <div class="stat-label">Today</div>
           <div class="stat-sub">All patients</div>
         </div>
         <div class="stat-card stat-alerts">
-          <div class="stat-icon">⚠️</div>
+          <div class="stat-icon"><span class="icon" data-icon="alert"></span></div>
           <div class="stat-val" id="s-alerts">—</div>
           <div class="stat-label">Safety Alerts</div>
           <div class="stat-sub">All time</div>
         </div>
         <div class="stat-card stat-active">
-          <div class="stat-icon">🔥</div>
+          <div class="stat-icon"><span class="icon" data-icon="flame"></span></div>
           <div class="stat-val" id="s-top-symbol">—</div>
           <div class="stat-label">Top Symbol</div>
           <div class="stat-sub">This week</div>
@@ -555,7 +556,7 @@
     <!-- ── Troubleshooting / Self-service ── -->
     <div id="help-section" style="display:none">
       <div class="help-section-header" id="help-toggle">
-        <h3>🛠 Troubleshooting &amp; Self-Service</h3>
+        <h3>Troubleshooting &amp; Self-Service</h3>
         <span class="help-section-chevron">▼</span>
       </div>
       <div id="help-section-body">
@@ -578,7 +579,7 @@
             <div class="help-step-num">2</div>
             <div class="help-step-body">
               <div class="help-step-title">Child is locked out — forgot PIN</div>
-              <div class="help-step-desc">The default PIN is <strong>0000</strong>. If that doesn't work, you can reset it from Provider Settings. Hold the 🔊 speaker button in the app for 3 seconds to open the PIN entry screen.</div>
+              <div class="help-step-desc">The default PIN is <strong>0000</strong>. If that doesn't work, you can reset it from Provider Settings. Hold the speaker button in the app for 3 seconds to open the PIN entry screen.</div>
             </div>
           </div>
 
@@ -612,7 +613,7 @@
             <div class="help-step-body">
               <div class="help-step-title">App isn't installed on the classroom iPad</div>
               <div class="help-step-desc">Speak can be installed as a PWA (web app) on any iPad — no App Store needed. Open the app in Safari, tap the Share button, then "Add to Home Screen."</div>
-              <a class="help-step-action" href="install_guide.html" target="_blank">📲 View Install Guide</a>
+              <a class="help-step-action" href="install_guide.html" target="_blank">View Install Guide</a>
             </div>
           </div>
 
@@ -654,15 +655,15 @@ function isToday(dateStr) {
 
 function eventLabel(ev) {
   switch (ev.type) {
-    case 'sentence_spoken': return { dot: 'dot-sentence', text: `🗣 "${esc(ev.payload?.text || '')}"` };
-    case 'ai_sentence':     return { dot: 'dot-ai',       text: `✨ AI: "${esc(ev.payload?.output || '')}"` };
+    case 'sentence_spoken': return { dot: 'dot-sentence', text: `"${esc(ev.payload?.text || '')}"` };
+    case 'ai_sentence':     return { dot: 'dot-ai',       text: `AI: "${esc(ev.payload?.output || '')}"` };
     case 'keyboard':        return { dot: 'dot-keyboard',  text: `⌨ Typed: "${esc(ev.payload?.text || '')}"` };
     case 'symbol':
       return {
         dot: ev.payload?.category === 'core' ? 'dot-core' : 'dot-symbol',
         text: `○ ${esc(ev.payload?.label || ev.payload?.speech || '')}`,
       };
-    case 'help_alert': return { dot: 'dot-alert', text: `⚠ Safety alert — ${esc(ev.payload?.reason || 'Help requested')}` };
+    case 'help_alert': return { dot: 'dot-alert', text: `Safety alert — ${esc(ev.payload?.reason || 'Help requested')}` };
     default:           return { dot: 'dot-symbol', text: esc(ev.type) };
   }
 }
@@ -712,6 +713,8 @@ document.getElementById('nav-signout').addEventListener('click', async () => {
 
 // ── Dashboard ─────────────────────────────────────────────────────────
 let _allEvents      = [];
+let _incidents      = [];   // safety incidents, institution-side read only
+let _incidentsByUser = {};
 let _currentSession = null;
 let _refreshInterval = null;
 let _lastRefreshed  = null;
@@ -782,6 +785,16 @@ async function showDash(session) {
     }));
 
     _allEvents = allProfiles.flatMap(x => x.events);
+
+    // Safety incidents no longer travel in the event stream — they are never
+    // written to the device. Pull them from the institution-side reader, which
+    // returns only profiles this signed-in teacher is assigned to.
+    _incidents = await Sync.loadIncidentsAsTeacher();
+    _incidentsByUser = {};
+    for (const inc of _incidents) {
+      (_incidentsByUser[inc.user_id] = _incidentsByUser[inc.user_id] || []).push(inc);
+    }
+
     renderSummaryStats(_allEvents);
 
     const list = document.getElementById('children-list');
@@ -814,7 +827,7 @@ function updateRefreshLabel() {
 function renderSummaryStats(allEvents) {
   const weekEvents    = allEvents.filter(e => isThisWeek(e.ts));
   const todayEvents   = allEvents.filter(e => isToday(e.date_str));
-  const alertCount    = allEvents.filter(e => e.type === 'help_alert').length;
+  const alertCount    = _incidents.length;
 
   // Top symbol this week
   const symbolCounts = {};
@@ -836,7 +849,7 @@ function renderChildCard(list, profile, events) {
 
   const weekEvents   = events.filter(e => isThisWeek(e.ts));
   const todayEvents  = events.filter(e => isToday(e.date_str));
-  const alertCount   = events.filter(e => e.type === 'help_alert').length;
+  const alertCount   = (_incidentsByUser[profile.user_id] || []).length;
 
   // Top 5 symbols for this child this week
   const symCounts = {};
@@ -860,7 +873,7 @@ function renderChildCard(list, profile, events) {
 
   // Badges HTML
   let badgesHtml = '';
-  if (alertCount > 0) badgesHtml += `<span class="badge badge-alert">⚠ ${alertCount} alert${alertCount !== 1 ? 's' : ''}</span>`;
+  if (alertCount > 0) badgesHtml += `<span class="badge badge-alert">${alertCount} alert${alertCount !== 1 ? 's' : ''}</span>`;
   if (todayEvents.length > 0) badgesHtml += `<span class="badge badge-today">✓ ${todayEvents.length} today</span>`;
   badgesHtml += `<span class="badge badge-events">${events.length} total</span>`;
 
@@ -918,7 +931,7 @@ function renderChildCard(list, profile, events) {
       <div class="event-log">
         <div class="event-log-header">
           <div class="event-log-title">Communication Log</div>
-          <button class="btn-export" data-uid="${esc(profile.user_id)}" data-name="${esc(name)}">⬇ Export CSV</button>
+          <button class="btn-export" data-uid="${esc(profile.user_id)}" data-name="${esc(name)}">Export CSV</button>
         </div>
         ${renderEventLog(events)}
       </div>

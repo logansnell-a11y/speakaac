@@ -22,6 +22,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="icons/icon.png" />
   <link rel="apple-touch-icon" href="icons/icon.png" />
   <link rel="stylesheet" href="styles.css" />
+  <script src="icons.js" defer></script>
 </head>
 <body>
 
@@ -31,7 +32,7 @@
       <img src="icons/butterfly.svg" alt="Speak" />
     </button>
     <div id="patient-chip" class="patient-chip hidden no-patient" title="Select patient for this session">
-      <span>👤</span><span id="patient-chip-name">Select Patient</span>
+      <span class="icon" data-icon="user"></span><span id="patient-chip-name">Select Patient</span>
     </div>
     <div id="sentence-display">
       <div id="sentence-text" class="placeholder">Tap a symbol to speak...</div>
@@ -43,8 +44,8 @@
       <button class="lang-btn" data-lang="es">ES</button>
     </div>
     <button id="btn-speak-top" title="Speak sentence · Hold 3s for settings">🔊</button>
-    <div id="kiosk-badge" class="hidden" title="Kiosk mode active">🔒</div>
-    <div id="offline-badge" class="hidden" title="No internet — app still works">📵 Offline</div>
+    <div id="kiosk-badge" class="hidden icon" data-icon="lock" title="Kiosk mode active"></div>
+    <div id="offline-badge" class="hidden" title="No internet — app still works"><span class="icon" data-icon="wifi-off"></span> Offline</div>
   </header>
 
   <!-- ── CORE VOCABULARY BAR ──────────────────────────────────── -->
@@ -251,8 +252,8 @@
       </div>
       <div id="setup-scroll">
 
-        <button id="setup-open-dashboard">📊 View Dashboard</button>
-        <a id="setup-open-clinic-dash" class="hidden" href="teacher.html" target="_blank">📋 Clinic Dashboard →</a>
+        <button id="setup-open-dashboard"><span class="icon" data-icon="chart"></span> View Dashboard</button>
+        <a id="setup-open-clinic-dash" class="hidden" href="teacher.html" target="_blank"><span class="icon" data-icon="clipboard"></span> Clinic Dashboard →</a>
 
         <section class="setup-section">
           <h3>User Profile</h3>
@@ -395,7 +396,7 @@
               <img id="custom-preview-img" alt="Preview" />
               <button id="custom-preview-clear">✕ Remove photo</button>
             </div>
-            <button id="custom-upload-btn">📷 Choose Photo</button>
+            <button id="custom-upload-btn"><span class="icon" data-icon="camera"></span> Choose Photo</button>
             <label class="setup-label" style="margin-top:10px">
               Name (shown on the symbol)
               <input class="setup-input" type="text" id="custom-sym-label" placeholder="e.g. Biscuit" autocorrect="off" />
@@ -465,15 +466,15 @@
         </section>
 
         <button id="setup-save">Save Settings</button>
-        <div id="setup-saved" class="hidden">✅ Settings saved!</div>
+        <div id="setup-saved" class="hidden">Settings saved!</div>
 
         <section class="setup-section setup-about-section">
           <h3>About &amp; Support</h3>
           <p class="setup-hint">Speak is built to give every nonverbal person a voice — and a private way to stay safe. Built by Speak AAC&#x2122; LLC.</p>
           <div class="about-links-row">
             <a class="about-link-btn" href="mailto:support@speakaac.org">✉ support@speakaac.org</a>
-            <button class="about-link-btn" id="setup-open-about">🛡️ Privacy &amp; FAQ</button>
-            <a class="about-link-btn" href="install_guide.html">📲 Install on iPad or Desktop</a>
+            <button class="about-link-btn" id="setup-open-about"><span class="icon" data-icon="shield"></span> Privacy &amp; FAQ</button>
+            <a class="about-link-btn" href="install_guide.html"><span class="icon" data-icon="download"></span> Install on iPad or Desktop</a>
           </div>
           <div class="about-crisis-row">
             <span class="about-crisis-label">Crisis resources:</span>
@@ -490,7 +491,7 @@
   <!-- ── UPGRADE PROMPT ───────────────────────────────────────────── -->
   <div id="upgrade-modal" class="hidden">
     <div id="upgrade-inner">
-      <div id="upgrade-icon">✨</div>
+      <div id="upgrade-icon" class="icon" data-icon="sparkle"></div>
       <h2>AI Sentence Builder</h2>
       <p>You've used your 10 free AI sentences for today. Upgrade to Family for unlimited — sentences rebuild every day for free users.</p>
       <p class="upgrade-plan-note"><strong>Family</strong> plan and above = unlimited AI sentences.</p>
@@ -614,9 +615,9 @@
           <p id="db-user-name"></p>
         </div>
         <div id="db-header-actions">
-          <button id="db-eval">📋 AAC Evaluation</button>
-          <button id="db-matrix">📈 Comm. Matrix</button>
-          <button id="db-report">📄 Progress Report</button>
+          <button id="db-eval"><span class="icon" data-icon="clipboard"></span> AAC Evaluation</button>
+          <button id="db-matrix"><span class="icon" data-icon="trending"></span> Comm. Matrix</button>
+          <button id="db-report"><span class="icon" data-icon="file"></span> Progress Report</button>
           <button id="db-seed">Load Demo</button>
           <button id="db-close">✕ Close</button>
         </div>
@@ -643,22 +644,22 @@
         </div>
 
         <section class="db-section">
-          <h3>🛡️ Safety Alerts</h3>
+          <h3>Safety Alerts</h3>
           <div id="db-alerts-list"></div>
         </section>
 
         <section class="db-section">
-          <h3>💬 Recent Communications</h3>
+          <h3>Recent Communications</h3>
           <div id="db-recent-list"></div>
         </section>
 
         <section class="db-section">
-          <h3>📊 Most Used Symbols</h3>
+          <h3>Most Used Symbols</h3>
           <div id="db-symbols-chart"></div>
         </section>
 
         <section class="db-section">
-          <h3>📁 Category Breakdown</h3>
+          <h3>Category Breakdown</h3>
           <div id="db-categories-chart"></div>
         </section>
 
@@ -670,7 +671,7 @@
   <div id="report-modal" class="hidden">
     <div id="report-inner">
       <div id="report-head">
-        <h2>📄 Communication Progress Report</h2>
+        <h2>Communication Progress Report</h2>
         <button id="report-close">✕ Close</button>
       </div>
       <div id="report-controls">
@@ -686,8 +687,8 @@
           <select id="report-patient"><option value="">All</option></select>
         </label>
         <div id="report-actions">
-          <button id="report-print">🖨 Print / Save PDF</button>
-          <button id="report-csv">⬇ CSV</button>
+          <button id="report-print"><span class="icon" data-icon="printer"></span> Print / Save PDF</button>
+          <button id="report-csv"><span class="icon" data-icon="download"></span> CSV</button>
         </div>
       </div>
       <div id="report-preview"></div>
@@ -698,7 +699,7 @@
   <div id="eval-modal" class="hidden">
     <div id="eval-inner">
       <div id="report-head">
-        <h2>📋 AAC Evaluation &amp; Funding Summary</h2>
+        <h2>AAC Evaluation &amp; Funding Summary</h2>
         <button id="eval-close">✕ Close</button>
       </div>
       <div id="report-controls">
@@ -713,8 +714,8 @@
           </select>
         </label>
         <div id="report-actions">
-          <button id="eval-save">💾 Save Draft</button>
-          <button id="eval-print">🖨 Print / Save PDF</button>
+          <button id="eval-save">Save Draft</button>
+          <button id="eval-print"><span class="icon" data-icon="printer"></span> Print / Save PDF</button>
         </div>
       </div>
       <div id="eval-form">
@@ -743,7 +744,7 @@
   <div id="matrix-modal" class="hidden">
     <div id="matrix-inner">
       <div id="report-head">
-        <h2>📈 Communication Matrix</h2>
+        <h2>Communication Matrix</h2>
         <button id="matrix-close">✕ Close</button>
       </div>
       <div id="report-controls">
@@ -836,7 +837,7 @@
     <div id="about-inner">
       <div id="about-header">
         <div>
-          <div id="about-logo">🗣️ Speak</div>
+          <div id="about-logo">Speak</div>
           <div id="about-tagline">A voice for every child</div>
         </div>
         <button id="about-close">✕</button>
@@ -854,7 +855,7 @@
         </section>
 
         <section class="about-section">
-          <h3 class="about-section-title">🛡️ Crisis &amp; Safety Resources</h3>
+          <h3 class="about-section-title">Crisis &amp; Safety Resources</h3>
           <p class="about-body about-crisis-intro">The private safety channel in Speak notifies a trusted adult — but in an immediate emergency, these free 24/7 resources are always available.</p>
           <div class="crisis-resource-list">
             <a class="crisis-resource" href="tel:911">
@@ -966,14 +967,13 @@
     window.addEventListener('DOMContentLoaded', function(){
       var b = document.createElement('div');
       b.id = 'demo-banner';
-      b.innerHTML = '🔎 <b>DEMO</b> — sample profile “Alex.” Tap symbols to build a sentence, and try the safety button. <a href="index.html" style="color:#fff;text-decoration:underline;">Sign up free</a> to save your own setup &amp; enable real alerts.';
+      b.innerHTML = '<b>DEMO</b> — sample profile “Alex.” Tap symbols to build a sentence, and try the safety button. <a href="index.html" style="color:#fff;text-decoration:underline;">Sign up free</a> to save your own setup &amp; enable real alerts.';
       b.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:99999;background:#0f766e;color:#fff;font:600 13px/1.45 system-ui,sans-serif;padding:9px 14px;text-align:center;box-shadow:0 -2px 10px rgba(0,0,0,.25);';
       document.body.appendChild(b);
     });
   })();
   </script>
 
-  <script src="app.js"></script>
 
   <!-- ── SAFETY PROMPT ────────────────────────────────────────── -->
   <div id="safety-prompt" class="safety-prompt hidden" role="alertdialog" aria-label="Need help?">
@@ -1008,5 +1008,6 @@
       </div>
     </div>
   </div>
+  <script src="app.js"></script>
 </body>
 </html>

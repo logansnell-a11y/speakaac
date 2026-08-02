@@ -100,6 +100,20 @@ function saveSettings(s) {
 // ── Event logging ──────────────────────────────────────────────────
 const HISTORY_KEY = 'aac_history_v1';
 
+// One-time purge: earlier builds wrote 'help_alert' events into the local
+// history, which the Provider Dashboard renders. On any device that already
+// fired the safety channel, those records are sitting in localStorage where
+// the caretaker can read them. Strip them on load.
+(function purgeLegacySafetyEvents() {
+  try {
+    const hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    const clean = hist.filter(e => e && e.type !== 'help_alert');
+    if (clean.length !== hist.length) {
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(clean));
+    }
+  } catch {}
+})();
+
 function logEvent(type, payload) {
   if (tierUnlocks('dashboard') && _activePatientId) {
     payload = { ...payload, patient_id: _activePatientId };
@@ -575,7 +589,7 @@ function renderGrid(category) {
     ph.className = "custom-cat-placeholder";
     const label = profile.customInterest || category;
     ph.innerHTML = `
-      <div class="ccp-icon">⭐</div>
+      <div class="ccp-icon icon" data-icon="sparkle"></div>
       <div class="ccp-title">${label}</div>
       <div class="ccp-body">Custom symbols for this category will be added here. Tap the Type button to communicate anything in the meantime.</div>
     `;
@@ -675,15 +689,19 @@ function checkHiddenTrigger() {
 }
 
 function fireHiddenChannel() {
-  // Brief pulse on sentence bar — subtle signal to the child that it worked
+  // Ambiguous acknowledgement only. The user is taught during setup that this
+  // pulse means the message went out; to anyone watching over their shoulder it
+  // is indistinguishable from ordinary selection feedback.
+  //
+  // Do NOT surface privateSentModal here. A modal announcing that a private
+  // alert was sent is visible to whoever is standing in the room — including
+  // the person being reported. That is the one failure this channel exists to
+  // prevent.
   sentenceText.classList.add("trigger-pulse");
   setTimeout(() => sentenceText.classList.remove("trigger-pulse"), 900);
 
   // Small delay so it feels intentional, not accidental
-  setTimeout(() => {
-    sendPrivateAlert("hidden_trigger");
-    privateSentModal.classList.remove("hidden");
-  }, 700);
+  setTimeout(() => sendPrivateAlert("hidden_trigger"), 700);
 }
 
 function onSymbolTap(sym, card) {
@@ -748,7 +766,7 @@ function renderSearchResults(query) {
   if (results.length === 0) {
     const ph = document.createElement('div');
     ph.className = 'custom-cat-placeholder';
-    ph.innerHTML = `<div class="ccp-icon">🔍</div><div class="ccp-title">No symbols found</div><div class="ccp-body">Try a different word.</div>`;
+    ph.innerHTML = `<div class="ccp-icon"></div><div class="ccp-title">No symbols found</div><div class="ccp-body">Try a different word.</div>`;
     grid.appendChild(ph);
     return;
   }
@@ -1031,7 +1049,7 @@ psOk.addEventListener("click", () => {
 
 // ── General help alert (caretaker-facing) ─────────────────────────
 function sendGeneralHelpAlert() {
-  console.info("🤝 GENERAL HELP REQUEST logged at", new Date().toLocaleString());
+  console.info("General help request logged at", new Date().toLocaleString());
   logEvent('help_general', { method: 'help_button' });
 }
 
@@ -1097,29 +1115,20 @@ function sendPrivateAlert(reason) {
   const currentMsg   = sentence.join(" ") || "(no message typed)";
   const timestamp    = new Date().toLocaleString();
 
-  const subject = encodeURIComponent(`🛡️ PRIVATE ALERT: ${userName} needs help`);
-  const body = encodeURIComponent(
-    `Hi ${contactName},\n\n` +
-    `${userName} used the private safety channel in their AAC communication app.\n\n` +
-    `What they said: "${reasonLabel}"\n` +
-    `Time: ${timestamp}\n` +
-    `Their last message in the app: "${currentMsg}"\n\n` +
-    `⚠️ This alert was sent privately — their caretaker did not see this message.\n\n` +
-    `Please check on ${userName} immediately and discreetly.\n` +
-    `If you believe they are in danger, contact the appropriate authorities.\n\n` +
-    `— Speak AAC App (Private Safety Channel)`
-  );
-
   // Fire silently — server-side first (no rate limits), EmailJS as fallback.
   // Demo mode NEVER sends a real alert — the flow/modal still shows so it can be demonstrated safely.
-  if (contactEmail && !settings.demoMode) {
+  // Called even with no contact configured: the function records the incident
+  // either way, and "no trusted contact set" is itself worth surfacing.
+  if (!settings.demoMode) {
     const alertPayload = {
       to_email:     contactEmail,
       to_name:      contactName,
       user_name:    userName,
       reason:       reasonLabel,
+      reason_key:   reason,
       last_message: currentMsg,
       timestamp:    timestamp,
+      user_id:      (window.Sync && Sync.userId) || null,
     };
 
     // Primary: Netlify function (server-side Resend — no client-side API key exposure)
@@ -1131,6 +1140,7 @@ function sendPrivateAlert(reason) {
       if (!res.ok) throw new Error(`Function returned ${res.status}`);
       console.log('Safety alert sent via server function');
     }).catch(() => {
+      if (!contactEmail) return; // nothing to fall back to — incident is already recorded
       // Fallback: EmailJS (client-side, 200/month free tier)
       const ejsReady = EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && EMAILJS_PUBLIC_KEY;
       if (ejsReady) {
@@ -1140,19 +1150,13 @@ function sendPrivateAlert(reason) {
           alertPayload,
           EMAILJS_PUBLIC_KEY
         ).catch(err => console.error('EmailJS fallback error:', err));
-      } else {
-        // Last resort: mailto (visible — only fires if both server and EmailJS fail)
-      const link = document.createElement("a");
-      link.href = `mailto:${contactEmail}?subject=${subject}&body=${encodeURIComponent(
-        `Hi ${contactName},\n\n${userName} used the private safety channel.\n\nWhat they said: "${reasonLabel}"\nTime: ${timestamp}\nLast message: "${currentMsg}"\n\n⚠️ This was sent privately — the caretaker did not see this.\n\nPlease check on ${userName} immediately.\n\n— Speak AAC (Private Safety Channel)`
-      )}`;
-      link.target = "_blank";
-      link.rel = "noopener";
-      link.style.display = "none";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
       }
+      // There is deliberately no mailto: last resort here. It opened a visible
+      // compose window on the device — the trusted contact's address and the
+      // abuse reason, on screen, in front of whoever is in the room. That is a
+      // full disclosure in exactly the situation this channel exists for.
+      // The incident is recorded server-side regardless, so the fallback bought
+      // very little and cost the one thing the feature guarantees.
     });
   }
 
@@ -1165,37 +1169,15 @@ function sendPrivateAlert(reason) {
   const youngChild = ['2-4', '5-8'].includes(profile.age);
   privateSentModal.classList.toggle('safe-dial-off', youngChild || !!loadSettings().kiosk);
 
-  logEvent('help_alert', {
-    reason,
-    reason_label:    reasonLabel,
-    method:          reason === 'hidden_trigger' ? 'symbol_sequence' : 'private_channel',
-    user_name:       userName,
-    message_at_time: currentMsg,
-    alert_sent_to:   contactEmail || null,
-  });
+  // NOTE: this event is deliberately NOT written to the local history log or
+  // synced. logEvent() persists to localStorage['aac_history_v1'], which the
+  // Provider Dashboard reads — meaning the caretaker could open the app and
+  // see every alert, its reason, and who was contacted. The incident is
+  // recorded server-side by send-safety-alert.js instead, where the device
+  // account cannot read it.
 
-  // Persist full incident record to Supabase for evidence-grade audit trail
-  if (window.Sync) {
-    Sync.createIncident({
-      user_name:          userName,
-      reason,
-      reason_label:       reasonLabel,
-      message_at_time:    currentMsg,
-      alert_sent_to:      contactEmail || null,
-      alert_sent_to_name: contactName,
-      no_contact:         !contactEmail,
-      ts:                 new Date().toISOString(),
-    }).catch(() => {});
-  }
-
-  // Full audit log
-  console.warn("🛡️ PRIVATE SAFETY ALERT FIRED:", {
-    to: contactEmail || "⚠️ no trusted contact configured",
-    user: userName,
-    reason: reasonLabel,
-    lastMessage: currentMsg,
-    timestamp,
-  });
+  // Nothing is written to the console either — dev tools are readable by
+  // anyone holding the device.
 }
 
 // ── PIN Modal ──────────────────────────────────────────────────────
@@ -1291,7 +1273,7 @@ function openSetupModal() {
 
   const kioskStatusEl = document.getElementById("kiosk-status");
   kioskStatusEl.textContent = settings.kiosk
-    ? "✅ Kiosk mode is active — app is locked in fullscreen."
+    ? "Kiosk mode is active — app is locked in fullscreen."
     : "Kiosk mode is off.";
   kioskStatusEl.className = `key-status ${settings.kiosk ? "ok" : "missing"}`;
 
@@ -1526,7 +1508,7 @@ setupSave.addEventListener("click", () => {
   // Update kiosk status display
   const kioskStatusEl = document.getElementById("kiosk-status");
   kioskStatusEl.textContent = settings.kiosk
-    ? "✅ Kiosk mode is active — app is locked in fullscreen."
+    ? "Kiosk mode is active — app is locked in fullscreen."
     : "Kiosk mode is off.";
   kioskStatusEl.className = `key-status ${settings.kiosk ? "ok" : "missing"}`;
 
@@ -1600,7 +1582,7 @@ document.querySelectorAll(".plan-btn[data-select]").forEach(btn => {
         b.textContent = b.dataset.select === "free" ? "Current Plan" : planBtnLabel(b.dataset.select);
       });
       updateDisplay();
-      btn.textContent = "✅ Activated!";
+      btn.textContent = "Activated!";
       setTimeout(() => plansModal.classList.add("hidden"), 1200);
       return;
     }
@@ -1965,11 +1947,11 @@ function renderHistoryDrawer() {
     switch (ev.type) {
       case 'sentence_spoken':
         dotClass = 'hdot-sentence';
-        text = `🗣 &ldquo;${esc(ev.payload?.text)}&rdquo;`;
+        text = `&ldquo;${esc(ev.payload?.text)}&rdquo;`;
         break;
       case 'ai_sentence':
         dotClass = 'hdot-ai';
-        text = `✨ AI: &ldquo;${esc(ev.payload?.output)}&rdquo;`;
+        text = `AI: &ldquo;${esc(ev.payload?.output)}&rdquo;`;
         break;
       case 'keyboard':
         dotClass = 'hdot-keyboard';
@@ -1981,7 +1963,7 @@ function renderHistoryDrawer() {
         break;
       case 'help_alert':
         dotClass = 'hdot-alert';
-        text = `⚠ Safety alert — ${esc(ev.payload?.reason || 'Help requested')}`;
+        text = `Safety alert — ${esc(ev.payload?.reason || 'Help requested')}`;
         break;
       default:
         text = esc(ev.type);
@@ -2042,7 +2024,7 @@ function renderCustomGrid() {
     const ph = document.createElement('div');
     ph.className = 'custom-cat-placeholder';
     ph.innerHTML = `
-      <div class="ccp-icon">📷</div>
+      <div class="ccp-icon icon" data-icon="camera"></div>
       <div class="ccp-title">My Symbols</div>
       <div class="ccp-body">No custom symbols yet. Open <strong>Provider Settings → My Symbols</strong> to upload photos of people, pets, or favorite things — they become tappable symbol buttons right here.</div>
     `;
@@ -2098,7 +2080,7 @@ document.getElementById('custom-file-input').addEventListener('change', e => {
     _pendingCustomDataUrl = ev.target.result;
     document.getElementById('custom-preview-img').src = _pendingCustomDataUrl;
     document.getElementById('custom-upload-preview').classList.remove('hidden');
-    document.getElementById('custom-upload-btn').textContent = '📷 Change Photo';
+    document.getElementById('custom-upload-btn').innerHTML = '<span class="icon" data-icon="camera"></span> Change Photo';
   };
   reader.readAsDataURL(file);
   e.target.value = ''; // allow re-selecting same file
@@ -2107,7 +2089,7 @@ document.getElementById('custom-file-input').addEventListener('change', e => {
 document.getElementById('custom-preview-clear').addEventListener('click', () => {
   _pendingCustomDataUrl = null;
   document.getElementById('custom-upload-preview').classList.add('hidden');
-  document.getElementById('custom-upload-btn').textContent = '📷 Choose Photo';
+  document.getElementById('custom-upload-btn').innerHTML = '<span class="icon" data-icon="camera"></span> Choose Photo';
 });
 
 document.getElementById('custom-sym-add').addEventListener('click', () => {
@@ -2141,9 +2123,9 @@ document.getElementById('custom-sym-add').addEventListener('click', () => {
   document.getElementById('custom-sym-label').value  = '';
   document.getElementById('custom-sym-speech').value = '';
   document.getElementById('custom-upload-preview').classList.add('hidden');
-  document.getElementById('custom-upload-btn').textContent = '📷 Choose Photo';
+  document.getElementById('custom-upload-btn').innerHTML = '<span class="icon" data-icon="camera"></span> Choose Photo';
 
-  status.textContent = '✅ Symbol added! Find it in the "Mine" category.';
+  status.textContent = 'Symbol added! Find it in the "Mine" category.';
   status.className   = 'setup-hint ok';
   status.classList.remove('hidden');
   setTimeout(() => status.classList.add('hidden'), 3000);
@@ -2367,7 +2349,7 @@ async function updateAccountSection() {
   const deleteBtn    = document.getElementById('deleteAccountBtn');
 
   if (session) {
-    statusEl.textContent = `✅ Signed in as ${session.user.email}`;
+    statusEl.textContent = `Signed in as ${session.user.email}`;
     statusEl.className   = 'key-status ok';
     signinBtn.classList.add('hidden');
     signoutBtn.classList.remove('hidden');
@@ -2526,11 +2508,11 @@ const FAQ_ITEMS = [
   },
   {
     q: "Who receives the safety alerts?",
-    a: "Only the trusted contact you set in Provider Settings — a grandparent, teacher, therapist, or other adult outside the primary caretaker relationship. Nobody at Speak sees the content of alerts. The trusted contact's information is stored only on your device."
+    a: "Only the trusted contact you set in Provider Settings — a grandparent, teacher, therapist, or other adult outside the primary caretaker relationship. Alerts are delivered to that contact and recorded in a secure incident log that is not readable from this device or account. Nobody at Speak reviews alert content in the normal course of operation."
   },
   {
     q: "What if my child accidentally triggers the safety channel?",
-    a: "Simply let your trusted contact know it was accidental. You can also see a log of all alerts in the Provider Dashboard. There is no penalty or lockout for accidental triggers — the child should never feel they did something wrong for pressing it."
+    a: "Simply let your trusted contact know it was accidental. Alerts are intentionally not listed in the Provider Dashboard — the channel only works if it cannot be reviewed from the device it was sent on. There is no penalty or lockout for accidental triggers, and the child should never feel they did something wrong for using it."
   },
   {
     q: "Is this app HIPAA compliant?",
@@ -2601,7 +2583,10 @@ document.getElementById('about-modal').addEventListener('click', e => {
   if (e.target === document.getElementById('about-modal')) closeAboutModal();
 });
 
-document.getElementById('pw-learn-more').addEventListener('click', openAboutModal);
+// #pw-learn-more no longer exists in app.html. Left unguarded this threw and
+// aborted every binding below it — including setup-open-about, which is why
+// the Privacy & FAQ button did nothing.
+document.getElementById('pw-learn-more')?.addEventListener('click', openAboutModal);
 
 document.getElementById('setup-open-about').addEventListener('click', () => {
   setupModal.classList.add('hidden');

@@ -1,11 +1,16 @@
 // Speak Service Worker — offline support + asset caching
-const CACHE = 'speak-v34';
+// Bumped for the safety-channel fix. Existing installs keep serving the old
+// app.js from cache until CACHE changes — and the old app.js is the one that
+// wrote safety alerts into localStorage where the caretaker could read them.
+// Any future change to the safety path must bump this too.
+const CACHE = 'speak-v35';
 
 const PRECACHE = [
   '/app.html',
   '/index.html',
   '/styles.css',
   '/app.js',
+  '/icons.js',
   '/onboarding.js',
   '/dashboard.js',
   '/symbols.js',

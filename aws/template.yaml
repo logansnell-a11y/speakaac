@@ -66,10 +66,16 @@ Resources:
       FunctionName: speak-send-safety-alert
       CodeUri: functions/send-safety-alert/
       Handler: index.handler
-      Description: Sends private safety alert emails via Resend
+      Description: Sends private safety alert emails via Resend and records the incident
       Environment:
         Variables:
           RESEND_API_KEY: !Sub '{{resolve:ssm:/speak/RESEND_API_KEY}}'
+          # Restated explicitly rather than inherited from Globals. SAM merges
+          # Environment.Variables, but this is the safety path — if these were
+          # ever missing the incident would silently go unrecorded, and the
+          # function would still return 200 for the email. Not worth the doubt.
+          SUPABASE_URL:              !Sub '{{resolve:ssm:/speak/SUPABASE_URL}}'
+          SUPABASE_SERVICE_ROLE_KEY: !Sub '{{resolve:ssm:/speak/SUPABASE_SERVICE_ROLE_KEY}}'
       Events:
         Post:
           Type: HttpApi

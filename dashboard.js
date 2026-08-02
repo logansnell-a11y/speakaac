@@ -36,6 +36,9 @@ function formatDate(dateStr) {
   return dateStr;
 }
 
+// Category glyphs for the chart legend. These mirror the .cat-emoji symbols
+// the user actually sees in the grid, so they stay as emoji deliberately —
+// they are wayfinding for a non-reading user, not decoration.
 const CAT_EMOJI = {
   needs: '🙌', feelings: '💛', people: '👤',
   places: '🏠', actions: '🚶', food: '🍎', social: '👋',
@@ -152,35 +155,16 @@ function copyIncidentReport(idx) {
 // ── Render: alerts ─────────────────────────────────────────────────
 function renderAlerts(alerts) {
   const el = document.getElementById('db-alerts-list');
-  if (!alerts.length) {
-    el.innerHTML = '<p class="db-empty">No safety alerts recorded.</p>';
-    return;
-  }
-  _alertReportCache = alerts.map(a => formatIncidentReport(a));
-  el.innerHTML = alerts.map((a, i) => {
-    const p = a.payload || {};
-    const method = (p.method === 'symbol_sequence' || p.reason === 'hidden_trigger')
-      ? 'hidden trigger' : 'help button';
-    const reasonText = p.reason_label || DB_REASON_TEXT[p.reason] || p.reason || 'Help requested';
-    const msgHtml = p.message_at_time && p.message_at_time !== '(no message typed)'
-      ? `<div class="db-alert-message">"${p.message_at_time}"</div>` : '';
-    const sentHtml = p.alert_sent_to
-      ? `<span class="db-alert-sent">✓ Sent to ${p.alert_sent_to}</span>`
-      : `<span class="db-alert-no-contact">⚠ No contact configured</span>`;
-    return `
-      <div class="db-alert-row">
-        <div class="db-alert-icon">🛡️</div>
-        <div class="db-alert-body">
-          <div class="db-alert-reason">${reasonText}</div>
-          ${msgHtml}
-          <div class="db-alert-meta">${a.timeStr || ''} · ${formatDate(a.dateStr || '')} · via ${method}</div>
-          <div class="db-alert-footer">
-            ${sentHtml}
-            <button class="db-alert-copy" onclick="copyIncidentReport(${i})" title="Copy formatted report for incident documentation">Copy report</button>
-          </div>
-        </div>
-      </div>`;
-  }).join('');
+
+  // The private safety channel is not reportable here, by design. This
+  // dashboard runs on the device, under the caretaker's account — if the
+  // caretaker is the person being reported, listing alerts here hands them
+  // the report. Alerts go to the trusted contact; the incident record is
+  // readable institution-side only.
+  el.innerHTML =
+    '<p class="db-empty">Private safety alerts are delivered directly to the ' +
+    'designated trusted contact and are not shown on this device. Contact your ' +
+    'school or clinic administrator for incident records.</p>';
 }
 
 // ── Render: recent communications ──────────────────────────────────
@@ -196,7 +180,7 @@ function renderRecentComms(comms) {
     const safeText = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     return `
       <div class="db-comm-row">
-        <div class="db-comm-left">${isAI ? '<span class="db-ai-tag">✨</span>' : '<span class="db-sym-tag">▶</span>'}</div>
+        <div class="db-comm-left">${isAI ? '<span class="db-ai-tag icon" data-icon="sparkle"></span>' : '<span class="db-sym-tag">▶</span>'}</div>
         <div class="db-comm-body">
           <div class="db-comm-text">"${safeText}"</div>
           <div class="db-comm-meta">${c.timeStr || ''} · ${formatDate(c.dateStr || '')}</div>
@@ -456,7 +440,7 @@ function reportBodyHTML(r) {
       ${stat(r.typedMessages, 'Typed messages')}
       ${stat(r.activeDays, 'Active days')}
     </div>
-    ${r.safetyEvents ? `<p class="report-note">🛡️ Safety channel used <strong>${r.safetyEvents}</strong> time(s) this period — see Provider Dashboard → Safety Alerts for details.</p>` : ''}
+    ${r.safetyEvents ? `<p class="report-note">Safety channel used <strong>${r.safetyEvents}</strong> time(s) this period. Details are not available on this device — contact your school or clinic administrator for the incident record.</p>` : ''}
     <h3 class="report-h3">Daily communication activity</h3>
     <div class="report-chart">${bars}</div>
     <div class="report-tables">
@@ -475,7 +459,7 @@ function renderReportPreview() {
       <div><strong>${rEsc(r.patientName)}</strong> · ${rEsc(r.rangeLabel)}</div>
       <div class="report-generated">Generated ${rEsc(r.generated)}</div>
     </div>
-    ${mLine ? `<p class="report-note">📈 ${rEsc(mLine)}</p>` : ''}
+    ${mLine ? `<p class="report-note">${rEsc(mLine)}</p>` : ''}
     ${reportBodyHTML(r)}`;
   document.getElementById('report-modal')._current = r;
 }
@@ -515,7 +499,7 @@ function printReport() {
     </style></head><body>
     <div class="brand"><h1>Speak — Communication Progress Report</h1><span class="sub">speakaac.org</span></div>
     <div class="meta"><strong>${rEsc(r.patientName)}</strong> &nbsp;·&nbsp; ${rEsc(r.rangeLabel)} &nbsp;·&nbsp; Generated ${rEsc(r.generated)}</div>
-    ${matrixLine(document.getElementById('report-patient').value || null) ? `<p class="report-note">📈 ${rEsc(matrixLine(document.getElementById('report-patient').value || null))}</p>` : ''}
+    ${matrixLine(document.getElementById('report-patient').value || null) ? `<p class="report-note">${rEsc(matrixLine(document.getElementById('report-patient').value || null))}</p>` : ''}
     ${reportBodyHTML(r)}
     <footer>Generated by Speak (speakaac.org) from in-app communication logs. For clinical and educational documentation.</footer>
     </body></html>`);

@@ -6,9 +6,13 @@ const SUPABASE_KEY = 'sb_publishable_q5cjUmE-5kcX81NZTwad1Q_VKxotAf5';
 const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 window.Sync = {
+  // Cached so the safety path can attach a user_id without going async.
+  userId: null,
+
   async getSession() {
     try {
       const { data: { session } } = await _sb.auth.getSession();
+      window.Sync.userId = session?.user?.id || null;
       return session;
     } catch { return null; }
   },
@@ -107,41 +111,29 @@ window.Sync = {
     } catch (e) { console.warn('Event sync failed:', e); }
   },
 
-  // Dedicated safety incident table — structured record for evidence and clinical reporting
-  async createIncident(data) {
-    try {
-      const session = await this.getSession();
-      if (!session) return null;
-      const { data: row, error } = await _sb
-        .from('safety_incidents')
-        .insert({
-          user_id:            session.user.id,
-          user_name:          data.user_name,
-          reason:             data.reason,
-          reason_label:       data.reason_label,
-          message_at_time:    data.message_at_time || null,
-          alert_sent_to:      data.alert_sent_to   || null,
-          alert_sent_to_name: data.alert_sent_to_name || null,
-          no_contact:         data.no_contact || false,
-          ts:                 data.ts,
-        })
-        .select('id')
-        .single();
-      return error ? null : (row?.id ?? null);
-    } catch { return null; }
-  },
-
-  async loadIncidents(limit = 50) {
+  // Institution-side incident read. Goes through a function that verifies the
+  // caller is the assigned teacher for the profiles it returns — the device
+  // account never is, so this stays closed to the caretaker.
+  async loadIncidentsAsTeacher() {
     try {
       const session = await this.getSession();
       if (!session) return [];
-      const { data } = await _sb
-        .from('safety_incidents')
-        .select('*')
-        .eq('user_id', session.user.id)
-        .order('ts', { ascending: false })
-        .limit(limit);
-      return data || [];
+      const res = await fetch('/.netlify/functions/get-safety-incidents', {
+        method:  'POST',
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      if (!res.ok) return [];
+      return (await res.json()).incidents || [];
     } catch { return []; }
   },
+
+  // ── Safety incidents are deliberately NOT accessible from the client ──
+  //
+  // The device account belongs to the caretaker. If the caretaker is the
+  // person the user is reporting, any client-side read or write of this
+  // table hands them the report. Writes go through
+  // netlify/functions/send-safety-alert.js using the service role key;
+  // reads are institution-side only.
+  //
+  // See supabase_safety_incidents_lockdown.sql — RLS now blocks both.
 };
