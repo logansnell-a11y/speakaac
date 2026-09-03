@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- Never let a safety alert be indexed or previewed by a link unfurler. -->
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="no-referrer">
+<title>Speak · Safety Alert</title>
+<style>
+  :root{
+    --bg:#131317; --card:#1a1a1e; --line:#2a2a31;
+    --text:#f0f0f2; --dim:#9999aa; --alert:#e05555;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+       display:flex;align-items:center;justify-content:center;
+       min-height:100vh;padding:24px;line-height:1.55}
+  .card{background:var(--card);border:1px solid var(--alert);border-radius:12px;
+        padding:28px;max-width:520px;width:100%}
+  .card.neutral{border-color:var(--line)}
+  h1{font-size:1.3rem;margin:0 0 6px;color:var(--alert)}
+  .card.neutral h1{color:var(--text)}
+  .ref{font-size:.78rem;color:var(--dim);letter-spacing:.08em;
+       text-transform:uppercase;margin:0 0 20px}
+  dl{display:grid;grid-template-columns:auto 1fr;gap:12px 20px;margin:0 0 20px}
+  dt{color:var(--dim);font-size:.9rem}
+  dd{margin:0;font-weight:600;overflow-wrap:anywhere}
+  .note{background:#2a1010;border:1px solid var(--alert);border-radius:8px;
+        padding:14px;font-size:.9rem;color:var(--alert);margin:0}
+  .msg{color:var(--dim);margin:0}
+  footer{margin-top:22px;font-size:.75rem;color:var(--dim)}
+  a{color:var(--alert)}
+</style>
+</head>
+<body>
+<main class="card neutral" id="card" aria-live="polite">
+  <h1 id="h">Opening alert…</h1>
+  <p class="msg" id="body">Checking the link.</p>
+</main>
+<script>
+(async function () {
+  const card = document.getElementById('card');
+  const h    = document.getElementById('h');
+  const body = document.getElementById('body');
+
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g,
+    c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  function fail(title, text) {
+    card.className = 'card neutral';
+    h.textContent = title;
+    body.textContent = text;
+  }
+
+  const token = new URLSearchParams(location.search).get('t');
+  if (!token) return fail('Link incomplete', 'This link is missing its access token. Open the link from the alert email exactly as it was sent.');
+
+  // Strip the token from the address bar so it does not sit in history,
+  // get screenshotted, or ride along in a Referer header.
+  history.replaceState(null, '', location.pathname);
+
+  let res;
+  try {
+    res = await fetch('/.netlify/functions/view-incident', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token }),
+    });
+  } catch {
+    return fail('Could not connect', 'Check your connection and reopen the link from the email.');
+  }
+
+  if (res.status === 410) return fail('This link has expired', 'Safety alert links are valid for 7 days. Contact the facility or caregiver directly.');
+  if (res.status === 403) return fail('Link not valid', 'This link could not be verified. Open it from the alert email exactly as it was sent.');
+  if (res.status === 404) return fail('Alert not found', 'No alert matches this link. It may have been removed.');
+  if (!res.ok)            return fail('Something went wrong', 'Please try again shortly.');
+
+  const { incident } = await res.json();
+  const when = incident.ts ? new Date(incident.ts).toLocaleString() : '(unknown)';
+
+  card.className = 'card';
+  h.textContent  = 'Safety alert';
+  card.innerHTML =
+    '<h1>Safety alert</h1>' +
+    '<p class="ref">Incident ' + esc(incident.incident_id) + '</p>' +
+    '<dl>' +
+      '<dt>Who</dt><dd>'    + esc(incident.user_name || '(not recorded)') + '</dd>' +
+      '<dt>Reason</dt><dd>' + esc(incident.reason_label || '(not specified)') + '</dd>' +
+      '<dt>Message at the time</dt><dd>' + esc(incident.message_at_time || '(none)') + '</dd>' +
+      '<dt>Time</dt><dd>'   + esc(when) + '</dd>' +
+    '</dl>' +
+    '<p class="note">This alert was raised privately. It was not shown on the user’s ' +
+    'device and the caretaker in the room was not notified. Please check on them ' +
+    'discreetly. If you believe they are in danger, contact authorities.</p>' +
+    '<footer>Speak AAC Private Safety Channel · speakaac.org</footer>';
+})();
+</script>
+</body>
+</html>
