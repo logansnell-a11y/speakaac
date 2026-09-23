@@ -121,7 +121,7 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.12em;
-      color: var(--gold);
+      color: var(--gold-bright);
       margin-bottom: 10px;
     }
 
@@ -168,7 +168,7 @@
     .point::before {
       content: '◆';
       font-size: 0.4rem;
-      color: var(--gold);
+      color: var(--gold-bright);
       flex-shrink: 0;
       padding-top: 8px;
     }
@@ -248,7 +248,7 @@
       border-bottom: 1px solid rgba(37,99,196,0.3);
       padding-bottom: 1px;
     }
-    .contact-email:hover { color: var(--gold); }
+    .contact-email:hover { color: var(--gold-bright); }
     .response-note { font-size: 0.74rem; color: var(--text-dim); margin-top: 12px; }
 
     /* Footer */
@@ -513,7 +513,7 @@
     if (localStorage.getItem('speak_analytics') === 'yes') loadGA();
   </script>
   <div id="cookie-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:14px 20px;align-items:center;gap:12px;flex-wrap:wrap;z-index:9999;font-size:0.82rem;color:var(--text-muted);">
-    <span style="flex:1;min-width:200px;">We use analytics to understand how people find Speak and improve the experience. No personal data is sold. <a href="privacy.html" style="color:var(--gold);">Privacy policy</a></span>
+    <span style="flex:1;min-width:200px;">We use analytics to understand how people find Speak and improve the experience. No personal data is sold. <a href="privacy.html" style="color:var(--gold-bright);">Privacy policy</a></span>
     <button onclick="consentGA(true)"  style="background:var(--gold);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:0.82rem;font-weight:700;cursor:pointer;">Accept</button>
     <button onclick="consentGA(false)" style="background:var(--surface2);color:var(--text-muted);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:0.82rem;cursor:pointer;">Decline</button>
   </div>

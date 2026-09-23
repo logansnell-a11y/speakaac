@@ -54,7 +54,7 @@
     .page { max-width: 740px; margin: 0 auto; padding: 72px 24px 100px; }
 
     /* ── Hero ── */
-    .eyebrow { font-size: 0.78rem; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: .12em; margin-bottom: 16px; }
+    .eyebrow { font-size: 0.78rem; font-weight: 700; color: var(--gold-bright); text-transform: uppercase; letter-spacing: .12em; margin-bottom: 16px; }
     h1 { font-size: 2.6rem; font-weight: 900; line-height: 1.15; margin-bottom: 24px; }
     h1 em { color: var(--gold-bright); font-style: normal; }
     .lead { font-size: 1.12rem; color: var(--text-muted); line-height: 1.75; margin-bottom: 56px; max-width: 600px; }
@@ -105,7 +105,7 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      color: var(--gold);
+      color: var(--gold-bright);
       margin-bottom: 12px;
     }
 
@@ -143,7 +143,7 @@
     .cta-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
     .btn-gold { background: var(--gold); color: #0f0f10; font-weight: 700; font-size: 0.95rem; padding: 13px 28px; border-radius: 10px; text-decoration: none; }
     .btn-ghost { background: transparent; border: 1.5px solid var(--border-light); color: var(--text); font-size: 0.95rem; padding: 13px 28px; border-radius: 10px; text-decoration: none; }
-    .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+    .btn-ghost:hover { border-color: var(--gold-bright); color: var(--gold-bright); }
 
     /* ── Refs ── */
     .creator-message { border-left: 3px solid var(--gold); padding-left: 24px; }
@@ -206,7 +206,7 @@
     }
     .contact-field input:focus,
     .contact-field textarea:focus,
-    .contact-field select:focus { border-color: var(--gold); }
+    .contact-field select:focus { border-color: var(--gold-bright); }
     .contact-field textarea { min-height: 100px; }
     .contact-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 4px; }
     .contact-cancel { background: none; border: 1px solid var(--border); border-radius: 10px; color: var(--text-muted); font-family: inherit; font-size: 0.88rem; font-weight: 600; padding: 10px 20px; cursor: pointer; }
@@ -646,7 +646,7 @@
     if (localStorage.getItem('speak_analytics') === 'yes') loadGA();
   </script>
   <div id="cookie-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:14px 20px;align-items:center;gap:12px;flex-wrap:wrap;z-index:9999;font-size:0.82rem;color:var(--text-muted);">
-    <span style="flex:1;min-width:200px;">We use analytics to understand how people find Speak and improve the experience. No personal data is sold. <a href="privacy.html" style="color:var(--gold);">Privacy policy</a></span>
+    <span style="flex:1;min-width:200px;">We use analytics to understand how people find Speak and improve the experience. No personal data is sold. <a href="privacy.html" style="color:var(--gold-bright);">Privacy policy</a></span>
     <button onclick="consentGA(true)"  style="background:var(--gold);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:0.82rem;font-weight:700;cursor:pointer;">Accept</button>
     <button onclick="consentGA(false)" style="background:var(--surface2);color:var(--text-muted);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:0.82rem;cursor:pointer;">Decline</button>
   </div>

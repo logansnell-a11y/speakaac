@@ -43,7 +43,7 @@
     .btn-nav { background: var(--gold); color: #0f0f10; font-weight: 700; font-size: 0.85rem; padding: 8px 18px; border-radius: 8px; text-decoration: none; }
 
     .page { max-width: 720px; margin: 0 auto; padding: 64px 24px 100px; }
-    .eyebrow { font-size: 0.78rem; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: .12em; margin-bottom: 16px; }
+    .eyebrow { font-size: 0.78rem; font-weight: 700; color: var(--gold-bright); text-transform: uppercase; letter-spacing: .12em; margin-bottom: 16px; }
     h1 { font-size: 2rem; font-weight: 900; margin-bottom: 8px; }
     .updated { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 48px; }
 
@@ -73,7 +73,7 @@
     }
     .contact-block h3 { font-size: 1rem; font-weight: 800; margin-bottom: 10px; }
     .contact-block p  { font-size: 0.88rem; }
-    .contact-block a  { color: var(--gold); }
+    .contact-block a  { color: var(--gold-bright); }
 
     footer { border-top: 1px solid var(--border); padding: 24px 28px; display: flex; gap: 16px; align-items: center; justify-content: center; flex-wrap: wrap; }
     .footer-link { font-size: 0.8rem; color: var(--text-dim); text-decoration: none; }
@@ -172,7 +172,7 @@
   <p>Our total liability to you for any claim arising from your use of Speak shall not exceed the amount you paid us in the 12 months preceding the claim, or $10, whichever is greater.</p>
 
   <h2>12. Privacy</h2>
-  <p>Your use of Speak is also governed by our <a href="privacy.html" style="color:var(--gold);">Privacy Policy</a>, which is incorporated into these terms by reference.</p>
+  <p>Your use of Speak is also governed by our <a href="privacy.html" style="color:var(--gold-bright);">Privacy Policy</a>, which is incorporated into these terms by reference.</p>
 
   <h2>13. Changes to these terms</h2>
   <p>We may update these terms from time to time. Material changes will be communicated to account holders by email at least 14 days before taking effect. Continued use of the service after changes take effect constitutes acceptance of the updated terms.</p>
@@ -212,7 +212,7 @@
     if (localStorage.getItem('speak_analytics') === 'yes') loadGA();
   </script>
   <div id="cookie-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:14px 20px;align-items:center;gap:12px;flex-wrap:wrap;z-index:9999;font-size:0.82rem;color:var(--text-muted);">
-    <span style="flex:1;min-width:200px;">We use analytics to understand how people find Speak and improve the experience. No personal data is sold. <a href="privacy.html" style="color:var(--gold);">Privacy policy</a></span>
+    <span style="flex:1;min-width:200px;">We use analytics to understand how people find Speak and improve the experience. No personal data is sold. <a href="privacy.html" style="color:var(--gold-bright);">Privacy policy</a></span>
     <button onclick="consentGA(true)"  style="background:var(--gold);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:0.82rem;font-weight:700;cursor:pointer;">Accept</button>
     <button onclick="consentGA(false)" style="background:var(--surface2);color:var(--text-muted);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:0.82rem;cursor:pointer;">Decline</button>
   </div>
