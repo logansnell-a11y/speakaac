@@ -1,0 +1,31 @@
+name: Site audit
+
+# Netlify deploys straight from main, so this runs after the push rather than
+# gating it. The blocking checks are the ones that hurt a real user: a service
+# worker that would brick installed devices, prices that disagree with Stripe,
+# a paid tier that is not honoured, and missing security headers.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # Catches drift that no commit caused, e.g. a page that starts 404ing.
+    - cron: '0 13 * * 1'
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Wait for the Netlify deploy to land
+        if: github.event_name == 'push'
+        run: sleep 90
+
+      - name: Audit production
+        run: ./tools/audit.sh https://speakaac.org
