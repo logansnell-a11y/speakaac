@@ -1586,7 +1586,7 @@
           var cspan=cbar.querySelector('span');
           if(cspan&&t['cookie.text']){
             var privLink=lang==='es'?'Política de privacidad':'Privacy policy';
-            cspan.innerHTML=t['cookie.text']+' <a href="privacy.html" style="color:var(--gold-bright);">'+privLink+'</a>';
+            cspan.innerHTML=t['cookie.text']+' <a href="privacy.html" style="color:var(--gold-bright);text-decoration:underline">'+privLink+'</a>';
           }
           var cbtns=cbar.querySelectorAll('button');
           if(cbtns[0]&&t['cookie.accept']) cbtns[0].textContent=t['cookie.accept'];
