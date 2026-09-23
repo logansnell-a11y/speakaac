@@ -97,6 +97,30 @@ async function setUserTier(userId, tier) {
   return upsertRes.ok;
 }
 
+async function parkUpgrade(email, tier, sessionId) {
+  // Unique index on stripe_session_id makes a Stripe webhook retry a no-op.
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/pending_upgrades`, {
+      method: 'POST',
+      headers: {
+        apikey:         SUPABASE_SERVICE_KEY,
+        Authorization:  `Bearer ${SUPABASE_SERVICE_KEY}`,
+        'Content-Type': 'application/json',
+        Prefer:         'resolution=ignore-duplicates',
+      },
+      body: JSON.stringify({
+        email: String(email).toLowerCase(),
+        tier,
+        stripe_session_id: sessionId,
+      }),
+    });
+    return res.ok;
+  } catch (e) {
+    console.error('parkUpgrade failed:', e);
+    return false;
+  }
+}
+
 // ── Main handler ──────────────────────────────────────────────────────
 exports.handler = async function (event) {
   if (event.httpMethod !== 'POST') {
@@ -191,9 +215,13 @@ exports.handler = async function (event) {
   // Find the Supabase user by email
   const user = await getUserByEmail(email);
   if (!user) {
-    console.warn(`No Supabase user found for email: ${email}`);
-    // Not an error — they may not have signed up yet; Stripe still succeeded
-    return { statusCode: 200, body: 'User not found — skipped' };
+    // They paid with an address that has no account yet. Park the tier so
+    // claim-upgrade can apply it when they sign in. Previously this just
+    // logged and returned 200, which meant the money was taken and the
+    // upgrade was lost with nothing to retry from.
+    const parked = await parkUpgrade(email, tier, session.id);
+    console.warn(`No Supabase user for ${email}; upgrade parked=${parked} tier=${tier}`);
+    return { statusCode: 200, body: parked ? 'Parked for claim on signup' : 'User not found and parking failed' };
   }
 
   const ok = await setUserTier(user.id, tier);

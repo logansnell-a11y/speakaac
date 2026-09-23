@@ -3,7 +3,7 @@
 // app.js from cache until CACHE changes — and the old app.js is the one that
 // wrote safety alerts into localStorage where the caretaker could read them.
 // Any future change to the safety path must bump this too.
-const CACHE = 'speak-v36';
+const CACHE = 'speak-v37';
 
 // The app shell. If any one of these 404s the install fails and every existing
 // device stays frozen on the previous cache, so keep this list to files that

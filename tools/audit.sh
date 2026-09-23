@@ -66,6 +66,18 @@ for t in family clinic institution lifetime facility; do
   fi
 done
 
+# 3b. Publish-root leak. netlify.toml publishes ".", so every file in the repo
+#     is served unless a forced redirect 404s it. This has bitten twice.
+echo "-- publish root"
+leaked=0
+for f in "$ROOT"/*.sql "$ROOT"/*.md "$ROOT"/*.py "$ROOT"/*.mjs; do
+  [ -e "$f" ] || continue
+  b=$(basename "$f")
+  c=$(curl -s -o /dev/null -w '%{http_code}' "$SITE/$b")
+  if [ "$c" = "200" ]; then bad "$b is publicly served (add a forced 404 in netlify.toml)"; leaked=$((leaked+1)); fi
+done
+[ $leaked -eq 0 ] && pass "no internal .sql/.md/.py served from the publish root"
+
 # 4. Security headers.
 echo "-- security headers"
 hdrs=$(curl -sI "$SITE/")

@@ -4542,3 +4542,20 @@ body.large-targets .core-word-emoji {
   padding: 6px 0; border-bottom: 1px solid var(--border-light);
 }
 .matrix-hist-date { color: var(--text-muted); min-width: 90px; }
+
+/* ── WCAG AA contrast repairs ──────────────────────────────────────────
+   These controls sit on --surface-high or on the brand blue, both of
+   which are lighter than the page background, so the dim and muted
+   tokens tuned against the page fail the 4.5:1 floor on top of them.
+   Every value below is measured, not guessed, and the comment records
+   what it was. #bar-help matters most: it is the safety channel. */
+#bar-help     { color: #b03f26; }            /* was var(--red), 4.46 on light */
+#ob-home-link { color: var(--text-muted); }  /* was var(--text-dim), 2.45 on light */
+#ob-next-btn  { color: #fff; }               /* was var(--bg), 3.11 on dark */
+
+@media (prefers-color-scheme: dark) {
+  #bar-help     { color: #ff9d9d; }  /* was #e05555 on #3f4252, 2.65 */
+  #auth-sub     { color: #aab8cb; }  /* was #94a3b8 on #334155, 4.04 */
+  #ob-home-link { color: #aab8cb; }  /* was #7c8899 on #334155, 2.88 */
+  #ob-app-name  { color: #8cb8f8; }  /* was #4d8ef0 on #334155, 3.18 */
+}

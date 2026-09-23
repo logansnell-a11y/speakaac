@@ -35,10 +35,26 @@ window.Sync = {
     });
   },
 
+  // If they paid with an email that had no account yet, the Stripe webhook
+  // parked the tier server-side. Claim it once per session, before reading
+  // settings, so the upgrade they paid for is already applied when the app
+  // renders. Never blocks sign-in: any failure here is swallowed.
+  async _claimParkedUpgrade(session) {
+    if (this._claimed) return;
+    this._claimed = true;
+    try {
+      await fetch('/.netlify/functions/claim-upgrade', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+    } catch { /* offline or function down — next sign-in retries */ }
+  },
+
   async load() {
     try {
       const session = await this.getSession();
       if (!session) return null;
+      await this._claimParkedUpgrade(session);
       const { data } = await _sb
         .from('profiles')
         .select('settings')
