@@ -149,7 +149,13 @@ exports.handler = async function (event) {
   }
 
   if (!RESEND_API_KEY) {
-    // Config not yet done — fall back to client-side EmailJS
+    // Config not yet done — fall back to client-side EmailJS.
+    // Shout about it. While this is unset EVERY alert takes the fallback,
+    // which is a third-party vendor with no BAA, and the two-tier design
+    // that keeps content out of a vendor's hands is bypassed entirely.
+    console.error('[SAFETY] RESEND_API_KEY is not set. Every alert is ' +
+      'falling back to client-side EmailJS with full content. Set it in ' +
+      'Netlify → Site → Environment Variables.');
     return { statusCode: 503, body: 'Resend not configured' };
   }
 
