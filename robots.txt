@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Utility and demo pages carry their own noindex tag.
+Disallow: /incident
+Disallow: /payment-success
+Disallow: /reset-password
+Disallow: /baa_print
+
+Sitemap: https://speakaac.org/sitemap.xml

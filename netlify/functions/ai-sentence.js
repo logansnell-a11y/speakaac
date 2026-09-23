@@ -12,7 +12,7 @@ const SUPABASE_URL        = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const ANTHROPIC_KEY       = process.env.ANTHROPIC_API_KEY;
 
-const PAID_TIERS  = ['family', 'clinic', 'institution'];
+const PAID_TIERS  = ['family', 'clinic', 'institution', 'lifetime', 'facility'];
 const FREE_DAILY_LIMIT = 10;
 const ANON_LIFETIME_LIMIT = 3;
 
