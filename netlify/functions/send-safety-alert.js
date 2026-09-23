@@ -91,7 +91,10 @@ exports.handler = async function (event) {
 
 
   // ────────────────────────────────────────────────────────────────────
-  // TEMPORARY — REVERT WHEN supabase_safety_incidents_lockdown.sql HAS RUN
+  // TEMPORARY — REVERT WHEN supabase_safety_incidents_v2.sql HAS RUN
+  // (v2 supersedes supabase_safety_incidents_lockdown.sql: same lockdown,
+  //  plus the incident_id column the two-tier alert needs. Run v2, not the
+  //  older file, or the two-tier path stays broken.)
   //
   // The old RLS policy (auth.uid() = user_id) is still live on
   // safety_incidents, so the device account can still read the table
@@ -104,7 +107,9 @@ exports.handler = async function (event) {
   // path. The incident is written to the function log instead, which only
   // the site owner can read and the caretaker cannot query.
   //
-  // To revert: delete this block and the early return below.
+  // To revert: set LOCKDOWN_APPLIED = true, then delete this block and the
+  // early return below. Do NOT flip it before the migration has actually run:
+  // that re-opens the exact read path this exists to close.
   // ────────────────────────────────────────────────────────────────────
   const LOCKDOWN_APPLIED = false;
 
