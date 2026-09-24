@@ -3,7 +3,17 @@
 const SUPABASE_URL = 'https://ymljgpaublxjazfgcefz.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_q5cjUmE-5kcX81NZTwad1Q_VKxotAf5';
 
-const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// The Supabase SDK is loaded from a CDN. Content filters in schools, hospitals
+// and long-term-care facilities — exactly the places Speak is meant to run — block
+// CDN origins routinely, and a jsdelivr outage does the same thing. Calling
+// createClient() unguarded throws while this file is still parsing, which takes
+// window.Sync down with it and silently kills sign-in, cloud sync and the account
+// controls with no message to the user. Degrade loudly instead: the on-device app
+// keeps working and the UI says why the cloud half is missing.
+const _sdkReady = typeof supabase !== 'undefined'
+               && typeof supabase.createClient === 'function';
+
+const _sb = _sdkReady ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
 window.Sync = {
   // Cached so the safety path can attach a user_id without going async.
@@ -153,3 +163,43 @@ window.Sync = {
   //
   // See supabase_safety_incidents_lockdown.sql — RLS now blocks both.
 };
+
+// ── Degraded mode ───────────────────────────────────────────────────────────
+// Same method names, same return shapes, no network. Callers that do
+// `const { error } = await Sync.signIn(...)` get a real message to show rather
+// than a TypeError on a null client.
+if (!_sdkReady) {
+  console.error(
+    '[Speak] Supabase SDK failed to load (cdn.jsdelivr.net unreachable). ' +
+    'Cloud sync, sign-in and account controls are disabled. ' +
+    'On-device use is unaffected.'
+  );
+
+  window.Sync.UNAVAILABLE_MESSAGE =
+    'Cannot reach the server. A network filter may be blocking cdn.jsdelivr.net. ' +
+    'Speak still works on this device.';
+
+  const _down = () => ({
+    data:  null,
+    error: { name: 'SyncUnavailable', message: window.Sync.UNAVAILABLE_MESSAGE },
+  });
+
+  Object.assign(window.Sync, {
+    unavailable: true,
+    userId: null,
+    async getSession()            { return null;    },
+    async signUp()                { return _down(); },
+    async signIn()                { return _down(); },
+    async signOut()               {                 },
+    async resetPassword()         { return _down(); },
+    async load()                  { return null;    },
+    async save()                  {                 },
+    async setTeacherEmail()       {                 },
+    async loadAsTeacher()         { return [];      },
+    async loadEventsForProfile()  { return [];      },
+    async saveEvent()             {                 },
+    async loadIncidentsAsTeacher(){ return [];      },
+  });
+
+  window.dispatchEvent(new CustomEvent('speak:sync-unavailable'));
+}

@@ -5,3 +5,10 @@ node_modules/
 
 # Local Netlify folder
 .netlify
+
+# Never commit these: netlify.toml uses publish = "." so anything committed is
+# served publicly. bench/ is the Aim 2 alert-delivery simulation, its 200k-trial
+# CSV and RESULTS.md — unpublished preliminary data behind provisional
+# applications 64/055,430 and 64/150,287. It must not be published.
+bench/
+.bak-*/

@@ -177,6 +177,15 @@ function makePicImg(searchTerm, _cache) {
   else return null;
 
   const img = document.createElement("img");
+  // crossOrigin must be set before src or the browser has already sent a no-cors
+  // request. jsdelivr answers with Access-Control-Allow-Origin: *, so asking for
+  // CORS costs nothing and buys a real, readable response instead of an opaque
+  // one. That matters because an opaque response is indistinguishable from a
+  // school or facility content filter handing back a block page: the service
+  // worker cannot tell them apart and would store the block page as if it were
+  // a symbol. With CORS, res.ok is meaningful and a blocked symbol fails loudly
+  // into the emoji fallback below instead of quietly rendering nothing.
+  img.crossOrigin = "anonymous";
   img.src       = src;
   img.alt       = searchTerm;
   img.className = "symbol-pic";
